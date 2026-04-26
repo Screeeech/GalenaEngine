@@ -4,10 +4,10 @@
 namespace Utils
 {
 
-consteval unsigned int sdbm_hash(const char* str, size_t len)
+consteval unsigned int sdbm_hash(const char* str, std::size_t len)
 {
     unsigned int hash = 0;
-    for(size_t i = 0; i < len; ++i)
+    for(std::size_t i = 0; i < len; ++i)
     {
         hash = static_cast<unsigned int>(str[i]) + (hash << 6) + (hash << 16) - hash;
     }
@@ -17,7 +17,7 @@ consteval unsigned int sdbm_hash(const char* str, size_t len)
 
 }
 
-consteval unsigned int operator""_h(const char* str, size_t len)
+consteval unsigned int operator""_h(const char* str, std::size_t len)
 {
     return Utils::sdbm_hash(str, len);
 }

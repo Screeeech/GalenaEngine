@@ -1,6 +1,6 @@
-#include "Animation.hpp"
+#include "../../Include/Components/Animation.hpp"
 
-#include "Renderer.hpp"
+#include "../../Include/Renderer.hpp"
 
 namespace dae
 {

@@ -1,4 +1,4 @@
-#include "GameObjectCommand.hpp"
+#include "../../Include/Commands/GameObjectCommand.hpp"
 
 namespace dae
 {

@@ -5,7 +5,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/matrix_decompose.hpp>
 
-#include "GameObject.hpp"
+#include "../Include/GameObject.hpp"
 
 dae::Transform::Transform(float x, float y, float z, GameObject* parent)
     : m_pOwner(parent)
