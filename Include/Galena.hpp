@@ -16,10 +16,10 @@ public:
     void Run(const std::function<void()>& load);
     void RunOneFrame();
 
-    Galena(const Galena& other) = delete;
+    Galena(Galena const& other) = delete;
+    auto operator=(Galena const& other) -> Galena& = delete;
     Galena(Galena&& other) = delete;
-    Galena& operator=(const Galena& other) = delete;
-    Galena& operator=(Galena&& other) = delete;
+    auto operator=(Galena&& other) -> Galena& = delete;
 
 private:
     bool m_quit{};

@@ -35,23 +35,23 @@ struct Input
     } type{};
 
     explicit Input(SDL_Scancode _key, Type _type = Type::released)
-        : data{ _key }
-        , type{ _type }
+        : data{_key}
+        , type{_type}
     {
     }
 
     explicit Input(SDL_GamepadButton _key, Type _type = Type::released)
-        : data{ _key }
-        , type{ _type }
+        : data{_key}
+        , type{_type}
     {
     }
 
     template<InputConcept T>
-    bool InputDataMatches(T otherData) const
+    auto InputDataMatches(T otherData) const -> bool
     {
-        if constexpr(std::same_as<T, SDL_Scancode>)
+        if constexpr (std::same_as<T, SDL_Scancode>)
         {
-            if(not std::holds_alternative<SDL_Scancode>(data))
+            if (not std::holds_alternative<SDL_Scancode>(data))
                 return false;
 
             const auto ourKey = std::get<SDL_Scancode>(data);
@@ -59,7 +59,7 @@ struct Input
         }
         else
         {
-            if(not std::holds_alternative<SDL_GamepadButton>(data))
+            if (not std::holds_alternative<SDL_GamepadButton>(data))
                 return false;
 
             const auto ourButton = std::get<SDL_GamepadButton>(data);
@@ -73,17 +73,11 @@ struct Action
     ActionID name;
     int playerIndex{};
 
-    bool operator==(const Action& other) const
-    {
-        return name == other.name and playerIndex == other.playerIndex;
-    }
+    auto operator==(const Action& other) const -> bool { return name == other.name and playerIndex == other.playerIndex; }
 
     struct Hash
     {
-        size_t operator()(const Action& action) const noexcept
-        {
-            return std::hash<ActionID>{}(action.name);
-        }
+        auto operator()(const Action& action) const noexcept -> size_t { return std::hash<ActionID>{}(action.name); }
     };
 };
 
@@ -93,57 +87,66 @@ public:
     InputManager() = default;
     ~InputManager() noexcept override;
 
+    InputManager(InputManager const&) = delete;
+    auto operator=(InputManager const&) -> InputManager& = delete;
+    InputManager(InputManager&&) = delete;
+    auto operator=(InputManager&&) -> InputManager& = delete;
+
     void Init();
-    bool ProcessInput();
+    auto ProcessInput() -> bool;
     void ProcessInputHeld();
 
     template<InputConcept T>
     void RegisterInput(T inputData, Input::Type inputType, const ActionID& name, int playerIndex)
     {
-        if(m_registeredInputs.contains(Action{ name, playerIndex }))
+        if (m_registeredInputs.contains(Action{.name = name, .playerIndex = playerIndex}))
         {
-            if constexpr(std::same_as<T, SDL_Scancode>)
-                std::println("Warning! \tAttempting to bind Input: \'{}\' to Action: ({}, {}) which is already bound!",
-                             SDL_GetScancodeName(inputData), name, playerIndex);
-            else if constexpr(std::same_as<T, SDL_GamepadButton>)
-                std::println("Warning! \tAttempting to bind Input: \'{}\' to Action: ({}, {}) which is already bound!",
-                             SDL_GetGamepadStringForButton(inputData), name, playerIndex);
+            if constexpr (std::same_as<T, SDL_Scancode>)
+                std::println(
+                    "Warning! \tAttempting to bind Input: \'{}\' to Action: ({}, {}) which is already bound!",
+                    SDL_GetScancodeName(inputData),
+                    name,
+                    playerIndex);
+            else if constexpr (std::same_as<T, SDL_GamepadButton>)
+                std::println(
+                    "Warning! \tAttempting to bind Input: \'{}\' to Action: ({}, {}) which is already bound!",
+                    SDL_GetGamepadStringForButton(inputData),
+                    name,
+                    playerIndex);
         }
 
-        m_registeredInputs.insert(std::pair{ Action{ name, playerIndex }, Input{ inputData, inputType } });
+        m_registeredInputs.insert(std::pair{Action{.name = name, .playerIndex = playerIndex}, Input{inputData, inputType}});
     }
 
     template<InputConcept T>
     void UnregisterInput(T inputData, const ActionID& name, int playerIndex)
     {
-        std::erase_if(m_registeredInputs,
-                      [inputData, name, playerIndex](const std::pair<Action, Input>& input)
-                      {
-                          return input.first.name == name and input.first.playerIndex == playerIndex and
-                              input.second.InputDataMatches(inputData);
-                      });
+        std::erase_if(
+            m_registeredInputs,
+            [inputData, name, playerIndex](const std::pair<Action, Input>& input) -> bool
+            { return input.first.name == name and input.first.playerIndex == playerIndex and input.second.InputDataMatches(inputData); });
     }
 
     template<typename CommandType, typename... Args>
         requires std::derived_from<CommandType, Command>
     void BindAction(const ActionID& name, int playerIndex, Args... args)
     {
-        m_commands.emplace(Action{ .name = name, .playerIndex = playerIndex }, std::make_unique<CommandType>(args...));
+        m_commands.emplace(Action{.name = name, .playerIndex = playerIndex}, std::make_unique<CommandType>(args...));
     }
 
     void UnbindAction(const ActionID& name, int playerIndex);
 
 private:
     template<InputConcept T>
-    bool HandleInputEvent(Input::Type inputType, T inputData)
+    auto HandleInputEvent(Input::Type inputType, T inputData) -> bool
     {
-        auto actionFilter = [&](const auto& pair)
+        auto actionFilter = [&](const auto& pair) -> bool
         {
             const auto& [action, registeredInput] = pair;
             return registeredInput.type != inputType and registeredInput.InputDataMatches(inputData);
         };
 
-        auto getCommands = [this](const Action& action)
+        auto getCommands = [this](const Action& action) -> auto
         {
             auto range = m_commands.equal_range(action);
             return std::ranges::subrange(range.first, range.second) | std::views::values;

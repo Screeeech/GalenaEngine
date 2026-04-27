@@ -17,14 +17,14 @@ class Renderable;
 class SceneManager final : public Singleton<SceneManager>
 {
 public:
-    Scene& CreateScene();
+    auto CreateScene() -> Scene&;
 
     void Update(float deltaTime) const;
     void Render() const;
     void DrawUI() const;
 
     void LoadScene(Scene* scene);
-    [[nodiscard]] Scene* GetActiveScene() const;
+    [[nodiscard]] auto GetActiveScene() const -> Scene*;
     void RegisterRenderComponent(Renderable* component) const;
     void UnregisterRenderComponent(Renderable* component) const;
     void RegisterUIComponent(UIComponent* component) const;

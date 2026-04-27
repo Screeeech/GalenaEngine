@@ -18,6 +18,11 @@ public:
     explicit Sprite(GameObject* pOwner, int zIndex = 0);
     ~Sprite() noexcept override;
 
+    Sprite(Sprite const&) = delete;
+    auto operator=(Sprite const&) -> Sprite& = delete;
+    Sprite(Sprite &&) = delete;
+    auto operator=(Sprite &&) -> Sprite& = delete;
+
     void Update(float deltaTime) override;
     void Render() override;
 

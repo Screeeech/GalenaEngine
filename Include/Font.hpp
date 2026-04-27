@@ -13,12 +13,12 @@ public:
     explicit Font(const std::string& fullPath, float size);
     ~Font() noexcept;
 
-    [[nodiscard]] TTF_Font* GetFont() const;
+    [[nodiscard]] auto GetFont() const -> TTF_Font*;
 
-    Font(const Font&) = delete;
     Font(Font&&) = delete;
-    Font& operator=(const Font&) = delete;
-    Font& operator=(const Font&&) = delete;
+    auto operator=(Font const&) -> Font& = delete;
+    Font(Font const&) = delete;
+    auto operator=(Font&&) -> Font& = delete;
 
 private:
     TTF_Font* m_font;

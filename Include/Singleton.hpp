@@ -8,17 +8,18 @@ template<typename T>
 class Singleton
 {
 public:
-    [[nodiscard]] static T& Get()
+    [[nodiscard]] static auto Get() -> T&
     {
         static T instance{};
         return instance;
     }
 
     virtual ~Singleton() = default;
-    Singleton(const Singleton& other) = delete;
+
+    Singleton(Singleton const& other) = delete;
+    auto operator=(Singleton const& other) -> Singleton& = delete;
     Singleton(Singleton&& other) = delete;
-    Singleton& operator=(const Singleton& other) = delete;
-    Singleton& operator=(Singleton&& other) = delete;
+    auto operator=(Singleton&& other) -> Singleton& = delete;
 
 protected:
     Singleton() = default;

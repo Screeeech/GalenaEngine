@@ -23,13 +23,14 @@ public:
 
     explicit GameObject(float x, float y, float z = 0.0f, std::string_view name = "new GameObject");
     ~GameObject() noexcept = default;
+
+    GameObject(GameObject const& other) = delete;
+    auto operator=(GameObject const& other) -> GameObject& = delete;
     GameObject(GameObject&& other) = delete;
-    GameObject(const GameObject& other) = delete;
-    GameObject& operator=(GameObject&& other) = delete;
-    GameObject& operator=(const GameObject& other) = delete;
+    auto operator=(GameObject&& other) -> GameObject& = delete;
 
     template<ComponentConcept T, typename... Args>
-    T* AddComponent(Args&&... args) noexcept
+    auto AddComponent(Args&&... args) noexcept -> T*
     {
         m_components.push_back(std::make_unique<T>(this, std::forward<Args>(args)...));
         return dynamic_cast<T*>(m_components.back().get());
@@ -44,7 +45,7 @@ public:
     }
 
     template<ComponentConcept T>
-    T* GetComponent()
+    auto GetComponent() -> T*
     {
         for(auto& component : m_components)
             if(auto* pComponent = dynamic_cast<T*>(component.get()))
@@ -55,17 +56,17 @@ public:
     template<ComponentConcept T>
     auto GetAllComponents()
     {
-        return m_components | std::views::transform([](const auto& comp) { return dynamic_cast<T*>(comp.get()); }) |
+        return m_components | std::views::transform([](auto const& comp) -> auto { return dynamic_cast<T*>(comp.get()); }) |
             std::views::filter([](auto* comp) { return comp != nullptr; });
     }
 
-    Transform& GetTransform();
-    glm::mat4 GetParentWorldMatrix();
-    glm::vec3 GetWorldPosition();
+    auto GetTransform() -> Transform&;
+    auto GetParentWorldMatrix() -> glm::mat4;
+    auto GetWorldPosition() -> glm::vec3;
 
-    GameObject* CreateChild(float x, float y, float z = 0.0f, std::string_view name = "new GameObject");
-    std::unique_ptr<GameObject> DisownChild(GameObject* pChild);
-    bool RemoveChild(GameObject* pChild);
+    auto CreateChild(float x, float y, float z = 0.0f, std::string_view name = "new GameObject") -> GameObject*;
+    auto DisownChild(GameObject* pChild) -> std::unique_ptr<GameObject>;
+    auto RemoveChild(GameObject* pChild) -> bool;
     void Reparent(GameObject* pParent, bool keepWorldPosition = true);
 
     // Recursive function
@@ -76,7 +77,7 @@ public:
 
 private:
     void AddChild(std::unique_ptr<GameObject> pChild);
-    bool IsChild(GameObject* pChild);
+    auto IsChild(GameObject* pChild) -> bool;
 
 
     GameObject* m_pParent{};

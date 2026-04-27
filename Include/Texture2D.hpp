@@ -14,19 +14,19 @@ namespace gla
 class Texture2D final
 {
 public:
-    [[nodiscard]] SDL_Texture* GetSDLTexture() const;
+    [[nodiscard]] auto GetSDLTexture() const -> SDL_Texture*;
     explicit Texture2D(SDL_Texture* texture, SDL_ScaleMode scaleMode = SDL_SCALEMODE_LINEAR);
 
     explicit Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode = SDL_SCALEMODE_LINEAR);
 
     ~Texture2D() noexcept;
 
-    [[nodiscard]] glm::vec2 GetSize() const;
+    [[nodiscard]] auto GetSize() const -> glm::vec2;
 
-    Texture2D(const Texture2D&) = delete;
+    Texture2D(Texture2D const&) = delete;
+    auto operator=(Texture2D const&) -> Texture2D& = delete;
     Texture2D(Texture2D&&) = delete;
-    Texture2D& operator=(const Texture2D&) = delete;
-    Texture2D& operator=(const Texture2D&&) = delete;
+    auto operator=(const Texture2D&&) -> Texture2D& = delete;
 
 private:
     SDL_Texture* m_texture;

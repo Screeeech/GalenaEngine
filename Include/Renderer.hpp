@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GALENA_RENDERER_HPP
+#define GALENA_RENDERER_HPP
+
 #include <SDL3/SDL.h>
 
 #include "Singleton.hpp"
@@ -7,9 +9,6 @@ namespace gla
 {
 class Texture2D;
 
-/**
- * Simple RAII wrapper for the SDL renderer
- */
 class Renderer final : public Singleton<Renderer>
 {
     SDL_Renderer* m_renderer{};
@@ -27,9 +26,9 @@ public:
     void RenderTextureScaleFlipped(const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX, bool flipY,
                                    SDL_FRect srcRect = { 0.f, 0.f, -1.f, -1.f }) const;
 
-    [[nodiscard]] SDL_Renderer* GetSDLRenderer() const;
+    [[nodiscard]] auto GetSDLRenderer() const -> SDL_Renderer*;
 
-    [[nodiscard]] const SDL_Color& GetBackgroundColor() const
+    [[nodiscard]] auto GetBackgroundColor() const -> const SDL_Color&
     {
         return m_clearColor;
     }
@@ -39,4 +38,5 @@ public:
         m_clearColor = color;
     }
 };
-}  // namespace dae
+}  // namespace gla
+#endif  // GALENA_RENDERER_HPP

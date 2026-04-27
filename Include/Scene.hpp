@@ -27,12 +27,12 @@ public:
     void SortCachedRenderComponents();
 
     ~Scene() = default;
-    Scene(const Scene& other) = delete;
+    Scene(Scene const& other) = delete;
+    auto operator=(Scene const& other) -> Scene& = delete;
     Scene(Scene&& other) = delete;
-    Scene& operator=(const Scene& other) = delete;
-    Scene& operator=(Scene&& other) = delete;
+    auto operator=(Scene&& other) -> Scene& = delete;
 
-    [[nodiscard]] GameObject* GetRoot();
+    [[nodiscard]] auto GetRoot() -> GameObject*;
 private:
     friend class SceneManager;
     explicit Scene();

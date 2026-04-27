@@ -19,6 +19,12 @@ public:
     explicit FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color = { .r = 255, .g = 255, .b = 255, .a = 255 });
     ~FpsComponent() noexcept override = default;
 
+    FpsComponent(FpsComponent const&) = delete;
+    auto operator=(FpsComponent const&) -> FpsComponent = delete;
+    FpsComponent(FpsComponent&&) = delete;
+    auto operator=(FpsComponent&&) -> FpsComponent = delete;
+
+
     void Update(float deltaTime) override;
 
 private:

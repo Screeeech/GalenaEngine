@@ -11,6 +11,11 @@ public:
     RotatorComponent(GameObject* pOwner, float rotationSpeed);
     ~RotatorComponent() override = default;
 
+    RotatorComponent(RotatorComponent const&) = delete;
+    auto operator=(RotatorComponent const&) -> RotatorComponent = delete;
+    RotatorComponent(RotatorComponent&&) = delete;
+    auto operator=(RotatorComponent&&) -> RotatorComponent = delete;
+
     void Update(float deltaTime) override;
 
 private:

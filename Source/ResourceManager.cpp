@@ -23,7 +23,7 @@ void ResourceManager::Init(const std::filesystem::path& dataPath)
     }
 }
 
-std::shared_ptr<Texture2D> ResourceManager::LoadTexture(const std::string& file, SDL_ScaleMode scaleMode)
+auto ResourceManager::LoadTexture(const std::string& file, SDL_ScaleMode scaleMode) -> std::shared_ptr<Texture2D>
 {
     // const auto fullPath = m_dataPath/file;
     const auto filename = fs::path(file).filename().string();
@@ -32,7 +32,7 @@ std::shared_ptr<Texture2D> ResourceManager::LoadTexture(const std::string& file,
     return m_loadedTextures.at(filename);
 }
 
-std::shared_ptr<Font> ResourceManager::LoadFont(const std::string& file, uint8_t size)
+auto ResourceManager::LoadFont(const std::string& file, uint8_t size) -> std::shared_ptr<Font>
 {
     // const auto fullPath = m_dataPath/file;
     const auto filename = fs::path(file).filename().string();

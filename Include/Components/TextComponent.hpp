@@ -20,6 +20,11 @@ public:
                            SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 });
     ~TextComponent() noexcept override = default;
 
+    TextComponent(TextComponent const&) = delete;
+    auto operator=(TextComponent const&) -> TextComponent = delete;
+    TextComponent(TextComponent&&) = delete;
+    auto operator=(TextComponent&&) -> TextComponent = delete;
+
     void Update(float deltaTime) override;
     void SetText(const std::string& text);
     [[nodiscard]] const std::string& GetText() const;

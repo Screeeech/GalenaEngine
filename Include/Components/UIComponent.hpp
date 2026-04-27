@@ -13,6 +13,11 @@ public:
     UIComponent(GameObject* pOwner, std::function<void(GameObject* pCaller)> drawFunc);
     ~UIComponent() noexcept override;
 
+    UIComponent(UIComponent const&) = delete;
+    auto operator=(UIComponent const&) -> UIComponent = delete;
+    UIComponent(UIComponent &&) = delete;
+    auto operator=(UIComponent &&) -> UIComponent = delete;
+
     void Update(float deltaTime) override;
     void DrawUI() const;
 

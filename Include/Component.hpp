@@ -11,10 +11,11 @@ class Component
 {
 public:
     virtual ~Component() noexcept = default;
-    Component(Component&&) = delete;
+
     Component(Component const&) = delete;
-    Component& operator=(Component&&) = delete;
-    Component& operator=(Component const&) = delete;
+    auto operator=(Component const&) -> Component& = delete;
+    Component(Component&&) = delete;
+    auto operator=(Component&&) -> Component& = delete;
 
     virtual void Update(float deltaTime) = 0;
 
