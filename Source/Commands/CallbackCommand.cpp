@@ -2,12 +2,17 @@
 
 #include <utility>
 
-dae::CallbackCommand::CallbackCommand(std::function<void()> callback)
+namespace gla
+{
+
+CallbackCommand::CallbackCommand(std::function<void()> callback)
     : m_callback(std::move(callback))
 {
 }
 
-void dae::CallbackCommand::Execute()
+void CallbackCommand::Execute()
 {
     m_callback();
 }
+
+}  // namespace gla

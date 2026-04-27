@@ -4,23 +4,26 @@
 
 #include "SceneManager.hpp"
 
-dae::UIComponent::UIComponent(GameObject* pOwner, std::function<void(GameObject* pCaller)> drawFunc)
+namespace gla
+{
+
+UIComponent::UIComponent(GameObject* pOwner, std::function<void(GameObject* pCaller)> drawFunc)
     : Component(pOwner)
     , m_drawFunc(std::move(drawFunc))
 {
     SceneManager::Get().RegisterUIComponent(this);
 }
 
-dae::UIComponent::~UIComponent() noexcept
+UIComponent::~UIComponent() noexcept
 {
     SceneManager::Get().UnregisterUIComponent(this);
 }
 
-void dae::UIComponent::Update(float /*deltaTime*/)
-{
-}
+void UIComponent::Update(float /*deltaTime*/) {}
 
-void dae::UIComponent::DrawUI() const
+void UIComponent::DrawUI() const
 {
     m_drawFunc(m_pOwner);
 }
+
+}  // namespace gla

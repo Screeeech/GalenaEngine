@@ -1,9 +1,9 @@
-#ifndef MINIGIN_COMPONENT_H
-#define MINIGIN_COMPONENT_H
+#ifndef GALENA_COMPONENT_H
+#define GALENA_COMPONENT_H
 
 #include <concepts>
 
-namespace dae
+namespace gla
 {
 class GameObject;
 
@@ -20,12 +20,16 @@ public:
 
 protected:
     explicit Component(GameObject* pOwner)
-        : m_pOwner(pOwner) {}
+        : m_pOwner(pOwner)
+    {
+    }
+
     GameObject* const m_pOwner;
 };
 
 template<typename ComponentType>
 concept ComponentConcept = std::derived_from<ComponentType, Component>;
 
-}  // namespace dae
-#endif  // MINIGIN_COMPONENT_H
+}  // namespace gla
+
+#endif  // GALENA_COMPONENT_H

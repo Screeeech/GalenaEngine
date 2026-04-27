@@ -1,9 +1,9 @@
-#ifndef ENGINE_EVENTS_H
-#define ENGINE_EVENTS_H
+#ifndef GALENA_EVENTS_H
+#define GALENA_EVENTS_H
 
 using EventID = unsigned int;
 
-namespace dae
+namespace gla
 {
 
 struct Event
@@ -57,6 +57,6 @@ struct ScoreEvent : PlayerEvent
     int scoreChange;
 };
 
-}  // namespace dae
+}  // namespace gla
 
-#endif  // ENGINE_EVENTS_H
+#endif  // GALENA_EVENTS_H

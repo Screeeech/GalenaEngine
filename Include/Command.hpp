@@ -1,7 +1,7 @@
-#ifndef ENGINE_COMMAND_H
-#define ENGINE_COMMAND_H
+#ifndef GALENA_COMMAND_H
+#define GALENA_COMMAND_H
 
-namespace dae
+namespace gla
 {
 class GameObject;
 
@@ -13,6 +13,6 @@ public:
     virtual void Execute() = 0;
 };
 
-}  // namespace dae
+}  // namespace gla
 
-#endif  // ENGINE_COMMAND_H
+#endif  // GALENA_COMMAND_H

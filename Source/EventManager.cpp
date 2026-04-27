@@ -1,14 +1,14 @@
-#include "../Include/EventManager.hpp"
+#include "EventManager.hpp"
 
-#include "../Include/Events.hpp"
+#include "Events.hpp"
 
-namespace dae
+namespace gla
 {
 
 void EventManager::InvokeEvent(const Event& event)
 {
     auto range = m_listeners.equal_range(event.eventID);
-    for(auto&& [key, value]  : std::ranges::subrange(range.first, range.second))
+    for(auto&& [key, value] : std::ranges::subrange(range.first, range.second))
     {
         value.second(event);
     }
@@ -25,4 +25,4 @@ void EventManager::ExecuteQueuedEvents()
     }
 }
 
-}  // namespace dae
+}  // namespace gla

@@ -5,13 +5,13 @@
 #include "Components/TextComponent.hpp"
 #include "GameObject.hpp"
 
-dae::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color color)
+gla::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color color)
     : Component(pOwner)
     , m_pTextComponent(pOwner->AddComponent<TextComponent>("FPS: ", std::move(font), 999, color))
 {
 }
 
-void dae::FpsComponent::Update(float deltaTime)
+void gla::FpsComponent::Update(float deltaTime)
 {
     m_elapsedTime += deltaTime;
     ++m_frameCount;

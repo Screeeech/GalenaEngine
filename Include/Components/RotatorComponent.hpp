@@ -1,8 +1,8 @@
-#ifndef ENGINE_ROTATORCOMPONENT_H
-#define ENGINE_ROTATORCOMPONENT_H
+#ifndef GALENA_ROTATORCOMPONENT_H
+#define GALENA_ROTATORCOMPONENT_H
 #include "Component.hpp"
 
-namespace dae
+namespace gla
 {
 
 class RotatorComponent : public Component
@@ -18,6 +18,6 @@ private:
     float m_angle{};
 };
 
-}  // namespace dae
+}  // namespace gla
 
-#endif  // ENGINE_ROTATORCOMPONENT_H
+#endif  // GALENA_ROTATORCOMPONENT_H

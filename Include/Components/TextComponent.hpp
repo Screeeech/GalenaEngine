@@ -1,5 +1,5 @@
-#ifndef MINIGIN_TEXTCOMPONENT_H
-#define MINIGIN_TEXTCOMPONENT_H
+#ifndef GALENA_TEXTCOMPONENT_H
+#define GALENA_TEXTCOMPONENT_H
 
 #include <SDL3/SDL_pixels.h>
 
@@ -8,7 +8,7 @@
 #include "Component.hpp"
 #include "Font.hpp"
 
-namespace dae
+namespace gla
 {
 class Sprite;
 class Texture2D;
@@ -17,7 +17,7 @@ class TextComponent : public Component
 {
 public:
     explicit TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, int zIndex = 0,
-                  SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 });
+                           SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 });
     ~TextComponent() noexcept override = default;
 
     void Update(float deltaTime) override;
@@ -37,6 +37,6 @@ private:
     std::shared_ptr<Texture2D> UpdateTexture() const;
 };
 
-}  // namespace dae
+}  // namespace gla
 
-#endif  // MINIGIN_TEXTCOMPONENT_H
+#endif  // GALENA_TEXTCOMPONENT_H

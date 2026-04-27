@@ -1,8 +1,11 @@
-#pragma once
+#ifndef GALENA_TRANSFORM_HPP
+#define GALENA_TRANSFORM_HPP
+
 #include <glm/glm.hpp>
 
-namespace dae
+namespace gla
 {
+
 class GameObject;
 
 class Transform final
@@ -33,19 +36,22 @@ public:
     void UpdateWorldMatrix();
     void ApplyInverseTransform(const Transform& parentTransform);
 
-    bool isDirty{ true };
+    bool isDirty{true};
 
 private:
     GameObject* m_pOwner{};
 
-    glm::mat4 m_worldMatrix{ 1.f };
+    glm::mat4 m_worldMatrix{1.f};
 
-    glm::vec3 m_localRotation{ 0.f };
-    glm::vec3 m_localScale{ 1.f };
-    glm::vec3 m_localPosition{ 0.f };
+    glm::vec3 m_localRotation{0.f};
+    glm::vec3 m_localScale{1.f};
+    glm::vec3 m_localPosition{0.f};
 
-    glm::vec3 m_worldRotation{ 0.f };
-    glm::vec3 m_worldScale{ 1.f };
-    glm::vec3 m_worldPosition{ 0.f };
+    glm::vec3 m_worldRotation{0.f};
+    glm::vec3 m_worldScale{1.f};
+    glm::vec3 m_worldPosition{0.f};
 };
-}  // namespace dae
+
+}  // namespace gla
+
+#endif  // GALENA_TRANSFORM_HPP

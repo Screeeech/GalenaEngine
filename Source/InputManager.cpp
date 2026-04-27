@@ -8,13 +8,16 @@
 
 #include "Commands/CallbackCommand.hpp"
 
-dae::InputManager::~InputManager() noexcept
+namespace gla
+{
+
+InputManager::~InputManager() noexcept
 {
     if(m_pGamepad)
         SDL_CloseGamepad(m_pGamepad);
 }
 
-void dae::InputManager::Init()
+void InputManager::Init()
 {
     int count = 0;
     SDL_JoystickID* ids = SDL_GetGamepads(&count);
@@ -38,7 +41,7 @@ void dae::InputManager::Init()
     SDL_free(ids);
 }
 
-bool dae::InputManager::ProcessInput()
+bool InputManager::ProcessInput()
 {
     ProcessInputHeld();
 
@@ -98,7 +101,7 @@ bool dae::InputManager::ProcessInput()
     return true;
 }
 
-void dae::InputManager::ProcessInputHeld()
+void InputManager::ProcessInputHeld()
 {
     for(auto& [action, input] : m_registeredInputs)
     {
@@ -127,7 +130,9 @@ void dae::InputManager::ProcessInputHeld()
     }
 }
 
-void dae::InputManager::UnbindAction(const ActionID& name, int playerIndex)
+void InputManager::UnbindAction(const ActionID& name, int playerIndex)
 {
-    m_commands.erase(Action{name, playerIndex});
+    m_commands.erase(Action{ name, playerIndex });
 }
+
+}  // namespace gla

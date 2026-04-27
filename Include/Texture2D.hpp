@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GALENA_TEXTURE2D_HPP
+#define GALENA_TEXTURE2D_HPP
+
 #include <SDL3/SDL_surface.h>
 
 #include <glm/vec2.hpp>
@@ -6,11 +8,9 @@
 
 struct SDL_Texture;
 
-namespace dae
+namespace gla
 {
-/**
- * Simple RAII wrapper for an SDL_Texture
- */
+
 class Texture2D final
 {
 public:
@@ -31,4 +31,7 @@ public:
 private:
     SDL_Texture* m_texture;
 };
-}  // namespace dae
+
+}  // namespace gla
+
+#endif  // GALENA_TEXTURE2D_HPP

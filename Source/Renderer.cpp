@@ -11,7 +11,7 @@
 #include "SceneManager.hpp"
 #include "Texture2D.hpp"
 
-void dae::Renderer::Init(SDL_Window* window)
+void gla::Renderer::Init(SDL_Window* window)
 {
     m_window = window;
 
@@ -42,7 +42,7 @@ void dae::Renderer::Init(SDL_Window* window)
     ImGui_ImplSDLRenderer3_Init(m_renderer);
 }
 
-void dae::Renderer::Render() const
+void gla::Renderer::Render() const
 {
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
@@ -62,7 +62,7 @@ void dae::Renderer::Render() const
     SDL_RenderPresent(m_renderer);
 }
 
-void dae::Renderer::Destroy()
+void gla::Renderer::Destroy()
 {
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
@@ -78,7 +78,7 @@ void dae::Renderer::Destroy()
     }
 }
 
-void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect) const
+void gla::Renderer::RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;
@@ -98,7 +98,7 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, float x, float y, SD
     SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
 }
 
-void dae::Renderer::RenderTextureScale(const Texture2D& texture, float x, float y, float scaleX, float scaleY,
+void gla::Renderer::RenderTextureScale(const Texture2D& texture, float x, float y, float scaleX, float scaleY,
                                        SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
@@ -123,7 +123,7 @@ void dae::Renderer::RenderTextureScale(const Texture2D& texture, float x, float 
     SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
 }
 
-void dae::Renderer::RenderTextureScaleFlipped(const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX,
+void gla::Renderer::RenderTextureScaleFlipped(const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX,
                                               bool flipY, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
@@ -148,7 +148,7 @@ void dae::Renderer::RenderTextureScaleFlipped(const Texture2D& texture, float x,
     SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst, 0, &origin, flipMode);
 }
 
-SDL_Renderer* dae::Renderer::GetSDLRenderer() const
+SDL_Renderer* gla::Renderer::GetSDLRenderer() const
 {
     return m_renderer;
 }

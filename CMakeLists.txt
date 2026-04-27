@@ -22,7 +22,7 @@ set(ENGINE_SOURCES
     "Source/Font.cpp"
     "Source/GameObject.cpp"
     "Source/InputManager.cpp"
-    "Source/Minigin.cpp"
+    "Source/Galena.cpp"
     "Source/Renderer.cpp"
     "Source/ResourceManager.cpp"
     "Source/Scene.cpp"

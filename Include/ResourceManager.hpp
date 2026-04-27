@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿#ifndef GALENA_RESOURCEMANAGER_HPP
+#define GALENA_RESOURCEMANAGER_HPP
+
 #include <SDL3/SDL_surface.h>
 
 #include <filesystem>
@@ -8,7 +10,7 @@
 
 #include "Singleton.hpp"
 
-namespace dae
+namespace gla
 {
 class Texture2D;
 class Font;
@@ -30,4 +32,7 @@ private:
     std::map<std::string, std::shared_ptr<Texture2D>> m_loadedTextures;
     std::map<std::pair<std::string, uint8_t>, std::shared_ptr<Font>> m_loadedFonts;
 };
-}  // namespace dae
+
+}  // namespace gla
+
+#endif // GALENA_RESOURCEMANAGER_HPP

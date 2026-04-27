@@ -6,12 +6,15 @@
 
 #include "Renderer.hpp"
 
-dae::Texture2D::~Texture2D() noexcept
+namespace gla
+{
+
+Texture2D::~Texture2D() noexcept
 {
     SDL_DestroyTexture(m_texture);
 }
 
-glm::vec2 dae::Texture2D::GetSize() const
+glm::vec2 Texture2D::GetSize() const
 {
     float w{};
     float h{};
@@ -19,12 +22,12 @@ glm::vec2 dae::Texture2D::GetSize() const
     return { w, h };
 }
 
-SDL_Texture* dae::Texture2D::GetSDLTexture() const
+SDL_Texture* Texture2D::GetSDLTexture() const
 {
     return m_texture;
 }
 
-dae::Texture2D::Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode)
+Texture2D::Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode)
 {
     SDL_Surface* surface = SDL_LoadPNG(fullPath.c_str());
     if(!surface)
@@ -43,9 +46,11 @@ dae::Texture2D::Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode)
     }
 }
 
-dae::Texture2D::Texture2D(SDL_Texture* texture, SDL_ScaleMode scaleMode)
+Texture2D::Texture2D(SDL_Texture* texture, SDL_ScaleMode scaleMode)
     : m_texture{ texture }
 {
     assert(m_texture != nullptr);
     SDL_SetTextureScaleMode(m_texture, scaleMode);
+}
+
 }

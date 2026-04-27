@@ -3,7 +3,7 @@
 
 #include "Singleton.hpp"
 
-namespace dae
+namespace gla
 {
 class Texture2D;
 

@@ -1,10 +1,10 @@
-#ifndef ENGINE_GAMEOBJECTCOMMAND_H
-#define ENGINE_GAMEOBJECTCOMMAND_H
+#ifndef GALENA_GAMEOBJECTCOMMAND_H
+#define GALENA_GAMEOBJECTCOMMAND_H
 #include <glm/vec3.hpp>
 
 #include "Command.hpp"
 
-namespace dae
+namespace gla
 {
 
 class GameObjectCommand : public Command
@@ -14,10 +14,11 @@ public:
     ~GameObjectCommand() noexcept override = default;
 
     void Execute() override;
+
 protected:
     GameObject* m_pCaller;
 };
 
-}  // namespace dae
+}  // namespace gla
 
-#endif  // ENGINE_GAMEOBJECTCOMMAND_H
+#endif  // GALENA_GAMEOBJECTCOMMAND_H

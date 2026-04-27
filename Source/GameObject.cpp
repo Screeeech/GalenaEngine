@@ -6,18 +6,21 @@
 
 #include "ResourceManager.hpp"
 
-dae::GameObject::GameObject(float x, float y, float z, std::string_view name)
+namespace gla
+{
+
+GameObject::GameObject(float x, float y, float z, std::string_view name)
     : m_name(name)
     , m_transform(x, y, z, this)
 {
 }
 
-dae::Transform& dae::GameObject::GetTransform()
+Transform& GameObject::GetTransform()
 {
     return m_transform;
 }
 
-glm::mat4 dae::GameObject::GetParentWorldMatrix()
+glm::mat4 GameObject::GetParentWorldMatrix()
 {
     if(not m_pParent)
         return { 1.0f };
@@ -25,12 +28,12 @@ glm::mat4 dae::GameObject::GetParentWorldMatrix()
     return m_pParent->m_transform.GetWorldMatrix();
 }
 
-glm::vec3 dae::GameObject::GetWorldPosition()
+glm::vec3 GameObject::GetWorldPosition()
 {
     return GetTransform().GetWorldPosition();
 }
 
-bool dae::GameObject::IsChild(GameObject* pChild)
+bool GameObject::IsChild(GameObject* pChild)
 {
     if(not pChild or pChild == this)
         return false;
@@ -39,7 +42,7 @@ bool dae::GameObject::IsChild(GameObject* pChild)
     return it != m_children.end();
 }
 
-void dae::GameObject::Reparent(GameObject* pParent, bool keepWorldPosition)
+void GameObject::Reparent(GameObject* pParent, bool keepWorldPosition)
 {
     // Is the parent valid?
     if(IsChild(pParent) or pParent == this or pParent == m_pParent)
@@ -72,7 +75,7 @@ void dae::GameObject::Reparent(GameObject* pParent, bool keepWorldPosition)
         m_pParent->AddChild(std::move(self));
 }
 
-void dae::GameObject::AddChild(std::unique_ptr<GameObject> pChild)
+void GameObject::AddChild(std::unique_ptr<GameObject> pChild)
 {
     if(not pChild or pChild.get() == this or IsChild(pChild.get()))
         return;
@@ -81,7 +84,7 @@ void dae::GameObject::AddChild(std::unique_ptr<GameObject> pChild)
     m_children.push_back(std::move(pChild));
 }
 
-std::unique_ptr<dae::GameObject> dae::GameObject::DisownChild(GameObject* pParent)
+std::unique_ptr<GameObject> GameObject::DisownChild(GameObject* pParent)
 {
     // We have to move ownership of the child pointer from the parent
     // and return it to instantiate a new unique_ptr
@@ -102,7 +105,7 @@ std::unique_ptr<dae::GameObject> dae::GameObject::DisownChild(GameObject* pParen
     return newChild;
 }
 
-bool dae::GameObject::RemoveChild(GameObject* pChild)
+bool GameObject::RemoveChild(GameObject* pChild)
 {
     // See if child is in current GameObject's list of children
     auto it = std::ranges::find_if(m_children, [pChild](const auto& child) { return child.get() == pChild; });
@@ -122,7 +125,7 @@ bool dae::GameObject::RemoveChild(GameObject* pChild)
     return false;
 }
 
-dae::GameObject* dae::GameObject::CreateChild(float x, float y, float z, std::string_view name)
+GameObject* GameObject::CreateChild(float x, float y, float z, std::string_view name)
 {
     m_children.emplace_back(std::make_unique<GameObject>(x, y, z, name));
 
@@ -132,7 +135,7 @@ dae::GameObject* dae::GameObject::CreateChild(float x, float y, float z, std::st
     return child;
 }
 
-void dae::GameObject::SetDirty()
+void GameObject::SetDirty()
 {
     if(m_transform.isDirty)
         return;
@@ -142,7 +145,7 @@ void dae::GameObject::SetDirty()
         child->SetDirty();
 }
 
-void dae::GameObject::Update(float deltaTime) const
+void GameObject::Update(float deltaTime) const
 {
     for(const auto& component : m_components)
     {
@@ -154,3 +157,5 @@ void dae::GameObject::Update(float deltaTime) const
         children->Update(deltaTime);
     }
 }
+
+}  // namespace gla

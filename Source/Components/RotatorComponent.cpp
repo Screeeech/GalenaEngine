@@ -5,7 +5,7 @@
 
 #include "GameObject.hpp"
 
-namespace dae
+namespace gla
 {
 RotatorComponent::RotatorComponent(GameObject* pOwner, float rotationSpeed)
     : Component(pOwner)
@@ -31,4 +31,4 @@ void RotatorComponent::Update(float deltaTime)
 
     m_pOwner->GetTransform().SetLocalPosition(x, y);
 }
-}  // namespace dae
+}  // namespace gla

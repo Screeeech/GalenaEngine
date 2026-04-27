@@ -4,8 +4,9 @@
 
 #include "Renderer.hpp"
 
-namespace dae
+namespace gla
 {
+
 Animation::Animation(GameObject* pOwner, int zIndex)
     : Renderable(pOwner, zIndex)
 {
@@ -96,4 +97,4 @@ void Animation::AdvanceFrame()
         m_frameIndex = 0;
 }
 
-}  // namespace dae
+}  // namespace gla

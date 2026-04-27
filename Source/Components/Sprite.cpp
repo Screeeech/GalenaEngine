@@ -8,30 +8,31 @@
 #include "Texture2D.hpp"
 #include "Transform.hpp"
 
-dae::Sprite::Sprite(GameObject* pOwner, std::shared_ptr<Texture2D> texture, int zIndex)
+namespace gla
+{
+
+Sprite::Sprite(GameObject* pOwner, std::shared_ptr<Texture2D> texture, int zIndex)
     : Renderable(pOwner, zIndex)
     , m_texture(std::move(texture))
     , m_sourceRect(0, 0, m_texture->GetSize().x, m_texture->GetSize().y)
 {
 }
 
-dae::Sprite::Sprite(GameObject* pOwner, int zIndex)
+Sprite::Sprite(GameObject* pOwner, int zIndex)
     : Renderable(pOwner, zIndex)
     , m_sourceRect()
 {
 }
 
-dae::Sprite::~Sprite() noexcept
+Sprite::~Sprite() noexcept
 {
     auto& sm = SceneManager::Get();
     sm.UnregisterRenderComponent(this);
 }
 
-void dae::Sprite::Update(float /*deltaTime*/)
-{
-}
+void Sprite::Update(float /*deltaTime*/) {}
 
-void dae::Sprite::Render()
+void Sprite::Render()
 {
     if(not m_texture or not m_Visible)
         return;
@@ -39,15 +40,15 @@ void dae::Sprite::Render()
     const auto& pos{ m_pOwner->GetWorldPosition() };
     const auto& scale{ m_pOwner->GetTransform().GetWorldScale() };
 
-    Renderer::Get().RenderTextureScale(*m_texture, pos.x, pos.y, scale.x , scale.y);
+    Renderer::Get().RenderTextureScale(*m_texture, pos.x, pos.y, scale.x, scale.y);
 }
 
-void dae::Sprite::SetTexture(std::shared_ptr<Texture2D> texture)
+void Sprite::SetTexture(std::shared_ptr<Texture2D> texture)
 {
     m_texture = std::move(texture);
 }
 
-void dae::Sprite::SetSourceRect(SDL_FRect sourceRect)
+void Sprite::SetSourceRect(SDL_FRect sourceRect)
 {
     if(sourceRect.x < 0 or sourceRect.y < 0 or sourceRect.w < 0 or sourceRect.h < 0)
         throw std::invalid_argument("arguments must be greater than 0");
@@ -55,7 +56,7 @@ void dae::Sprite::SetSourceRect(SDL_FRect sourceRect)
     m_sourceRect = sourceRect;
 }
 
-void dae::Sprite::SetSourceRect(float x, float y, float w, float h)
+void Sprite::SetSourceRect(float x, float y, float w, float h)
 {
     if(x < 0 or y < 0 or w < 0 or h < 0)
         throw std::invalid_argument("arguments must be greater than 0");
@@ -66,7 +67,7 @@ void dae::Sprite::SetSourceRect(float x, float y, float w, float h)
     m_sourceRect.h = h;
 }
 
-void dae::Sprite::SetSourceRectPos(float x, float y)
+void Sprite::SetSourceRectPos(float x, float y)
 {
     if(x < 0 or y < 0)
         throw std::invalid_argument("arguments must be greater than 0");
@@ -75,7 +76,7 @@ void dae::Sprite::SetSourceRectPos(float x, float y)
     m_sourceRect.y = y;
 }
 
-void dae::Sprite::SetSourceRectSize(float w, float h)
+void Sprite::SetSourceRectSize(float w, float h)
 {
     if(w < 0 or h < 0)
         throw std::invalid_argument("arguments must be greater than 0");
@@ -84,7 +85,9 @@ void dae::Sprite::SetSourceRectSize(float w, float h)
     m_sourceRect.h = h;
 }
 
-SDL_FRect dae::Sprite::GetSourceRect() const
+SDL_FRect Sprite::GetSourceRect() const
 {
     return m_sourceRect;
 }
+
+}  // namespace gla

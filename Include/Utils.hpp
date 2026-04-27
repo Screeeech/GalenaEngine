@@ -1,13 +1,13 @@
-#ifndef ENGINE_SDBM_HPP
-#define ENGINE_SDBM_HPP
+#ifndef GALENA_UTILS_HPP
+#define GALENA_UTILS_HPP
 
-namespace Utils
+namespace gla::utils
 {
 
-consteval unsigned int sdbm_hash(const char* str, std::size_t len)
+consteval auto sdbm_hash(const char* str, std::size_t len) -> unsigned int
 {
     unsigned int hash = 0;
-    for(std::size_t i = 0; i < len; ++i)
+    for (std::size_t i = 0; i < len; ++i)
     {
         hash = static_cast<unsigned int>(str[i]) + (hash << 6) + (hash << 16) - hash;
     }
@@ -15,11 +15,11 @@ consteval unsigned int sdbm_hash(const char* str, std::size_t len)
 }
 
 
-}
+}  // namespace gla::utils
 
-consteval unsigned int operator""_h(const char* str, std::size_t len)
+consteval auto operator""_h(const char* str, std::size_t len) -> unsigned int
 {
-    return Utils::sdbm_hash(str, len);
+    return gla::utils::sdbm_hash(str, len);
 }
 
-#endif  // ENGINE_SDBM_HPP
+#endif  // GALENA_UTILS_HPP

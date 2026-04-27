@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GALENA_GAMEOBJECT_HPP
+#define GALENA_GAMEOBJECT_HPP
+
 #include <glm/fwd.hpp>
 #include <memory>
 #include <ranges>
@@ -7,8 +9,9 @@
 #include "Component.hpp"
 #include "Transform.hpp"
 
-namespace dae
+namespace gla
 {
+
 class Transform;
 class Sprite;
 class Texture2D;
@@ -52,9 +55,8 @@ public:
     template<ComponentConcept T>
     auto GetAllComponents()
     {
-        return m_components |
-            std::views::transform([](const auto& comp) { return dynamic_cast<T*>(comp.get()); }) |
-            std::views::filter([](auto* comp) { return comp != nullptr; } );
+        return m_components | std::views::transform([](const auto& comp) { return dynamic_cast<T*>(comp.get()); }) |
+            std::views::filter([](auto* comp) { return comp != nullptr; });
     }
 
     Transform& GetTransform();
@@ -88,4 +90,6 @@ private:
 template<typename ObjectType>
 concept GameObjectConcept = std::derived_from<ObjectType, GameObject>;
 
-}  // namespace dae
+}  // namespace gla
+
+#endif  // GALENA_GAMEOBJECT_HPP

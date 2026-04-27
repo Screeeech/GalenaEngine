@@ -1,5 +1,5 @@
-#ifndef ENGINE_ANIMATION_H
-#define ENGINE_ANIMATION_H
+#ifndef GALENA_ANIMATION_H
+#define GALENA_ANIMATION_H
 #include <SDL3/SDL_rect.h>
 
 #include <memory>
@@ -8,7 +8,7 @@
 #include "Renderable.hpp"
 #include "Texture2D.hpp"
 
-namespace dae
+namespace gla
 {
 
 struct SpriteSheet
@@ -42,17 +42,23 @@ public:
     explicit Animation(GameObject* pOwner, int zIndex = 0);
     ~Animation() noexcept override = default;
 
+    Animation(Animation const&) = delete;
+    auto operator=(Animation const&) -> Animation& = delete;
+    Animation(Animation&&) = delete;
+    auto operator=(Animation&&) -> Animation& = delete;
+
     void Update(float deltaTime) override;
     void Render() override;
 
     void SetPlaying(bool playing);
 
-    SpriteSheet& AddSpriteSheet(const std::shared_ptr<Texture2D>& texture, int cols, int rows);
+    auto AddSpriteSheet(const std::shared_ptr<Texture2D>& texture, int cols, int rows) -> SpriteSheet&;
     void AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData);
 
     void SetActiveAnimation(unsigned int animationID, bool startPlaying = false);
+
 private:
-    const Frame* GetActiveFrame() const;
+    auto GetActiveFrame() const -> const Frame*;
     void AdvanceFrame();
 
     std::vector<SpriteSheet> m_spriteSheets;
@@ -64,6 +70,6 @@ private:
     bool m_playing{};
 };
 
-}  // namespace dae
+}  // namespace gla
 
-#endif  // ENGINE_ANIMATION_H
+#endif  // GALENA_ANIMATION_H

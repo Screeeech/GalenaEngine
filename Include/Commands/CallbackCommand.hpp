@@ -1,11 +1,11 @@
-#ifndef ENGINE_CALLBACKCOMMAND_H
-#define ENGINE_CALLBACKCOMMAND_H
+#ifndef GALENA_CALLBACKCOMMAND_H
+#define GALENA_CALLBACKCOMMAND_H
 
 #include <functional>
 
 #include "Command.hpp"
 
-namespace dae
+namespace gla
 {
 
 class CallbackCommand : public Command
@@ -13,11 +13,18 @@ class CallbackCommand : public Command
 public:
     explicit CallbackCommand(std::function<void()> callback);
     ~CallbackCommand() noexcept override = default;
+
+    CallbackCommand(CallbackCommand const&) = delete;
+    auto operator=(CallbackCommand const&) -> CallbackCommand& = delete;
+    CallbackCommand(CallbackCommand&&) = delete;
+    auto operator=(CallbackCommand&&) -> CallbackCommand& = delete;
+
     void Execute() override;
+
 private:
     std::function<void()> m_callback;
 };
 
-}  // namespace dae
+}  // namespace gla
 
-#endif  // ENGINE_CALLBACKCOMMAND_H
+#endif  // GALENA_CALLBACKCOMMAND_H

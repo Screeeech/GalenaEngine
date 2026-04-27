@@ -1,12 +1,11 @@
-#ifndef ENGINE_UICOMPONENT_H
-#define ENGINE_UICOMPONENT_H
+#ifndef GALENA_UICOMPONENT_H
+#define GALENA_UICOMPONENT_H
 #include <functional>
 
 #include "Component.hpp"
 
-namespace dae
+namespace gla
 {
-
 
 class UIComponent : public Component
 {
@@ -22,6 +21,6 @@ private:
 };
 
 
-}
+}  // namespace gla
 
-#endif  // ENGINE_UICOMPONENT_H
+#endif  // GALENA_UICOMPONENT_H

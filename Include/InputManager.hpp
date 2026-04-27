@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GALENA_INPUTMANAGER_HPP
+#define GALENA_INPUTMANAGER_HPP
+
 #include <SDL3/SDL_events.h>
 #include <SDL3/SDL_scancode.h>
 
@@ -14,9 +16,8 @@
 #include "Command.hpp"
 #include "Singleton.hpp"
 
-namespace dae
+namespace gla
 {
-
 using ActionID = unsigned int;
 
 template<typename InputDataType>
@@ -171,4 +172,6 @@ private:
     SDL_Gamepad* m_pGamepad{};
 };
 
-}  // namespace dae
+}
+
+#endif // GALENA_INPUTMANAGER_HPP

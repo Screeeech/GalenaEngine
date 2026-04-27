@@ -1,12 +1,15 @@
-#pragma once
+#ifndef GALENA_SCENEMANAGER_HPP
+#define GALENA_SCENEMANAGER_HPP
+
 #include <memory>
 #include <vector>
 
 #include "Scene.hpp"
 #include "Singleton.hpp"
 
-namespace dae
+namespace gla
 {
+
 class UIComponent;
 class Scene;
 class Renderable;
@@ -16,7 +19,7 @@ class SceneManager final : public Singleton<SceneManager>
 public:
     Scene& CreateScene();
 
-    void Update(float deltaTime);
+    void Update(float deltaTime) const;
     void Render() const;
     void DrawUI() const;
 
@@ -36,4 +39,7 @@ private:
     std::vector<std::unique_ptr<Scene>> m_scenes;
     Scene* m_currentScene{};
 };
-}  // namespace dae
+
+}  // namespace gla
+
+#endif // GALENA_SCENEMANAGER_HPP

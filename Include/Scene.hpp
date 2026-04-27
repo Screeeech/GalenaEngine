@@ -1,11 +1,14 @@
-#pragma once
+#ifndef GALENA_SCENE_HPP
+#define GALENA_SCENE_HPP
+
 #include <memory>
 #include <vector>
 
 #include "GameObject.hpp"
 
-namespace dae
+namespace gla
 {
+
 class UIComponent;
 class Renderable;
 
@@ -39,4 +42,6 @@ private:
     std::vector<UIComponent*> m_uiComponents;
 };
 
-}  // namespace dae
+}  // namespace gla
+
+#endif // GALENA_SCENE_HPP

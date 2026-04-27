@@ -1,9 +1,10 @@
-#ifndef ENGINE_RENDERABLE_H
-#define ENGINE_RENDERABLE_H
+#ifndef GALENA_RENDERABLE_H
+#define GALENA_RENDERABLE_H
+
 #include "Component.hpp"
 #include "SceneManager.hpp"
 
-namespace dae
+namespace gla
 {
 
 class Renderable : public Component
@@ -38,5 +39,7 @@ public:
 private:
     int m_zIndex;
 };
+
 }  // namespace dae
-#endif  // ENGINE_RENDERABLE_H
+
+#endif  // GALENA_RENDERABLE_H

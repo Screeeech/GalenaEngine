@@ -1,6 +1,6 @@
 #include "Commands/GameObjectCommand.hpp"
 
-namespace dae
+namespace gla
 {
 
 GameObjectCommand::GameObjectCommand(GameObject* pCaller)

@@ -1,5 +1,6 @@
-#ifndef ENGINE_EVENTMANAGER_H
-#define ENGINE_EVENTMANAGER_H
+#ifndef GALENA_EVENTMANAGER_H
+#define GALENA_EVENTMANAGER_H
+
 #include <functional>
 #include <memory>
 #include <queue>
@@ -8,7 +9,7 @@
 
 #include "Singleton.hpp"
 
-namespace dae
+namespace gla
 {
 class PlayerController;
 struct Event;
@@ -21,43 +22,36 @@ using EventCallback = std::function<void(const Event&)>;
 class EventManager final : public Singleton<EventManager>
 {
 public:
-    template <typename T>
-    void BindEvent(EventID id, T* listener, void(T::*callback)(const Event&))
+    template<typename T>
+    void BindEvent(EventID id, T* listener, void (T::*callback)(const Event&))
     {
-        m_listeners.emplace( id, std::pair{ listener, std::bind_front(callback, listener) } );
+        m_listeners.emplace(id, std::pair{ listener, std::bind_front(callback, listener) });
     }
 
-    template <typename T>
+    template<typename T>
     void UnbindEvents(T* listener)
     {
-        std::erase_if(m_listeners, [&](const auto& pair)
-        {
-            return pair.second.first == listener;
-        });
+        std::erase_if(m_listeners, [&](const auto& pair) { return pair.second.first == listener; });
     }
 
-    template <typename T>
+    template<typename T>
     void UnbindEvent(EventID id, T* listener)
     {
-        std::erase_if(m_listeners, [&](const auto& pair)
-        {
-            return pair.first == id and pair.second.first == listener;
-        });
+        std::erase_if(m_listeners, [&](const auto& pair) { return pair.first == id and pair.second.first == listener; });
     }
 
     void InvokeEvent(const Event& event);
 
-    template <typename T>
+    template<typename T>
         requires std::derived_from<T, Event>
     void QueueEvent(const T& event)
     {
         auto range = m_listeners.equal_range(event.eventID);
-        for(auto&& [key, value]  : std::ranges::subrange(range.first, range.second))
+        for(auto&& [key, value] : std::ranges::subrange(range.first, range.second))
         {
             m_queuedEvents.emplace(std::make_unique<T>(event), value.second);
         }
     }
-
 
     void ExecuteQueuedEvents();
 
@@ -67,6 +61,6 @@ private:
     std::unordered_multimap<EventID, std::pair<void*, EventCallback>> m_listeners;
 };
 
-}  // namespace dae
+}  // namespace gla
 
-#endif  // ENGINE_EVENTMANAGER_H
+#endif  // GALENA_EVENTMANAGER_H

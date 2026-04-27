@@ -6,7 +6,8 @@
 #include "Components/UIComponent.hpp"
 #include "Renderable.hpp"
 
-using namespace dae;
+namespace gla
+{
 
 void Scene::RemoveGameObject(GameObject* pObject)
 {
@@ -76,3 +77,5 @@ GameObject* Scene::GetRoot()
 Scene::Scene()
     : m_pRootObject{new GameObject(0, 0, 0, "Scene root")}
 {}
+
+}
