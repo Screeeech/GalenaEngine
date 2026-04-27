@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.26)
 
 if (EMSCRIPTEN)
   message("Using Emscripten!")
-  set(ENGINE_TARGET EngineWeb)
+  set(ENGINE_TARGET GalenaWeb)
 else ()
-  set(ENGINE_TARGET Engine)
+  set(ENGINE_TARGET Galena)
 endif ()
 
 
