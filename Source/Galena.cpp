@@ -28,7 +28,7 @@ namespace
 
 void LoopCallback(void* arg)
 {
-    static_cast<Galena*>(arg)->RunOneFrame();
+    static_cast<gla::Galena*>(arg)->RunOneFrame();
 }
 #endif
 
