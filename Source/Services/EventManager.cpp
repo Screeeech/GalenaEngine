@@ -1,9 +1,14 @@
-#include "EventManager.hpp"
+#include "Services/EventManager.hpp"
 
 #include "Events.hpp"
 
 namespace gla
 {
+
+EventManager::EventManager(EventManager const& /*other*/)
+{
+    throw std::runtime_error("bad bad bad");
+}
 
 void EventManager::InvokeEvent(const Event& event)
 {

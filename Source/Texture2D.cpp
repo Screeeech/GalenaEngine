@@ -4,7 +4,8 @@
 
 #include <stdexcept>
 
-#include "Renderer.hpp"
+#include "ServiceLocator.hpp"
+#include "Services/Renderer.hpp"
 
 namespace gla
 {
@@ -29,13 +30,21 @@ SDL_Texture* Texture2D::GetSDLTexture() const
 
 Texture2D::Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode)
 {
+    auto const* renderer = ServiceLocator::Request<Renderer>().value_or(nullptr);
+    if (not renderer)
+    {
+        std::println("Careful! No renderer was found, proceeding without rendering texture");
+        return;
+    }
+
+
     SDL_Surface* surface = SDL_LoadPNG(fullPath.c_str());
     if(!surface)
     {
         throw std::runtime_error(std::string("Failed to load PNG: ") + SDL_GetError());
     }
 
-    m_texture = SDL_CreateTextureFromSurface(Renderer::Get().GetSDLRenderer(), surface);
+    m_texture = SDL_CreateTextureFromSurface(renderer->GetSDLRenderer(), surface);
     SDL_SetTextureScaleMode(m_texture, scaleMode);
 
     SDL_DestroySurface(surface);

@@ -14,6 +14,7 @@ class UIComponent;
 class Scene;
 class Renderable;
 
+// NOTE: This isn't a service locator yet, because ideally I want to gut this class entirely
 class SceneManager final : public Singleton<SceneManager>
 {
 public:

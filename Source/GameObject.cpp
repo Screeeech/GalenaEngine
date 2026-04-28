@@ -4,7 +4,7 @@
 #include <ranges>
 #include <utility>
 
-#include "ResourceManager.hpp"
+#include "Services/ResourceManager.hpp"
 
 namespace gla
 {

@@ -81,13 +81,13 @@ struct Action
     };
 };
 
-class InputManager final : public Singleton<InputManager>
+class InputManager final
 {
 public:
     InputManager() = default;
-    ~InputManager() noexcept override;
+    ~InputManager() noexcept;
 
-    InputManager(InputManager const&) = delete;
+    InputManager(InputManager const&);
     auto operator=(InputManager const&) -> InputManager& = delete;
     InputManager(InputManager&&) = delete;
     auto operator=(InputManager&&) -> InputManager& = delete;

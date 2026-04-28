@@ -8,23 +8,28 @@
 #include <memory>
 #include <string>
 
-#include "Singleton.hpp"
-
 namespace gla
 {
 class Texture2D;
 class Font;
 
-class ResourceManager final : public Singleton<ResourceManager>
+// TODO: Rework this entire class cause this is pretttyyy bad
+class ResourceManager final
 {
 public:
-    static void Init();
+    ResourceManager();
+    ~ResourceManager() = default;
+
+    ResourceManager(ResourceManager const&);
+    auto operator=(ResourceManager const&) -> ResourceManager& = delete;
+    ResourceManager(ResourceManager&&) = delete;
+    auto operator=(ResourceManager&&) -> ResourceManager& = delete;
+
+
     auto LoadTexture(std::string const& file, SDL_ScaleMode scaleMode = SDL_SCALEMODE_PIXELART) -> std::shared_ptr<Texture2D>;
     auto LoadFont(std::string const& filePath, uint8_t size) -> std::shared_ptr<Font>;
 
 private:
-    friend class Singleton<ResourceManager>;
-    ResourceManager() = default;
 
     void UnloadUnusedResources();
 

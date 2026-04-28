@@ -1,4 +1,4 @@
-﻿#include "Renderer.hpp"
+﻿#include "Services/Renderer.hpp"
 
 #include <imgui.h>
 #include <imgui_impl_sdl3.h>
@@ -14,17 +14,11 @@
 namespace gla
 {
 
-void Renderer::Init(SDL_Window* window)
+Renderer::Renderer(SDL_Window* pWindow)
+    : m_renderer(SDL_CreateRenderer(pWindow, nullptr))
+    , m_window(pWindow)
 {
-    m_window = window;
-
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
-
-#if defined(__EMSCRIPTEN__)
-    m_renderer = SDL_CreateRenderer(window, nullptr);
-#else
-    m_renderer = SDL_CreateRenderer(window, nullptr);
-#endif
 
     if (m_renderer == nullptr)
     {
@@ -41,8 +35,24 @@ void Renderer::Init(SDL_Window* window)
     io.IniFilename = NULL;
 #endif
 
-    ImGui_ImplSDL3_InitForSDLRenderer(window, m_renderer);
+    ImGui_ImplSDL3_InitForSDLRenderer(pWindow, m_renderer);
     ImGui_ImplSDLRenderer3_Init(m_renderer);
+}
+
+Renderer::~Renderer() noexcept
+{
+    ImGui_ImplSDLRenderer3_Shutdown();
+    ImGui_ImplSDL3_Shutdown();
+    ImPlot::DestroyContext();
+    ImGui::DestroyContext();
+
+    if (m_renderer != nullptr)
+    {
+        SDL_DestroyRenderer(m_renderer);
+        m_renderer = nullptr;
+        SDL_DestroyWindow(m_window);
+        m_window = nullptr;
+    }
 }
 
 void Renderer::Render() const
@@ -66,22 +76,6 @@ void Renderer::Render() const
 
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
     SDL_RenderPresent(m_renderer);
-}
-
-void Renderer::Destroy()
-{
-    ImGui_ImplSDLRenderer3_Shutdown();
-    ImGui_ImplSDL3_Shutdown();
-    ImPlot::DestroyContext();
-    ImGui::DestroyContext();
-
-    if (m_renderer != nullptr)
-    {
-        SDL_DestroyRenderer(m_renderer);
-        m_renderer = nullptr;
-        SDL_DestroyWindow(m_window);
-        m_window = nullptr;
-    }
 }
 
 void Renderer::SetLogicalResolution(int width, int height, SDL_RendererLogicalPresentation mode)

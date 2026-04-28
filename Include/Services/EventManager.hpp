@@ -7,11 +7,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "Singleton.hpp"
-
 namespace gla
 {
-class PlayerController;
 struct Event;
 class EventListener;
 class Observer;
@@ -19,9 +16,17 @@ class Observer;
 using EventID = unsigned int;
 using EventCallback = std::function<void(const Event&)>;
 
-class EventManager final : public Singleton<EventManager>
+class EventManager final
 {
 public:
+    EventManager() = default;
+    ~EventManager() = default;
+
+    EventManager(EventManager const&);
+    auto operator=(EventManager const&) -> EventManager& = delete;
+    EventManager(EventManager&&) = delete;
+    auto operator=(EventManager&&) -> EventManager& = delete;
+
     template<typename T>
     void BindEvent(EventID id, T* listener, void (T::*callback)(const Event&))
     {

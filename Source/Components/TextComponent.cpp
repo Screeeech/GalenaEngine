@@ -7,7 +7,8 @@
 
 #include "Components/Sprite.hpp"
 #include "GameObject.hpp"
-#include "Renderer.hpp"
+#include "ServiceLocator.hpp"
+#include "Services/Renderer.hpp"
 #include "Texture2D.hpp"
 
 namespace gla
@@ -27,7 +28,7 @@ TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_p
 
 void TextComponent::Update(float /*deltaTime*/)
 {
-    if(not m_Text.empty() and not m_NeedsUpdate)
+    if (not m_Text.empty() and not m_NeedsUpdate)
         return;
 
     m_TextTexture = UpdateTexture();
@@ -49,12 +50,12 @@ const std::string& TextComponent::GetText() const
 std::shared_ptr<Texture2D> TextComponent::UpdateTexture() const
 {
     auto* const surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Text.length(), m_Color);
-    if(surf == nullptr)
+    if (surf == nullptr)
     {
         throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
     }
-    auto* texture = SDL_CreateTextureFromSurface(Renderer::Get().GetSDLRenderer(), surf);
-    if(texture == nullptr)
+    auto* texture = SDL_CreateTextureFromSurface(ServiceLocator::Request<Renderer>().value()->GetSDLRenderer(), surf);
+    if (texture == nullptr)
     {
         throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
     }
@@ -63,4 +64,4 @@ std::shared_ptr<Texture2D> TextComponent::UpdateTexture() const
     return std::make_shared<Texture2D>(texture);
 }
 
-}
+}  // namespace gla

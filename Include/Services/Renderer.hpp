@@ -7,13 +7,11 @@
 #include <initializer_list>
 #include <utility>
 
-#include "Singleton.hpp"
-
 namespace gla
 {
 class Texture2D;
 
-class Renderer final : public Singleton<Renderer>
+class Renderer final
 {
     SDL_Renderer* m_renderer{};
     SDL_Window* m_window{};
@@ -21,9 +19,15 @@ class Renderer final : public Singleton<Renderer>
     SDL_Point m_logicalResolution{};
 
 public:
-    void Init(SDL_Window* window);
+    explicit Renderer(SDL_Window* pWindow);
+    ~Renderer() noexcept;
+
+    Renderer(Renderer const&) = default;
+    Renderer(Renderer&&) noexcept = delete;
+    auto operator=(Renderer const&) -> Renderer& = delete;
+    auto operator=(Renderer&&) noexcept -> Renderer& = delete;
+
     void Render() const;
-    void Destroy();
 
     void SetLogicalResolution(int width, int height, SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
 

@@ -2,7 +2,8 @@
 
 #include <stdexcept>
 
-#include "Renderer.hpp"
+#include "ServiceLocator.hpp"
+#include "Services/Renderer.hpp"
 
 namespace gla
 {
@@ -14,12 +15,12 @@ Animation::Animation(GameObject* pOwner, int zIndex)
 
 void Animation::Update(float deltaTime)
 {
-    if(not m_playing)
+    if (not m_playing)
         return;
 
     m_elapsedTime += deltaTime;
 
-    while(m_elapsedTime >= GetActiveFrame()->duration)
+    while (m_elapsedTime >= GetActiveFrame()->duration)
     {
         m_elapsedTime -= GetActiveFrame()->duration;
         AdvanceFrame();
@@ -29,14 +30,24 @@ void Animation::Update(float deltaTime)
 void Animation::Render()
 {
     auto const* frame = GetActiveFrame();
-    if(not frame)
+    if (not frame)
         return;
 
     const glm::vec3 worldPos{ m_pOwner->GetWorldPosition() };
     const glm::vec2 scale{ m_pOwner->GetTransform().GetWorldScale() };
 
-    Renderer::Get().RenderTextureScaleFlipped(*frame->spriteSheet->texture, worldPos.x, worldPos.y, scale.x, scale.y,
-                                              frame->flipX, frame->flipY, frame->srcRect);
+    if (auto const* renderer{ ServiceLocator::Request<Renderer>().value_or(nullptr) })
+        renderer->RenderTextureScaleFlipped(
+            *frame->spriteSheet->texture,
+            worldPos.x,
+            worldPos.y,
+            scale.x,
+            scale.y,
+            frame->flipX,
+            frame->flipY,
+            frame->srcRect);
+    else
+        std::println("Careful! No renderer was found, proceeding without rendering animation");
 }
 
 void Animation::SetPlaying(bool playing)
@@ -52,7 +63,7 @@ auto Animation::AddSpriteSheet(std::shared_ptr<Texture2D> const& texture, int co
 
 void Animation::AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData)
 {
-    if(m_animations.contains(animationID))
+    if (m_animations.contains(animationID))
         return;
 
     const glm::vec2 size{ spriteSheet.texture->GetSize() };
@@ -61,11 +72,12 @@ void Animation::AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet,
 
     std::vector<Frame> frames;
     frames.reserve(frames.size());
-    for(const auto& frame : frameData)
+    for (const auto& frame : frameData)
     {
-        const SDL_FRect srcRect{
-            .x = static_cast<float>(frame.colIdx) * width, .y = static_cast<float>(frame.rowIdx) * height, .w = width, .h = height
-        };
+        const SDL_FRect srcRect{ .x = static_cast<float>(frame.colIdx) * width,
+            .y = static_cast<float>(frame.rowIdx) * height,
+            .w = width,
+            .h = height };
         frames.emplace_back(&spriteSheet, frame.duration, srcRect, frame.flipX, frame.flipY);
     }
 
@@ -74,7 +86,7 @@ void Animation::AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet,
 
 void Animation::SetActiveAnimation(unsigned int animationID, bool startPlaying)
 {
-    if(not m_animations.contains(animationID))
+    if (not m_animations.contains(animationID))
         throw std::runtime_error("Animation not found");
 
     m_currentAnimation = animationID;
@@ -85,7 +97,7 @@ void Animation::SetActiveAnimation(unsigned int animationID, bool startPlaying)
 
 auto Animation::GetActiveFrame() const -> Frame const*
 {
-    if(m_animations.empty())
+    if (m_animations.empty())
         return nullptr;
 
     return &m_animations.at(m_currentAnimation).at(m_frameIndex);
@@ -94,7 +106,7 @@ auto Animation::GetActiveFrame() const -> Frame const*
 void Animation::AdvanceFrame()
 {
     ++m_frameIndex;
-    if(m_frameIndex >= m_animations.at(m_currentAnimation).size())
+    if (m_frameIndex >= m_animations.at(m_currentAnimation).size())
         m_frameIndex = 0;
 }
 

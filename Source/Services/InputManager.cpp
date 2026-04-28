@@ -1,4 +1,4 @@
-#include "InputManager.hpp"
+#include "Services/InputManager.hpp"
 
 #include <imgui_impl_sdl3.h>
 #include <SDL3/SDL.h>
@@ -15,6 +15,10 @@ InputManager::~InputManager() noexcept
 {
     if(m_pGamepad)
         SDL_CloseGamepad(m_pGamepad);
+}
+InputManager::InputManager(InputManager const&)
+{
+    throw std::runtime_error("Cannot copy construct InputManager, no clue how to fix this yet");
 }
 
 void InputManager::Init()

@@ -4,7 +4,8 @@
 #include <utility>
 
 #include "GameObject.hpp"
-#include "Renderer.hpp"
+#include "ServiceLocator.hpp"
+#include "Services/Renderer.hpp"
 #include "Texture2D.hpp"
 #include "Transform.hpp"
 
@@ -34,13 +35,16 @@ void Sprite::Update(float /*deltaTime*/) {}
 
 void Sprite::Render()
 {
-    if(not m_texture or not m_Visible)
+    if (not m_texture or not m_Visible)
         return;
 
     const auto& pos{ m_pOwner->GetWorldPosition() };
     const auto& scale{ m_pOwner->GetTransform().GetWorldScale() };
 
-    Renderer::Get().RenderTextureScale(*m_texture, pos.x, pos.y, scale.x, scale.y);
+    if (auto const* renderer{ ServiceLocator::Request<Renderer>().value_or(nullptr) })
+        renderer->RenderTextureScale(*m_texture, pos.x, pos.y, scale.x, scale.y);
+    else
+        std::println("Careful! No renderer was found, proceeding without rendering sprite");
 }
 
 void Sprite::SetTexture(std::shared_ptr<Texture2D> texture)
@@ -50,7 +54,7 @@ void Sprite::SetTexture(std::shared_ptr<Texture2D> texture)
 
 void Sprite::SetSourceRect(SDL_FRect sourceRect)
 {
-    if(sourceRect.x < 0 or sourceRect.y < 0 or sourceRect.w < 0 or sourceRect.h < 0)
+    if (sourceRect.x < 0 or sourceRect.y < 0 or sourceRect.w < 0 or sourceRect.h < 0)
         throw std::invalid_argument("arguments must be greater than 0");
 
     m_sourceRect = sourceRect;
@@ -58,7 +62,7 @@ void Sprite::SetSourceRect(SDL_FRect sourceRect)
 
 void Sprite::SetSourceRect(float x, float y, float w, float h)
 {
-    if(x < 0 or y < 0 or w < 0 or h < 0)
+    if (x < 0 or y < 0 or w < 0 or h < 0)
         throw std::invalid_argument("arguments must be greater than 0");
 
     m_sourceRect.x = x;
@@ -69,7 +73,7 @@ void Sprite::SetSourceRect(float x, float y, float w, float h)
 
 void Sprite::SetSourceRectPos(float x, float y)
 {
-    if(x < 0 or y < 0)
+    if (x < 0 or y < 0)
         throw std::invalid_argument("arguments must be greater than 0");
 
     m_sourceRect.x = x;
@@ -78,7 +82,7 @@ void Sprite::SetSourceRectPos(float x, float y)
 
 void Sprite::SetSourceRectSize(float w, float h)
 {
-    if(w < 0 or h < 0)
+    if (w < 0 or h < 0)
         throw std::invalid_argument("arguments must be greater than 0");
 
     m_sourceRect.w = w;

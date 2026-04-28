@@ -1,22 +1,25 @@
-﻿#include "ResourceManager.hpp"
+﻿#include "Services/ResourceManager.hpp"
 
 #include <SDL3_ttf/SDL_ttf.h>
 
 #include <stdexcept>
 
+#include "Services/Renderer.hpp"
 #include "Font.hpp"
-#include "Renderer.hpp"
 #include "Texture2D.hpp"
 
 namespace gla
 {
 
-void ResourceManager::Init()
+ResourceManager::ResourceManager()
 {
     if (!TTF_Init())
-    {
         throw std::runtime_error(std::string("Failed to load support for fonts: ") + SDL_GetError());
-    }
+}
+
+ResourceManager::ResourceManager(ResourceManager const& /*other*/)
+{
+    throw std::runtime_error("bad bad bad");
 }
 
 auto ResourceManager::LoadTexture(std::string const& filePath, SDL_ScaleMode scaleMode) -> std::shared_ptr<Texture2D>
