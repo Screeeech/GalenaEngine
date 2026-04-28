@@ -14,7 +14,6 @@
 namespace gla
 {
 
-
 void Renderer::Init(SDL_Window* window)
 {
     m_window = window;
@@ -56,9 +55,12 @@ void Renderer::Render() const
 
     ImGui::Render();
 
-    const auto [r, g, b, a] = GetBackgroundColor();
-    SDL_SetRenderDrawColor(m_renderer, r, g, b, a);
+    SetColor(m_clearColor);
     SDL_RenderClear(m_renderer);
+
+    // Draw temporary bounding box around game canvas
+    SetColor({ .r = 255, .g = 0, .b = 0, .a = 255 });
+    DrawRect({ .x = 0, .y = 0, .w = static_cast<float>(m_logicalResolution.x), .h = static_cast<float>(m_logicalResolution.y) });
 
     SceneManager::Get().Render();
 
@@ -81,9 +83,11 @@ void Renderer::Destroy()
         m_window = nullptr;
     }
 }
-void Renderer::SetLogicalResolution(int width, int height, SDL_RendererLogicalPresentation mode) const
+
+void Renderer::SetLogicalResolution(int width, int height, SDL_RendererLogicalPresentation mode)
 {
     SDL_SetRenderLogicalPresentation(m_renderer, width, height, mode);
+    m_logicalResolution = { .x = width, .y = height };
 }
 
 void Renderer::RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect) const
@@ -143,16 +147,43 @@ void Renderer::RenderTextureScaleFlipped(
     if (srcRect.w >= 0 and srcRect.h >= 0)
         pSrcRect = &srcRect;
 
-    constexpr SDL_FPoint origin = {0.f, 0.f};
+    constexpr SDL_FPoint origin = { 0.f, 0.f };
 
     uint8_t flipBits{};
     if (flipX)
         flipBits |= SDL_FLIP_HORIZONTAL;
     if (flipY)
         flipBits |= SDL_FLIP_VERTICAL;
-    const auto flipMode{static_cast<SDL_FlipMode>(flipBits)};
+    const auto flipMode{ static_cast<SDL_FlipMode>(flipBits) };
 
     SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst, 0, &origin, flipMode);
 }
 
+void Renderer::DrawLines(std::initializer_list<std::tuple<glm::vec2, glm::vec2, SDL_Color>> lines) const
+{
+    for (auto const [start, end, color] : lines)
+    {
+        SetColor(color);
+        SDL_RenderLine(m_renderer, start.x, start.y, end.x, end.y);
+    }
 }
+
+void Renderer::DrawLines(std::initializer_list<std::tuple<glm::vec2, glm::vec2>> lines) const
+{
+    for (auto const [start, end] : lines)
+    {
+        SDL_RenderLine(m_renderer, start.x, start.y, end.x, end.y);
+    }
+}
+
+void Renderer::DrawRect(SDL_FRect rect) const
+{
+    SDL_RenderRect(m_renderer, &rect);
+}
+
+void Renderer::SetColor(SDL_Color color) const
+{
+    SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+}
+
+}  // namespace gla

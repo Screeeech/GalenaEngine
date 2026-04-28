@@ -52,7 +52,7 @@ public:
 
     void SetPlaying(bool playing);
 
-    auto AddSpriteSheet(const std::shared_ptr<Texture2D>& texture, int cols, int rows) -> SpriteSheet&;
+    auto AddSpriteSheet(std::shared_ptr<Texture2D> const& texture, int cols, int rows) -> SpriteSheet&;
     void AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData);
 
     void SetActiveAnimation(unsigned int animationID, bool startPlaying = false);

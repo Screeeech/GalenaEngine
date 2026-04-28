@@ -44,7 +44,7 @@ void Animation::SetPlaying(bool playing)
     m_playing = playing;
 }
 
-SpriteSheet& Animation::AddSpriteSheet(const std::shared_ptr<Texture2D>& texture, int cols, int rows)
+SpriteSheet& Animation::AddSpriteSheet(std::shared_ptr<Texture2D> const& texture, int cols, int rows)
 {
     return m_spriteSheets.emplace_back(texture, cols, rows);
 }

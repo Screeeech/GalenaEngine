@@ -19,7 +19,7 @@ class ResourceManager final : public Singleton<ResourceManager>
 {
 public:
     static void Init();
-    auto LoadTexture(std::string const& file, SDL_ScaleMode scaleMode = SDL_SCALEMODE_LINEAR) -> std::shared_ptr<Texture2D>;
+    auto LoadTexture(std::string const& file, SDL_ScaleMode scaleMode = SDL_SCALEMODE_PIXELART) -> std::shared_ptr<Texture2D>;
     auto LoadFont(std::string const& filePath, uint8_t size) -> std::shared_ptr<Font>;
 
 private:
