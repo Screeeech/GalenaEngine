@@ -19,7 +19,8 @@ ResourceManager::ResourceManager()
 
 ResourceManager::ResourceManager(ResourceManager const& /*other*/)
 {
-    throw std::runtime_error("bad bad bad");
+    // TODO: Again this is very bad, I need to figure out how to store services in a way that allows them to not have a copy constructor
+    throw std::runtime_error("Cannot copy construct InputManager, no clue how to fix this yet");
 }
 
 auto ResourceManager::LoadTexture(std::string const& filePath, SDL_ScaleMode scaleMode) -> std::shared_ptr<Texture2D>
