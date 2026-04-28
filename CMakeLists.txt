@@ -8,7 +8,6 @@ else ()
 endif ()
 
 
-
 set(ENGINE_SOURCES
     "Source/Commands/CallbackCommand.cpp"
     "Source/Commands/GameObjectCommand.cpp"
@@ -160,6 +159,18 @@ if (NOT SDL3_ttf_FOUND)
   endif ()
 endif ()
 
+# Add SDL_Mixer
+if (NOT SDL3_Mixer_FOUND)
+  FetchContent_Declare(
+      SDL3_Mixer
+      GIT_REPOSITORY https://github.com/libsdl-org/SDL_mixer.git
+      GIT_TAG release-3.2.0
+      GIT_SHALLOW TRUE
+      GIT_PROGRESS TRUE)
+  FetchContent_MakeAvailable(SDL3_mixer)
+endif ()
+
+
 if (WIN32)
   # Add VLD (Visual Leak Detector) for memory leak detection on Windows
   find_package(VLD CONFIG)
@@ -170,15 +181,13 @@ endif ()
 
 target_include_directories(${ENGINE_TARGET} PUBLIC
     "${glm_SOURCE_DIR}"
-    "${sdl3_SOURCE_DIR}/include"
-    "${sdl3_image_SOURCE_DIR}/include"
-    "${sdl3_ttf_SOURCE_DIR}/include"
     "${imgui_SOURCE_DIR}"
 )
 
 target_link_libraries(${ENGINE_TARGET} PUBLIC
     SDL3::SDL3
     SDL3_ttf::SDL3_ttf
+    SDL3_mixer::SDL3_mixer
     imgui
     implot)
 
