@@ -44,7 +44,7 @@ void PrintSDLVersion()
 namespace gla
 {
 
-Galena::Galena(std::filesystem::path const& dataPath)
+Galena::Galena(std::string const& windowName)
     : lastTime(std::chrono::high_resolution_clock::now())
 {
     PrintSDLVersion();
@@ -55,7 +55,7 @@ Galena::Galena(std::filesystem::path const& dataPath)
         throw std::runtime_error(std::string("SDL_Init Error: ") + SDL_GetError());
     }
 
-    g_window = SDL_CreateWindow("Programming 4 assignment", 1024, 576, SDL_WINDOW_OPENGL);
+    g_window = SDL_CreateWindow(windowName.c_str(), 1024, 576, SDL_WINDOW_RESIZABLE);
     if(g_window == nullptr)
     {
         throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
@@ -67,7 +67,7 @@ Galena::Galena(std::filesystem::path const& dataPath)
 #endif
 
     Renderer::Get().Init(g_window);
-    ResourceManager::Get().Init(dataPath);
+    ResourceManager::Init();
     InputManager::Get().Init();
 }
 

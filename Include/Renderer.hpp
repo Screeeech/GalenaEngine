@@ -20,23 +20,26 @@ public:
     void Render() const;
     void Destroy();
 
-    void RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect = { 0.f, 0.f, -1.f, -1.f }) const;
-    void RenderTextureScale(const Texture2D& texture, float x, float y, float scaleX, float scaleY,
-                            SDL_FRect srcRect = { 0.f, 0.f, -1.f, -1.f }) const;
-    void RenderTextureScaleFlipped(const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX, bool flipY,
-                                   SDL_FRect srcRect = { 0.f, 0.f, -1.f, -1.f }) const;
+    void SetLogicalResolution(int width, int height, SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_INTEGER_SCALE) const;
 
-    [[nodiscard]] auto GetSDLRenderer() const -> SDL_Renderer*;
+    void RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect = {.x = 0.f, .y = 0.f, .w = -1.f, .h = -1.f}) const;
+    void RenderTextureScale(
+        const Texture2D& texture, float x, float y, float scaleX, float scaleY, SDL_FRect srcRect = {.x = 0.f, .y = 0.f, .w = -1.f, .h = -1.f})
+        const;
+    void RenderTextureScaleFlipped(
+        const Texture2D& texture,
+        float x,
+        float y,
+        float scaleX,
+        float scaleY,
+        bool flipX,
+        bool flipY,
+        SDL_FRect srcRect = {0.f, 0.f, -1.f, -1.f}) const;
 
-    [[nodiscard]] auto GetBackgroundColor() const -> const SDL_Color&
-    {
-        return m_clearColor;
-    }
+    [[nodiscard]] auto GetSDLRenderer() const -> SDL_Renderer* { return m_renderer; }
+    [[nodiscard]] auto GetBackgroundColor() const -> const SDL_Color& { return m_clearColor; }
 
-    void SetBackgroundColor(const SDL_Color& color)
-    {
-        m_clearColor = color;
-    }
+    void SetBackgroundColor(const SDL_Color& color) { m_clearColor = color; }
 };
 }  // namespace gla
 #endif  // GALENA_RENDERER_HPP

@@ -18,14 +18,13 @@ class Font;
 class ResourceManager final : public Singleton<ResourceManager>
 {
 public:
-    void Init(const std::filesystem::path& data);
-    auto LoadTexture(const std::string& file, SDL_ScaleMode scaleMode = SDL_SCALEMODE_LINEAR) -> std::shared_ptr<Texture2D>;
-    auto LoadFont(const std::string& file, uint8_t size) -> std::shared_ptr<Font>;
+    static void Init();
+    auto LoadTexture(std::string const& file, SDL_ScaleMode scaleMode = SDL_SCALEMODE_LINEAR) -> std::shared_ptr<Texture2D>;
+    auto LoadFont(std::string const& filePath, uint8_t size) -> std::shared_ptr<Font>;
 
 private:
     friend class Singleton<ResourceManager>;
     ResourceManager() = default;
-    std::filesystem::path m_dataPath;
 
     void UnloadUnusedResources();
 

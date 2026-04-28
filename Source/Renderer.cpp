@@ -11,7 +11,11 @@
 #include "SceneManager.hpp"
 #include "Texture2D.hpp"
 
-void gla::Renderer::Init(SDL_Window* window)
+namespace gla
+{
+
+
+void Renderer::Init(SDL_Window* window)
 {
     m_window = window;
 
@@ -23,7 +27,7 @@ void gla::Renderer::Init(SDL_Window* window)
     m_renderer = SDL_CreateRenderer(window, nullptr);
 #endif
 
-    if(m_renderer == nullptr)
+    if (m_renderer == nullptr)
     {
         std::cout << "Failed to create the renderer: " << SDL_GetError() << "\n";
         throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
@@ -42,7 +46,7 @@ void gla::Renderer::Init(SDL_Window* window)
     ImGui_ImplSDLRenderer3_Init(m_renderer);
 }
 
-void gla::Renderer::Render() const
+void Renderer::Render() const
 {
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
@@ -62,14 +66,14 @@ void gla::Renderer::Render() const
     SDL_RenderPresent(m_renderer);
 }
 
-void gla::Renderer::Destroy()
+void Renderer::Destroy()
 {
     ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
     ImPlot::DestroyContext();
     ImGui::DestroyContext();
 
-    if(m_renderer != nullptr)
+    if (m_renderer != nullptr)
     {
         SDL_DestroyRenderer(m_renderer);
         m_renderer = nullptr;
@@ -77,14 +81,18 @@ void gla::Renderer::Destroy()
         m_window = nullptr;
     }
 }
+void Renderer::SetLogicalResolution(int width, int height, SDL_RendererLogicalPresentation mode) const
+{
+    SDL_SetRenderLogicalPresentation(m_renderer, width, height, mode);
+}
 
-void gla::Renderer::RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect) const
+void Renderer::RenderTexture(const Texture2D& texture, float x, float y, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;
     dst.y = y;
     const SDL_FRect* pSrcRect{};
-    if(srcRect.w >= 0 and srcRect.h >= 0)
+    if (srcRect.w >= 0 and srcRect.h >= 0)
     {
         pSrcRect = &srcRect;
         dst.w = srcRect.w;
@@ -98,15 +106,14 @@ void gla::Renderer::RenderTexture(const Texture2D& texture, float x, float y, SD
     SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
 }
 
-void gla::Renderer::RenderTextureScale(const Texture2D& texture, float x, float y, float scaleX, float scaleY,
-                                       SDL_FRect srcRect) const
+void Renderer::RenderTextureScale(const Texture2D& texture, float x, float y, float scaleX, float scaleY, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;
     dst.y = y;
 
     const SDL_FRect* pSrcRect{};
-    if(srcRect.w >= 0 and srcRect.h >= 0)
+    if (srcRect.w >= 0 and srcRect.h >= 0)
     {
         pSrcRect = &srcRect;
         dst.w = srcRect.w;
@@ -123,8 +130,8 @@ void gla::Renderer::RenderTextureScale(const Texture2D& texture, float x, float 
     SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
 }
 
-void gla::Renderer::RenderTextureScaleFlipped(const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX,
-                                              bool flipY, SDL_FRect srcRect) const
+void Renderer::RenderTextureScaleFlipped(
+    const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX, bool flipY, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;
@@ -133,22 +140,19 @@ void gla::Renderer::RenderTextureScaleFlipped(const Texture2D& texture, float x,
     dst.h = srcRect.w * scaleY;
 
     const SDL_FRect* pSrcRect{};
-    if(srcRect.w >= 0 and srcRect.h >= 0)
+    if (srcRect.w >= 0 and srcRect.h >= 0)
         pSrcRect = &srcRect;
 
-    constexpr SDL_FPoint origin = { 0.f, 0.f };
+    constexpr SDL_FPoint origin = {0.f, 0.f};
 
     uint8_t flipBits{};
-    if(flipX)
+    if (flipX)
         flipBits |= SDL_FLIP_HORIZONTAL;
-    if(flipY)
+    if (flipY)
         flipBits |= SDL_FLIP_VERTICAL;
-    const auto flipMode{ static_cast<SDL_FlipMode>(flipBits) };
+    const auto flipMode{static_cast<SDL_FlipMode>(flipBits)};
 
     SDL_RenderTextureRotated(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst, 0, &origin, flipMode);
 }
 
-SDL_Renderer* gla::Renderer::GetSDLRenderer() const
-{
-    return m_renderer;
 }

@@ -10,7 +10,7 @@ namespace gla
 class Font final
 {
 public:
-    explicit Font(const std::string& fullPath, float size);
+    explicit Font(std::string const& fullPath, float size);
     ~Font() noexcept;
 
     [[nodiscard]] auto GetFont() const -> TTF_Font*;

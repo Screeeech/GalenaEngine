@@ -1,6 +1,8 @@
 #ifndef GALENA_UTILS_HPP
 #define GALENA_UTILS_HPP
 
+#include <cstdint>
+
 namespace gla::utils
 {
 

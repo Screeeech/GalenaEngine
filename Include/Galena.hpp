@@ -11,7 +11,7 @@ namespace gla
 class Galena final
 {
 public:
-    explicit Galena(const std::filesystem::path& dataPath);
+    explicit Galena(std::string const& windowName);
     ~Galena() noexcept;
     void Run(const std::function<void()>& load);
     void RunOneFrame();
