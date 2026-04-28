@@ -135,7 +135,7 @@ void Renderer::RenderTextureScale(const Texture2D& texture, float x, float y, fl
 }
 
 void Renderer::RenderTextureScaleFlipped(
-    const Texture2D& texture, float x, float y, float scaleX, float scaleY, bool flipX, bool flipY, SDL_FRect srcRect) const
+    Texture2D const& texture, float x, float y, float scaleX, float scaleY, bool flipX, bool flipY, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;

@@ -28,14 +28,14 @@ void Animation::Update(float deltaTime)
 
 void Animation::Render()
 {
-    const auto* frame = GetActiveFrame();
+    auto const* frame = GetActiveFrame();
     if(not frame)
         return;
 
     const glm::vec3 worldPos{ m_pOwner->GetWorldPosition() };
     const glm::vec2 scale{ m_pOwner->GetTransform().GetWorldScale() };
 
-    Renderer::Get().RenderTextureScaleFlipped(*frame->spriteSheet.texture.get(), worldPos.x, worldPos.y, scale.x, scale.y,
+    Renderer::Get().RenderTextureScaleFlipped(*frame->spriteSheet->texture, worldPos.x, worldPos.y, scale.x, scale.y,
                                               frame->flipX, frame->flipY, frame->srcRect);
 }
 
@@ -44,8 +44,9 @@ void Animation::SetPlaying(bool playing)
     m_playing = playing;
 }
 
-SpriteSheet& Animation::AddSpriteSheet(std::shared_ptr<Texture2D> const& texture, int cols, int rows)
+auto Animation::AddSpriteSheet(std::shared_ptr<Texture2D> const& texture, int cols, int rows) -> SpriteSheet&
 {
+    assert(texture != nullptr && "Texture cannot be null");
     return m_spriteSheets.emplace_back(texture, cols, rows);
 }
 
@@ -65,7 +66,7 @@ void Animation::AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet,
         const SDL_FRect srcRect{
             .x = static_cast<float>(frame.colIdx) * width, .y = static_cast<float>(frame.rowIdx) * height, .w = width, .h = height
         };
-        frames.emplace_back(spriteSheet, frame.duration, srcRect, frame.flipX, frame.flipY);
+        frames.emplace_back(&spriteSheet, frame.duration, srcRect, frame.flipX, frame.flipY);
     }
 
     m_animations.emplace(animationID, std::move(frames));
@@ -82,7 +83,7 @@ void Animation::SetActiveAnimation(unsigned int animationID, bool startPlaying)
     SetPlaying(startPlaying);
 }
 
-const Frame* Animation::GetActiveFrame() const
+auto Animation::GetActiveFrame() const -> Frame const*
 {
     if(m_animations.empty())
         return nullptr;

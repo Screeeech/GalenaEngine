@@ -11,27 +11,27 @@
 namespace gla
 {
 
-struct SpriteSheet
+struct SpriteSheet final
 {
     std::shared_ptr<Texture2D> texture;
-    int cols;
-    int rows;
+    int cols{};
+    int rows{};
 };
 
-struct Frame
+struct Frame final
 {
-    SpriteSheet& spriteSheet;
-    float duration;
-    SDL_FRect srcRect;
+    SpriteSheet* spriteSheet{};
+    float duration{};
+    SDL_FRect srcRect{};
     bool flipX{};
     bool flipY{};
 };
 
-struct FrameData
+struct FrameData final
 {
-    int colIdx;
-    int rowIdx;
-    float duration;
+    int colIdx{};
+    int rowIdx{};
+    float duration{};
     bool flipX{};
     bool flipY{};
 };
