@@ -224,6 +224,7 @@ elseif (WIN32)
   set(SDL_RUNTIME_DLLS
       SDL3::SDL3
       SDL3_ttf::SDL3_ttf
+      SLD3_mixer::SLD3_mixer
   )
 
   foreach (dllTarget IN LISTS SDL_RUNTIME_DLLS)

@@ -4,6 +4,7 @@
 #include "Services/ISound.hpp"
 
 #include <utility>
+#include <algorithm>
 
 namespace gla
 {
