@@ -4,6 +4,7 @@
 #include <any>
 #include <memory>
 #include <print>
+#include <optional>
 #include <typeindex>
 #include <unordered_map>
 

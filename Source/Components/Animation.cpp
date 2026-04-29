@@ -1,5 +1,6 @@
 #include "Components/Animation.hpp"
 
+#include <cstdint>
 #include <stdexcept>
 
 #include "ServiceLocator.hpp"
@@ -61,7 +62,7 @@ auto Animation::AddSpriteSheet(std::shared_ptr<Texture2D> const& texture, int co
     return m_spriteSheets.emplace_back(texture, cols, rows);
 }
 
-void Animation::AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData)
+void Animation::AddAnimation(uint32_t animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData)
 {
     if (m_animations.contains(animationID))
         return;
@@ -84,7 +85,7 @@ void Animation::AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet,
     m_animations.emplace(animationID, std::move(frames));
 }
 
-void Animation::SetActiveAnimation(unsigned int animationID, bool startPlaying)
+void Animation::SetActiveAnimation(uint32_t animationID, bool startPlaying)
 {
     if (not m_animations.contains(animationID))
         throw std::runtime_error("Animation not found");

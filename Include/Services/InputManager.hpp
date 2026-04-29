@@ -18,7 +18,7 @@
 
 namespace gla
 {
-using ActionID = unsigned int;
+using ActionID = uint32_t;
 
 template<typename InputDataType>
 concept InputConcept = std::same_as<InputDataType, SDL_Scancode> || std::same_as<InputDataType, SDL_GamepadButton>;

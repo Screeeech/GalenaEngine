@@ -53,19 +53,19 @@ public:
     void SetPlaying(bool playing);
 
     auto AddSpriteSheet(std::shared_ptr<Texture2D> const& texture, int cols, int rows) -> SpriteSheet&;
-    void AddAnimation(unsigned int animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData);
+    void AddAnimation(uint32_t animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData);
 
-    void SetActiveAnimation(unsigned int animationID, bool startPlaying = false);
+    void SetActiveAnimation(uint32_t animationID, bool startPlaying = false);
 
 private:
     auto GetActiveFrame() const -> const Frame*;
     void AdvanceFrame();
 
     std::vector<SpriteSheet> m_spriteSheets;
-    std::unordered_map<unsigned int, std::vector<Frame>> m_animations;
+    std::unordered_map<uint32_t, std::vector<Frame>> m_animations;
 
     float m_elapsedTime{};
-    unsigned int m_currentAnimation{};
+    uint32_t m_currentAnimation{};
     size_t m_frameIndex{};
     bool m_playing{};
 };

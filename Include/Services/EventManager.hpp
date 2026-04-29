@@ -13,7 +13,7 @@ struct Event;
 class EventListener;
 class Observer;
 
-using EventID = unsigned int;
+using EventID = uint32_t;
 using EventCallback = std::function<void(const Event&)>;
 
 class EventManager final

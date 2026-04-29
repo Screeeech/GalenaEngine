@@ -1,7 +1,9 @@
 #ifndef GALENA_EVENTS_H
 #define GALENA_EVENTS_H
 
-using EventID = unsigned int;
+#include <cstdint>
+
+using EventID = uint32_t;
 
 namespace gla
 {

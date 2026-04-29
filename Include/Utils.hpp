@@ -6,12 +6,12 @@
 namespace gla::utils
 {
 
-consteval auto sdbm_hash(const char* str, std::size_t len) -> unsigned int
+consteval auto sdbm_hash(const char* str, std::size_t len) -> std::uint32_t
 {
-    unsigned int hash = 0;
+    std::uint32_t hash = 0;
     for (std::size_t i = 0; i < len; ++i)
     {
-        hash = static_cast<unsigned int>(str[i]) + (hash << 6) + (hash << 16) - hash;
+        hash = static_cast<std::uint32_t>(str[i]) + (hash << 6) + (hash << 16) - hash;
     }
     return hash;
 }
@@ -19,7 +19,7 @@ consteval auto sdbm_hash(const char* str, std::size_t len) -> unsigned int
 
 }  // namespace gla::utils
 
-consteval auto operator""_h(const char* str, std::size_t len) -> unsigned int
+consteval auto operator""_h(const char* str, std::size_t len) -> std::uint32_t
 {
     return gla::utils::sdbm_hash(str, len);
 }
