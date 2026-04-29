@@ -44,10 +44,6 @@ void SoundService::ProcessAudioCommands(std::stop_token stopToken)
         if (stopToken.stop_requested() and m_audioCommands.empty())
             break;
 
-        if (m_audioCommands.empty())
-            continue;  // spurious wake
-
-
         auto const [type, id, tag] = m_audioCommands.front();
         m_audioCommands.pop();
 

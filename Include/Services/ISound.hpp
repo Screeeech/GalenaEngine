@@ -20,6 +20,8 @@ public:
     virtual void QuitAudio() = 0;
     virtual void LoadAudio(std::string const& path, uint32_t audioID) = 0;
     virtual void LoadPersistentAudioTrack(std::string const& path, std::string const& audioTag) = 0;
+    virtual void SetGlobalVolume(float volume) = 0;
+    virtual auto GetGlobalVolume() const -> float = 0;
 
 };
 

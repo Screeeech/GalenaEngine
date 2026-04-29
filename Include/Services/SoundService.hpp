@@ -48,6 +48,8 @@ public:
     void QuitAudio() override;
     void LoadAudio(std::string const& path, uint32_t audioID) override;
     void LoadPersistentAudioTrack(std::string const& path, std::string const& audioTag) override;
+    void SetGlobalVolume(float volume) override;
+    [[nodiscard]] auto GetGlobalVolume() const -> float override;
 
 private:
     void ProcessAudioCommands(std::stop_token stopToken);

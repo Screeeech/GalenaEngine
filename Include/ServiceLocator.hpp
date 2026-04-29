@@ -30,6 +30,8 @@ public:
         if (m_services.contains(typeid(ServiceType)))
             std::println("Careful!  Service of type already exists, providing a new service of this type will overwrite the previous one");
 
+        m_services.erase(typeid(ServiceType));
+
         // Works when calling Provide with parameters
         m_services.emplace(
             typeid(ServiceType),

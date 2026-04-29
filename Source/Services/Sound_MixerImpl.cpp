@@ -5,13 +5,17 @@
 #include <print>
 #include <Services/SoundService.hpp>
 
-
 namespace gla
 {
 
 class SoundService::Impl final
 {
 public:
+    Impl(Impl const&) = delete;
+    auto operator=(Impl const&) -> Impl& = delete;
+    Impl(Impl&&) = delete;
+    auto operator=(Impl&&) -> Impl& = delete;
+
     explicit Impl()
     {
         if (not MIX_Init())
@@ -22,9 +26,10 @@ public:
 
     ~Impl()
     {
+        MIX_StopAllTracks(m_mixer, 0);
+        // std::ranges::for_each(m_persistentTracks, );
+        // std::ranges::for_each(m_oneTimeUseTracks, MIX_DestroyTrack);
         std::ranges::for_each(m_persistentAudios, MIX_DestroyAudio);
-        std::ranges::for_each(m_persistentTracks, MIX_DestroyTrack);
-        std::ranges::for_each(m_oneTimeUseTracks, MIX_DestroyTrack);
         std::ranges::for_each(m_audioPerID, MIX_DestroyAudio, [](auto& pair) -> auto { return pair.second; });
 
         MIX_DestroyMixer(m_mixer);
@@ -46,7 +51,6 @@ public:
 
     void LoadPersistentAudioTrack(std::string const& path, std::string const& audioTag)
     {
-
         MIX_Audio* audio = MIX_LoadAudio(m_mixer, path.c_str(), true);
         MIX_Track* track = MIX_CreateTrack(m_mixer);
 
@@ -99,19 +103,23 @@ public:
         MIX_PlayTag(m_mixer, tag.c_str(), 0);
     }
 
+    void SetGlobalVolume(float volume) { MIX_SetMixerGain(m_mixer, volume); }
+
+    auto GetGlobalVolume() -> float { return MIX_GetMixerGain(m_mixer); }
+
     // clang-format off
     static void SetTrackAudioNull([[maybe_unused]] void* pUserData, MIX_Track* track)
     {
         MIX_SetTrackAudio(track, nullptr);
     }
 
-    MIX_Mixer* m_mixer{};
-
     std::vector<MIX_Audio*> m_persistentAudios;
     std::vector<MIX_Track*> m_persistentTracks;
 
     std::unordered_map<uint32_t, MIX_Audio*> m_audioPerID;
     std::vector<MIX_Track*> m_oneTimeUseTracks;
+
+    MIX_Mixer* m_mixer{};
 };
 
 SoundService::SoundService()
@@ -123,6 +131,8 @@ SoundService::SoundService()
 
 SoundService::~SoundService() noexcept
 {
+    SoundService::QuitAudio();
+
     // I know a jthread already joins automatically
     // but I need the thread to shut down before I destroy all the mixer resources
     if (m_thread.joinable())
@@ -141,6 +151,17 @@ void SoundService::LoadPersistentAudioTrack(std::string const& path, std::string
     std::scoped_lock const lock(m_mutex);
 
     m_pImpl->LoadPersistentAudioTrack(path, audioTag);
+
+}
+
+void SoundService::SetGlobalVolume(float volume)
+{
+    m_pImpl->SetGlobalVolume(volume);
+}
+
+auto SoundService::GetGlobalVolume()const -> float
+{
+    return m_pImpl->GetGlobalVolume();
 }
 
 void SoundService::PlaySingleTimeAudio(uint32_t audioID)

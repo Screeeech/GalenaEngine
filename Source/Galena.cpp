@@ -88,6 +88,8 @@ Galena::~Galena() noexcept
     SceneManager::Get().Cleanup();
 
     ServiceLocator::Destroy<Renderer>();
+    ServiceLocator::Destroy<ISound>();
+
 
     SDL_DestroyWindow(g_window);
     g_window = nullptr;
