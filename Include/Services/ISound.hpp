@@ -4,16 +4,16 @@
 namespace gla
 {
 
-class Sound
+class ISound
 {
 public:
-    explicit Sound() = default;
-    virtual ~Sound() noexcept = default;
+    explicit ISound() = default;
+    virtual ~ISound() noexcept = default;
 
-    Sound(Sound const&) = delete;
-    auto operator=(Sound const&) -> Sound& = delete;
-    Sound(Sound&&) noexcept = delete;
-    auto operator=(Sound&&) noexcept -> Sound& = delete;
+    ISound(ISound const&) = delete;
+    auto operator=(ISound const&) -> ISound& = delete;
+    ISound(ISound&&) noexcept = delete;
+    auto operator=(ISound&&) noexcept -> ISound& = delete;
 
     virtual void PlayAudio(uint32_t audioID) = 0;
     virtual void PlayTrack(std::string const& tag) = 0;

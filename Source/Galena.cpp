@@ -1,6 +1,6 @@
 #include "ServiceLocator.hpp"
-#include "Services/Sound.hpp"
-#include "Services/Sound_Mixer.hpp"
+#include "Services/ISound.hpp"
+#include "Services/SoundService.hpp"
 #if USE_STEAMWORKS
 #include <steam_api.h>
 #endif
@@ -77,7 +77,7 @@ Galena::Galena(std::string const& windowName)
     ServiceLocator::Provide<EventManager>();
 
     // This way we can provide a specialised type for the sound locator
-    ServiceLocator::Provide<Sound, Sound_Mixer>();
+    ServiceLocator::Provide<ISound, SoundService>();
 }
 
 Galena::~Galena() noexcept

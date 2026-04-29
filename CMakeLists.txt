@@ -21,8 +21,7 @@ set(ENGINE_SOURCES
     "Source/Services/InputManager.cpp"
     "Source/Services/Renderer.cpp"
     "Source/Services/ResourceManager.cpp"
-    "Source/Services/Sound.cpp"
-    "Source/Services/Sound_Mixer.cpp"
+    "Source/Services/SoundService.cpp"
     "Source/Font.cpp"
     "Source/GameObject.cpp"
     "Source/Galena.cpp"
@@ -31,6 +30,9 @@ set(ENGINE_SOURCES
     "Source/ServiceLocator.cpp"
     "Source/Texture2D.cpp"
     "Source/Transform.cpp"
+
+    # Add an if statement later on to switch between implementations
+    "Source/Services/Sound_MixerImpl.cpp"
 )
 
 add_library(${ENGINE_TARGET} STATIC ${ENGINE_SOURCES})
