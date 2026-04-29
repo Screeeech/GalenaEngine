@@ -1,5 +1,3 @@
-#include "Services/SoundService.hpp"
-
 #include <SDL3_mixer/SDL_mixer.h>
 
 #include <algorithm>
@@ -7,10 +5,12 @@
 #include <print>
 #include <stdexcept>
 
+#include "Services/Sound.hpp"
+
 namespace gla
 {
 
-SoundService::SoundService()
+Sound::Sound()
 {
     if (not MIX_Init())
         throw std::runtime_error("MIX_Init() failed");
@@ -18,10 +18,10 @@ SoundService::SoundService()
     m_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
 
     // We have to use bind_front here since stop_token always has to be the first parameter
-    m_thread = std::jthread(std::bind_front(&SoundService::ProcessAudioCommands, this));
+    m_thread = std::jthread(std::bind_front(&Sound::ProcessAudioCommands, this));
 }
 
-SoundService::~SoundService() noexcept
+Sound::~Sound() noexcept
 {
     // I know a jthread already joins automatically
     // but I need the thread to shut down before I destroy all the mixer resources
@@ -36,14 +36,7 @@ SoundService::~SoundService() noexcept
     MIX_DestroyMixer(m_mixer);
 }
 
-
-SoundService::SoundService(SoundService const& /*other*/)
-{
-    // TODO: Again this is very bad, I need to figure out how to store services in a way that allows them to not have a copy constructor
-    throw std::runtime_error("Cannot copy construct InputManager, no clue how to fix this yet");
-}
-
-void SoundService::PlayAudio(uint32_t audioID)
+void Sound::PlayAudio(uint32_t audioID)
 {
     std::scoped_lock const lock(m_mutex);
 
@@ -51,7 +44,7 @@ void SoundService::PlayAudio(uint32_t audioID)
     m_cv.notify_one();
 }
 
-void SoundService::PlayTrack(std::string const& tag)
+void Sound::PlayTrack(std::string const& tag)
 {
     std::scoped_lock const lock(m_mutex);
 
@@ -59,7 +52,7 @@ void SoundService::PlayTrack(std::string const& tag)
     m_cv.notify_one();
 }
 
-void SoundService::QuitAudio()
+void Sound::QuitAudio()
 {
     std::scoped_lock const lock(m_mutex);
 
@@ -67,7 +60,7 @@ void SoundService::QuitAudio()
     m_cv.notify_one();
 }
 
-void SoundService::LoadAudio(std::string const& path, uint32_t audioID)
+void Sound::LoadAudio(std::string const& path, uint32_t audioID)
 {
     std::scoped_lock const lock(m_mutex);
 
@@ -83,7 +76,7 @@ void SoundService::LoadAudio(std::string const& path, uint32_t audioID)
     m_audioPerID[audioID] = audio;
 }
 
-void SoundService::LoadPersistentAudioTrack(std::string const& path, std::string const& audioTag)
+void Sound::LoadPersistentAudioTrack(std::string const& path, std::string const& audioTag)
 {
     std::scoped_lock const lock(m_mutex);
 
@@ -97,7 +90,7 @@ void SoundService::LoadPersistentAudioTrack(std::string const& path, std::string
     m_persistentTracks.emplace_back(track);
 }
 
-void SoundService::ProcessAudioCommands(std::stop_token stopToken)
+void Sound::ProcessAudioCommands(std::stop_token stopToken)
 {
     while (true)
     {
@@ -129,7 +122,7 @@ void SoundService::ProcessAudioCommands(std::stop_token stopToken)
     }
 }
 
-auto SoundService::RequestTrack() -> MIX_Track*
+auto Sound::RequestTrack() -> MIX_Track*
 {
     // Doesn't need a lock, is only called from ProcessCommands which already locks the mutex
     for (auto* track : m_oneTimeUseTracks)
@@ -149,7 +142,7 @@ auto SoundService::RequestTrack() -> MIX_Track*
     return track;
 }
 
-void SoundService::PlaySingleTimeAudio(uint32_t audioID)
+void Sound::PlaySingleTimeAudio(uint32_t audioID)
 {
     // Doesn't need a lock, is only called from ProcessCommands which already locks the mutex
     auto* track = RequestTrack();
@@ -164,13 +157,13 @@ void SoundService::PlaySingleTimeAudio(uint32_t audioID)
     MIX_PlayTrack(track, 0);
 }
 
-void SoundService::PlayTaggedTracks(std::string const& tag) const
+void Sound::PlayTaggedTracks(std::string const& tag) const
 {
     // Doesn't need a lock, is only called from ProcessCommands which already locks the mutex
     MIX_PlayTag(m_mixer, tag.c_str(), 0);
 }
 
-void SoundService::SetTrackAudioNull([[maybe_unused]] void* pUserData, MIX_Track* track)
+void Sound::SetTrackAudioNull([[maybe_unused]] void* pUserData, MIX_Track* track)
 {
     MIX_SetTrackAudio(track, nullptr);
 }

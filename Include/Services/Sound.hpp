@@ -17,6 +17,7 @@ namespace gla
 {
 
 
+// Change to variant
 struct SoundCommand final
 {
     enum class Type : uint8_t
@@ -35,16 +36,16 @@ struct SoundCommand final
     std::string tag;
 };
 
-class SoundService
+class Sound
 {
 public:
-    explicit SoundService();
-    virtual ~SoundService() noexcept;
+    explicit Sound();
+    virtual ~Sound() noexcept;
 
-    SoundService(SoundService const&);
-    auto operator=(SoundService const&) -> SoundService& = delete;
-    SoundService(SoundService&&) noexcept = delete;
-    auto operator=(SoundService&&) noexcept -> SoundService& = delete;
+    Sound(Sound const&) = delete;
+    auto operator=(Sound const&) -> Sound& = delete;
+    Sound(Sound&&) noexcept = delete;
+    auto operator=(Sound&&) noexcept -> Sound& = delete;
 
     void PlayAudio(uint32_t audioID);
     void PlayTrack(std::string const& tag);

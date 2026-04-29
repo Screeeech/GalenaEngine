@@ -22,7 +22,7 @@ public:
     explicit Renderer(SDL_Window* pWindow);
     ~Renderer() noexcept;
 
-    Renderer(Renderer const&) = default;
+    Renderer(Renderer const&) = delete;
     Renderer(Renderer&&) noexcept = delete;
     auto operator=(Renderer const&) -> Renderer& = delete;
     auto operator=(Renderer&&) noexcept -> Renderer& = delete;

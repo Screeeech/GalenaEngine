@@ -87,7 +87,7 @@ public:
     InputManager() = default;
     ~InputManager() noexcept;
 
-    InputManager(InputManager const&);
+    InputManager(InputManager const&) = delete;
     auto operator=(InputManager const&) -> InputManager& = delete;
     InputManager(InputManager&&) = delete;
     auto operator=(InputManager&&) -> InputManager& = delete;

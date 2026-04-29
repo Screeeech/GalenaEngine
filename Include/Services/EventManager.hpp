@@ -22,7 +22,7 @@ public:
     EventManager() = default;
     ~EventManager() = default;
 
-    EventManager(EventManager const&);
+    EventManager(EventManager const&) = delete;
     auto operator=(EventManager const&) -> EventManager& = delete;
     EventManager(EventManager&&) = delete;
     auto operator=(EventManager&&) -> EventManager& = delete;

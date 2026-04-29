@@ -16,11 +16,6 @@ InputManager::~InputManager() noexcept
     if(m_pGamepad)
         SDL_CloseGamepad(m_pGamepad);
 }
-InputManager::InputManager(InputManager const& /*other*/)
-{
-    // TODO: Again this is very bad, I need to figure out how to store services in a way that allows them to not have a copy constructor
-    throw std::runtime_error("Cannot copy construct InputManager, no clue how to fix this yet");
-}
 
 void InputManager::Init()
 {

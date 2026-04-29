@@ -20,7 +20,7 @@ public:
     ResourceManager();
     ~ResourceManager() = default;
 
-    ResourceManager(ResourceManager const&);
+    ResourceManager(ResourceManager const&) = delete;
     auto operator=(ResourceManager const&) -> ResourceManager& = delete;
     ResourceManager(ResourceManager&&) = delete;
     auto operator=(ResourceManager&&) -> ResourceManager& = delete;

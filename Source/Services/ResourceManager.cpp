@@ -17,12 +17,6 @@ ResourceManager::ResourceManager()
         throw std::runtime_error(std::string("Failed to load support for fonts: ") + SDL_GetError());
 }
 
-ResourceManager::ResourceManager(ResourceManager const& /*other*/)
-{
-    // TODO: Again this is very bad, I need to figure out how to store services in a way that allows them to not have a copy constructor
-    throw std::runtime_error("Cannot copy construct InputManager, no clue how to fix this yet");
-}
-
 auto ResourceManager::LoadTexture(std::string const& filePath, SDL_ScaleMode scaleMode) -> std::shared_ptr<Texture2D>
 {
     if(not m_loadedTextures.contains(filePath))

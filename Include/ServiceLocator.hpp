@@ -3,8 +3,8 @@
 
 #include <any>
 #include <memory>
-#include <print>
 #include <optional>
+#include <print>
 #include <typeindex>
 #include <unordered_map>
 
@@ -17,13 +17,28 @@ namespace gla
 class ServiceLocator final
 {
 public:
+    template<typename ServiceType>
+    static void CustomDeleter(void* service)
+    {
+        delete static_cast<ServiceType*>(service);
+    }
+
     template<typename ServiceType, typename... Args>
     static void Provide(Args... args)
     {
         if (m_services.contains(typeid(ServiceType)))
             std::println("Careful!  Service of type already exists, providing a new service of this type will overwrite the previous one");
 
-        m_services[typeid(ServiceType)] = std::make_any<ServiceType>(args...);
+        // Works when calling Provide with parameters
+        m_services.emplace(
+            typeid(ServiceType),
+            std::unique_ptr<void, void (*)(void*)>(new ServiceType(std::forward<Args>(args)...), &CustomDeleter<ServiceType>));
+
+        // Doesn't work for some reason??
+        // m_services[typeid(ServiceType)] = std::unique_ptr<void, void(*)(void*)> (
+        //    new ServiceType(std::forward<Args>(args)...),
+        //    &CustomDeleter<ServiceType>
+        //);
     }
 
     template<typename ServiceType>
@@ -33,7 +48,7 @@ public:
         if (it == m_services.end())
             return std::nullopt;
 
-        return std::any_cast<ServiceType>(&it->second);
+        return static_cast<ServiceType*>(it->second.get());
     }
 
     template<typename ServiceType>
@@ -43,7 +58,7 @@ public:
     }
 
 private:
-    inline static std::unordered_map<std::type_index, std::any> m_services;
+    inline static std::unordered_map<std::type_index, std::unique_ptr<void, void (*)(void*)>> m_services;
 };
 
 }  // namespace gla

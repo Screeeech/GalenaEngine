@@ -1,5 +1,5 @@
 #include "ServiceLocator.hpp"
-#include "Services/SoundService.hpp"
+#include "Services/Sound.hpp"
 #if USE_STEAMWORKS
 #include <steam_api.h>
 #endif
@@ -74,7 +74,7 @@ Galena::Galena(std::string const& windowName)
     ServiceLocator::Provide<ResourceManager>();
     ServiceLocator::Provide<InputManager>();
     ServiceLocator::Provide<EventManager>();
-    ServiceLocator::Provide<SoundService>();
+    ServiceLocator::Provide<Sound>();
 }
 
 Galena::~Galena() noexcept

@@ -5,12 +5,6 @@
 namespace gla
 {
 
-EventManager::EventManager(EventManager const& /*other*/)
-{
-    // TODO: Again this is very bad, I need to figure out how to store services in a way that allows them to not have a copy constructor
-    throw std::runtime_error("Cannot copy construct InputManager, no clue how to fix this yet");
-}
-
 void EventManager::InvokeEvent(const Event& event)
 {
     auto range = m_listeners.equal_range(event.eventID);
