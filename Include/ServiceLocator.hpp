@@ -23,7 +23,8 @@ public:
         delete static_cast<ServiceType*>(service);
     }
 
-    template<typename ServiceType, typename... Args>
+    template<typename ServiceType, typename DerivedService = ServiceType, typename... Args>
+        requires std::derived_from<DerivedService, ServiceType>
     static void Provide(Args... args)
     {
         if (m_services.contains(typeid(ServiceType)))
@@ -32,7 +33,7 @@ public:
         // Works when calling Provide with parameters
         m_services.emplace(
             typeid(ServiceType),
-            std::unique_ptr<void, void (*)(void*)>(new ServiceType(std::forward<Args>(args)...), &CustomDeleter<ServiceType>));
+            std::unique_ptr<void, void (*)(void*)>(new DerivedService(std::forward<Args>(args)...), &CustomDeleter<ServiceType>));
 
         // Doesn't work for some reason??
         // m_services[typeid(ServiceType)] = std::unique_ptr<void, void(*)(void*)> (
