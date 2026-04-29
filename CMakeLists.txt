@@ -21,6 +21,7 @@ set(ENGINE_SOURCES
     "Source/Services/InputManager.cpp"
     "Source/Services/Renderer.cpp"
     "Source/Services/ResourceManager.cpp"
+    "Source/Services/SoundService.cpp"
     "Source/Font.cpp"
     "Source/GameObject.cpp"
     "Source/Galena.cpp"
