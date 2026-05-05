@@ -32,7 +32,7 @@ struct SoundCommand final
     std::string tag;
 };
 
-class SoundService : public ISound
+class SoundService final : public ISound
 {
 public:
     explicit SoundService();
@@ -54,15 +54,16 @@ public:
 private:
     void ProcessAudioCommands(std::stop_token stopToken);
 
-    void PlaySingleTimeAudio(uint32_t audioID);
-    void PlayTaggedTracks(std::string const& tag);
+    void PlaySingleTimeAudio(uint32_t audioID) const;
+    void PlayTaggedTracks(std::string const& tag) const;
 
     class Impl;
     std::unique_ptr<Impl> m_pImpl;
 
-    std::mutex m_mutex;
-    std::condition_variable m_cv;
     std::jthread m_thread;
+    std::condition_variable m_cv;
+
+    std::mutex m_commandQueueMutex;
     std::queue<SoundCommand> m_audioCommands;
 };
 

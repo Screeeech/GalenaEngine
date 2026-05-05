@@ -11,7 +11,7 @@ namespace gla
 
 void SoundService::QuitAudio()
 {
-    std::scoped_lock const lock(m_mutex);
+    std::scoped_lock const lock(m_commandQueueMutex);
 
     m_audioCommands.push({ .type = SoundCommand::Type::Quit });
     m_cv.notify_one();
@@ -20,7 +20,7 @@ void SoundService::QuitAudio()
 
 void SoundService::PlayTrack(std::string const& tag)
 {
-    std::scoped_lock const lock(m_mutex);
+    std::scoped_lock const lock(m_commandQueueMutex);
 
     m_audioCommands.push({ .type = SoundCommand::Type::PlayTag, .tag = tag });
     m_cv.notify_one();
@@ -28,7 +28,7 @@ void SoundService::PlayTrack(std::string const& tag)
 
 void SoundService::PlayAudio(uint32_t audioID)
 {
-    std::scoped_lock const lock(m_mutex);
+    std::scoped_lock const lock(m_commandQueueMutex);
 
     m_audioCommands.push({ .type = SoundCommand::Type::Play, .id = audioID });
     m_cv.notify_one();
@@ -38,15 +38,18 @@ void SoundService::ProcessAudioCommands(std::stop_token stopToken)
 {
     while (true)
     {
-        std::unique_lock lock(m_mutex);
+        std::unique_lock lock(m_commandQueueMutex);
         m_cv.wait(lock, [this, &stopToken]() -> bool { return not m_audioCommands.empty() or stopToken.stop_requested(); });
 
         if (stopToken.stop_requested() and m_audioCommands.empty())
-            break;
+            return;
 
         auto const [type, id, tag] = m_audioCommands.front();
         m_audioCommands.pop();
 
+        lock.unlock();
+
+        // TODO: Unlock the queue mutex after popping, add a new mutex for the other resources in the impl
         switch (type)
         {
             case SoundCommand::Type::Play:

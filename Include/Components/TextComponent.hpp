@@ -26,8 +26,8 @@ public:
     auto operator=(TextComponent&&) -> TextComponent = delete;
 
     void Update(float deltaTime) override;
-    void SetText(const std::string& text);
-    [[nodiscard]] const std::string& GetText() const;
+    void SetText(std::string const& text);
+    [[nodiscard]] auto GetText() const -> std::string const&;
 
 private:
     std::shared_ptr<Font> m_Font;
@@ -39,7 +39,7 @@ private:
 
     Sprite* m_pRenderComponent{};
 
-    std::shared_ptr<Texture2D> UpdateTexture() const;
+    [[nodiscard]] auto UpdateTexture() const -> std::shared_ptr<Texture2D>;
 };
 
 }  // namespace gla

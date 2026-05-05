@@ -69,7 +69,7 @@ void Scene::SortCachedRenderComponents()
                       [](Renderable* pComp1, Renderable* pComp2) { return pComp1->GetZIndex() < pComp2->GetZIndex(); });
 }
 
-GameObject* Scene::GetRoot()
+auto Scene::GetRoot() -> GameObject*
 {
     return m_pRootObject.get();
 }

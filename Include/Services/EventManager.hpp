@@ -28,7 +28,7 @@ public:
     auto operator=(EventManager&&) -> EventManager& = delete;
 
     template<typename T>
-    void BindEvent(EventID id, T* listener, void (T::*callback)(const Event&))
+    void BindEvent(EventID id, T* listener, void (T::*callback)(Event const&))
     {
         m_listeners.emplace(id, std::pair{ listener, std::bind_front(callback, listener) });
     }
@@ -36,20 +36,20 @@ public:
     template<typename T>
     void UnbindEvents(T* listener)
     {
-        std::erase_if(m_listeners, [&](const auto& pair) { return pair.second.first == listener; });
+        std::erase_if(m_listeners, [&](auto const& pair) { return pair.second.first == listener; });
     }
 
     template<typename T>
     void UnbindEvent(EventID id, T* listener)
     {
-        std::erase_if(m_listeners, [&](const auto& pair) { return pair.first == id and pair.second.first == listener; });
+        std::erase_if(m_listeners, [&](auto const& pair) { return pair.first == id and pair.second.first == listener; });
     }
 
-    void InvokeEvent(const Event& event);
+    void InvokeEvent(Event const& event);
 
     template<typename T>
         requires std::derived_from<T, Event>
-    void QueueEvent(const T& event)
+    void QueueEvent(T const& event)
     {
         auto range = m_listeners.equal_range(event.eventID);
         for(auto&& [key, value] : std::ranges::subrange(range.first, range.second))
@@ -63,6 +63,7 @@ public:
 private:
     // What if object gets deleted before event can fire?
     std::queue<std::pair<std::unique_ptr<Event>, EventCallback>> m_queuedEvents;
+
     std::unordered_multimap<EventID, std::pair<void*, EventCallback>> m_listeners;
 };
 

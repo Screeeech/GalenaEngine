@@ -13,7 +13,6 @@
 namespace gla
 {
 
-// TODO: Ask how we can store something that isn't copy constructable
 class ServiceLocator final
 {
 public:

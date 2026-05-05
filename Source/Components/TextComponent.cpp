@@ -36,18 +36,18 @@ void TextComponent::Update(float /*deltaTime*/)
     m_pRenderComponent->SetTexture(m_TextTexture);
 }
 
-void TextComponent::SetText(const std::string& text)
+void TextComponent::SetText(std::string const& text)
 {
     m_Text = text;
     m_NeedsUpdate = true;
 }
 
-const std::string& TextComponent::GetText() const
+auto TextComponent::GetText() const -> std::string const&
 {
     return m_Text;
 }
 
-std::shared_ptr<Texture2D> TextComponent::UpdateTexture() const
+auto TextComponent::UpdateTexture() const -> std::shared_ptr<Texture2D>
 {
     auto* const surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Text.length(), m_Color);
     if (surf == nullptr)

@@ -10,6 +10,16 @@ namespace gla
 
 class SoundService::Impl final
 {
+    std::vector<MIX_Audio*> m_persistentAudios;
+    std::vector<MIX_Track*> m_persistentTracks;
+
+    std::unordered_map<uint32_t, MIX_Audio*> m_audioPerID;
+    std::vector<MIX_Track*> m_oneTimeUseTracks;
+
+    MIX_Mixer* m_mixer{};
+
+    // We use mutable here because reading operations still need to lock (thus modify) the mutex
+    mutable std::mutex m_audioDataMutex;
 public:
     Impl(Impl const&) = delete;
     auto operator=(Impl const&) -> Impl& = delete;
@@ -27,8 +37,7 @@ public:
     ~Impl()
     {
         MIX_StopAllTracks(m_mixer, 0);
-        // std::ranges::for_each(m_persistentTracks, );
-        // std::ranges::for_each(m_oneTimeUseTracks, MIX_DestroyTrack);
+
         std::ranges::for_each(m_persistentAudios, MIX_DestroyAudio);
         std::ranges::for_each(m_audioPerID, MIX_DestroyAudio, [](auto& pair) -> auto { return pair.second; });
 
@@ -37,8 +46,9 @@ public:
 
     void LoadAudio(std::string const& path, uint32_t audioID)
     {
-        auto it = m_audioPerID.find(audioID);
-        if (it != m_audioPerID.end())
+        std::scoped_lock const lock(m_audioDataMutex);
+
+        if (auto const it = m_audioPerID.find(audioID); it != m_audioPerID.end())
         {
             std::println("Audio of ID {} already exists. Overwriting that audio...", audioID);
             MIX_DestroyAudio(it->second);
@@ -51,6 +61,8 @@ public:
 
     void LoadPersistentAudioTrack(std::string const& path, std::string const& audioTag)
     {
+        std::scoped_lock const lock(m_audioDataMutex);
+
         MIX_Audio* audio = MIX_LoadAudio(m_mixer, path.c_str(), true);
         MIX_Track* track = MIX_CreateTrack(m_mixer);
 
@@ -63,7 +75,7 @@ public:
 
     auto RequestTrack() -> MIX_Track*
     {
-        // Doesn't need a lock, is only called from ProcessCommands which already locks the mutex
+        // Caller already locks mutex
         for (auto* track : m_oneTimeUseTracks)
         {
             if (MIX_TrackPlaying(track))
@@ -74,7 +86,7 @@ public:
         }
 
         auto* track = MIX_CreateTrack(m_mixer);
-        MIX_SetTrackStoppedCallback(track, &SetTrackAudioNull, nullptr);
+        MIX_SetTrackStoppedCallback(track, &SetTrackAudioNull, this);
 
         m_oneTimeUseTracks.emplace_back(track);
 
@@ -84,7 +96,8 @@ public:
 
     void PlaySingleTimeAudio(uint32_t audioID)
     {
-        // Doesn't need a lock, is only called from ProcessCommands which already locks the mutex
+        std::scoped_lock const lock(m_audioDataMutex);
+
         auto* track = RequestTrack();
         auto* audio = m_audioPerID.at(audioID);
 
@@ -99,27 +112,33 @@ public:
 
     void PlayTaggedTracks(std::string const& tag) const
     {
-        // Doesn't need a lock, is only called from ProcessCommands which already locks the mutex
+        std::scoped_lock const lock(m_audioDataMutex);
+
         MIX_PlayTag(m_mixer, tag.c_str(), 0);
     }
 
-    void SetGlobalVolume(float volume) { MIX_SetMixerGain(m_mixer, volume); }
-
-    auto GetGlobalVolume() -> float { return MIX_GetMixerGain(m_mixer); }
-
-    // clang-format off
-    static void SetTrackAudioNull([[maybe_unused]] void* pUserData, MIX_Track* track)
+    void SetGlobalVolume(float volume) const
     {
-        MIX_SetTrackAudio(track, nullptr);
+        std::scoped_lock const lock(m_audioDataMutex);
+
+        MIX_SetMixerGain(m_mixer, volume);
     }
 
-    std::vector<MIX_Audio*> m_persistentAudios;
-    std::vector<MIX_Track*> m_persistentTracks;
+    auto GetGlobalVolume() const -> float
+    {
+        std::scoped_lock const lock(m_audioDataMutex);
 
-    std::unordered_map<uint32_t, MIX_Audio*> m_audioPerID;
-    std::vector<MIX_Track*> m_oneTimeUseTracks;
+        return MIX_GetMixerGain(m_mixer);
+    }
 
-    MIX_Mixer* m_mixer{};
+    static void SetTrackAudioNull(void* pUserData, MIX_Track* track)
+    {
+        auto const* instance = static_cast<Impl*>(pUserData);
+
+        std::scoped_lock const lock(instance->m_audioDataMutex);
+
+        MIX_SetTrackAudio(track, nullptr);
+    }
 };
 
 SoundService::SoundService()
@@ -133,7 +152,7 @@ SoundService::~SoundService() noexcept
 {
     SoundService::QuitAudio();
 
-    // I know a jthread already joins automatically
+    // I know a jthread already joins automatically,
     // but I need the thread to shut down before I destroy all the mixer resources
     if (m_thread.joinable())
         m_thread.join();
@@ -141,17 +160,12 @@ SoundService::~SoundService() noexcept
 
 void SoundService::LoadAudio(std::string const& path, uint32_t audioID)
 {
-    std::scoped_lock const lock(m_mutex);
-
     m_pImpl->LoadAudio(path, audioID);
 }
 
 void SoundService::LoadPersistentAudioTrack(std::string const& path, std::string const& audioTag)
 {
-    std::scoped_lock const lock(m_mutex);
-
     m_pImpl->LoadPersistentAudioTrack(path, audioTag);
-
 }
 
 void SoundService::SetGlobalVolume(float volume)
@@ -159,17 +173,17 @@ void SoundService::SetGlobalVolume(float volume)
     m_pImpl->SetGlobalVolume(volume);
 }
 
-auto SoundService::GetGlobalVolume()const -> float
+auto SoundService::GetGlobalVolume() const -> float
 {
     return m_pImpl->GetGlobalVolume();
 }
 
-void SoundService::PlaySingleTimeAudio(uint32_t audioID)
+void SoundService::PlaySingleTimeAudio(uint32_t audioID) const
 {
     m_pImpl->PlaySingleTimeAudio(audioID);
 }
 
-void SoundService::PlayTaggedTracks(std::string const& tag)
+void SoundService::PlayTaggedTracks(std::string const& tag) const
 {
     m_pImpl->PlayTaggedTracks(tag);
 }
