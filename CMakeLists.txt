@@ -28,7 +28,6 @@ set(ENGINE_SOURCES
     "Source/Galena.cpp"
     "Source/Scene.cpp"
     "Source/SceneManager.cpp"
-    "Source/ServiceLocator.cpp"
     "Source/Texture2D.cpp"
     "Source/Transform.cpp"
 
