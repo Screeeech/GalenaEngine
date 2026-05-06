@@ -219,23 +219,23 @@ elseif (WIN32)
   # Set working directory to output folder
   set_target_properties(${ENGINE_TARGET} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${ENGINE_TARGET}>")
 
-  # Copy SDL dlls to output folder
-  set(SDL_RUNTIME_DLLS
-      SDL3::SDL3
-      SDL3_ttf::SDL3_ttf
-      SLD3_mixer::SLD3_mixer
-  )
-
-  foreach (dllTarget IN LISTS SDL_RUNTIME_DLLS)
-    add_custom_command(
-        TARGET ${ENGINE_TARGET}
-        POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<TARGET_FILE:${dllTarget}>"
-        "${CMAKE_BINARY_DIR}"
-        VERBATIM
-    )
-  endforeach ()
+#  # Copy SDL dlls to output folder
+#  set(SDL_RUNTIME_DLLS
+#      SDL3::SDL3
+#      SDL3_ttf::SDL3_ttf
+#      SLD3_mixer::SLD3_mixer
+#  )
+#
+#  foreach (dllTarget IN LISTS SDL_RUNTIME_DLLS)
+#    add_custom_command(
+#        TARGET ${ENGINE_TARGET}
+#        POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#        "$<TARGET_FILE:${dllTarget}>"
+#        "${CMAKE_BINARY_DIR}"
+#        VERBATIM
+#    )
+#  endforeach ()
 
   if (Steamworks_FOUND)
     target_link_libraries("${ENGINE_TARGET}" PUBLIC Steamworks::Steamworks)
