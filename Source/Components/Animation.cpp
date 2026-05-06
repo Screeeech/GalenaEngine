@@ -19,11 +19,19 @@ void Animation::Update(float deltaTime)
     if (not m_playing)
         return;
 
-    m_elapsedTime += deltaTime;
+    auto const* frame = GetActiveFrame();
 
-    while (m_elapsedTime >= GetActiveFrame()->duration)
+    // If duration is 0, it should be active for one frame maybe?
+    if (frame->duration <= 0.f)
     {
-        m_elapsedTime -= GetActiveFrame()->duration;
+        AdvanceFrame();
+        return;
+    }
+
+    m_elapsedTime += deltaTime;
+    while (m_elapsedTime >= frame->duration)
+    {
+        m_elapsedTime -= frame->duration;
         AdvanceFrame();
     }
 }
@@ -89,6 +97,10 @@ void Animation::SetActiveAnimation(uint32_t animationID, bool startPlaying)
 {
     if (not m_animations.contains(animationID))
         throw std::runtime_error("Animation not found");
+
+    // Lets us set active animation over and over without resetting the frame
+    if (m_currentAnimation == animationID)
+        return;
 
     m_currentAnimation = animationID;
     m_frameIndex = 0;
