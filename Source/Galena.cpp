@@ -1,5 +1,6 @@
 #include "ServiceLocator.hpp"
 #include "Services/ISound.hpp"
+#include "Services/SoundNull.hpp"
 #include "Services/SoundService.hpp"
 #if USE_STEAMWORKS
 #include <steam_api.h>
@@ -18,6 +19,7 @@
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/Renderer.hpp"
+#include "Services/SoundNull.hpp"
 #include "Services/ResourceManager.hpp"
 
 SDL_Window* g_window{};
@@ -76,8 +78,12 @@ Galena::Galena(std::string const& windowName)
     ServiceLocator::Provide<InputManager>();
     ServiceLocator::Provide<EventManager>();
 
-    // This way we can provide a specialised type for the sound locator
+#ifndef __EMSCRIPTEN__
     ServiceLocator::Provide<ISound, SoundService>();
+#else
+    // temporarily use null service on emscripten until I implement a singlethreaded sound service
+    ServiceLocator::Provide<ISound, SoundNull>();
+#endif
 }
 
 Galena::~Galena() noexcept
