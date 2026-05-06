@@ -35,6 +35,8 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/Include"
 )
 
+
+
 # ==================== LIBRARIES ====================
 
 include(FetchContent)
@@ -145,15 +147,15 @@ if (NOT SDL3_ttf_FOUND)
         GIT_PROGRESS TRUE
     )
     set(SDL3TTF_INSTALL OFF)
+    FetchContent_MakeAvailable(SDL3_ttf)
     if (EMSCRIPTEN)
       list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/emscripten")
       set(SDL3TTF_USE_SYSTEM_FREETYPE ON)
       set(SDL3TTF_VENDORED OFF)
       set(SDLTTF_PLUTOSVG OFF)
-      add_compile_options(-sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1 -sASSERTIONS)
-      add_link_options(-sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1 -sASSERTIONS)
+      add_compile_options(-sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1)
+      add_link_options(-sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1)
     endif ()
-    FetchContent_MakeAvailable(SDL3_ttf)
   endif ()
 endif ()
 
@@ -167,7 +169,6 @@ if (NOT SDL3_Mixer_FOUND)
       GIT_PROGRESS TRUE)
   FetchContent_MakeAvailable(SDL3_mixer)
 endif ()
-
 
 if (WIN32)
   # Add VLD (Visual Leak Detector) for memory leak detection on Windows
@@ -193,17 +194,17 @@ target_link_libraries(${ENGINE_TARGET} PUBLIC
 # ==================== PLATFORM SPECIFIC ====================
 
 if (EMSCRIPTEN)
-  set(EMSCRIPTEN_COMPILE_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -g")
-  set(EMSCRIPTEN_LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS} -sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1 -g -sALLOW_MEMORY_GROWTH --preload-file \"${CMAKE_SOURCE_DIR}/Resources@/\"")
-
-  # Use the Emscripten toolchain
-  set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/EmscriptenToolchain.cmake)
-
-  # Additional settings for Emscripten build
-  set_target_properties(${ENGINE_TARGET} PROPERTIES
-      COMPILE_FLAGS "${EMSCRIPTEN_COMPILE_FLAGS}"
-      LINK_FLAGS "${EMSCRIPTEN_LINK_FLAGS}"
+  target_compile_options(${ENGINE_TARGET} PRIVATE
+      -pthread
+      -sUSE_PTHREADS
+      -sASSERTIONS
   )
+  target_link_options(${ENGINE_TARGET} PRIVATE
+      -pthread
+      -sUSE_PTHREADS
+      -sASSERTIONS
+  )
+
   # Have emscripten generate a html page too.
   set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
