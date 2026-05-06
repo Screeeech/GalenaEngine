@@ -35,8 +35,6 @@ target_include_directories(${ENGINE_TARGET} PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/Include"
 )
 
-
-
 # ==================== LIBRARIES ====================
 
 include(FetchContent)
@@ -149,6 +147,8 @@ if (NOT SDL3_ttf_FOUND)
     set(SDL3TTF_INSTALL OFF)
     FetchContent_MakeAvailable(SDL3_ttf)
     if (EMSCRIPTEN)
+      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -s WASM=1 -s USE_FREETYPE=1 -s USE_HARFBUZZ=1")
+      set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s WASM=1 -s USE_FREETYPE=1 -s USE_HARFBUZZ=1")
       list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/emscripten")
       set(SDL3TTF_USE_SYSTEM_FREETYPE ON)
       set(SDL3TTF_VENDORED OFF)
