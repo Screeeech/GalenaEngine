@@ -9,7 +9,7 @@ namespace gla
 class SoundNull : public ISound
 {
 public:
-    void PlayAudio(uint32_t audioID) override {};
+    void PlayAudio(uint32_t /*audioID*/) override {};
     void QuitAudio() override {};
     void SetGlobalVolume(float /*volume*/) override {}
     [[nodiscard]] auto GetGlobalVolume() const -> float override { return 0.f; }

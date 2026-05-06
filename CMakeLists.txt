@@ -193,13 +193,9 @@ target_link_libraries(${ENGINE_TARGET} PUBLIC
 
 if (EMSCRIPTEN)
   target_compile_options(${ENGINE_TARGET} PRIVATE
-      -pthread
-      -sUSE_PTHREADS
       -sASSERTIONS
   )
   target_link_options(${ENGINE_TARGET} PRIVATE
-      -pthread
-      -sUSE_PTHREADS
       -sASSERTIONS
   )
 
