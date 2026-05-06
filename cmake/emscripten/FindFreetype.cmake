@@ -4,7 +4,13 @@ set(FREETYPE_VERSION_STRING "2.10.0")
 
 if(NOT TARGET Freetype::Freetype)
   add_library(Freetype::Freetype INTERFACE IMPORTED)
-  # Emscripten handles linking via -s USE_FREETYPE=1, but we might need to be explicit if this target is linked directly.
-  # However, -s flags are usually compile/link options.
-  # We assume the user or toolchain adds -s USE_FREETYPE=1 to CMAKE_C_FLAGS/CMAKE_CXX_FLAGS
+  target_link_options(Freetype::Freetype INTERFACE
+      -sUSE_FREETYPE=1
+      -sUSE_HARFBUZZ=1
+  )
+
+  target_compile_options(Freetype::Freetype INTERFACE
+      -sUSE_FREETYPE=1
+      -sUSE_HARFBUZZ=1
+  )
 endif()
