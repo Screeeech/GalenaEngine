@@ -26,6 +26,7 @@ public:
 
 
     void Update(float deltaTime) override;
+    void FixedUpdate(float /*deltaTime*/) override {};
 
 private:
     int m_frameCount{};

@@ -158,4 +158,17 @@ void GameObject::Update(float deltaTime) const
     }
 }
 
+void GameObject::FixedUpdate(float deltaTime) const
+{
+    for(const auto& component : m_components)
+    {
+        component->FixedUpdate(deltaTime);
+    }
+
+    for(const auto& children : m_children)
+    {
+        children->FixedUpdate(deltaTime);
+    }
+}
+
 }  // namespace gla

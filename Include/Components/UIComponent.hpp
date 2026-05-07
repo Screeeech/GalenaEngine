@@ -19,6 +19,7 @@ public:
     auto operator=(UIComponent &&) -> UIComponent = delete;
 
     void Update(float deltaTime) override;
+    void FixedUpdate(float /*deltaTime*/) override {};
     void DrawUI() const;
 
 private:

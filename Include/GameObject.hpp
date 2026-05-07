@@ -20,6 +20,7 @@ class GameObject final
 {
 public:
     void Update(float deltaTime) const;
+    void FixedUpdate(float deltaTime) const;
 
     explicit GameObject(float x, float y, float z = 0.0f, std::string_view name = "new GameObject");
     ~GameObject() noexcept = default;

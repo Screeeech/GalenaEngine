@@ -51,8 +51,9 @@ void PrintSDLVersion()
 namespace gla
 {
 
-Galena::Galena(std::string const& windowName)
-    : lastTime(std::chrono::high_resolution_clock::now())
+Galena::Galena(std::string const& windowName, int fixedUpdateFrameCap)
+    : m_fixed_time_step(fixedUpdateFrameCap == 0 ? 0.f : 1.f / static_cast<float>(fixedUpdateFrameCap))
+    , m_lastTime(std::chrono::high_resolution_clock::now())
 {
     PrintSDLVersion();
 
@@ -117,13 +118,20 @@ void Galena::Run(std::function<void()> const& load)
 void Galena::RunOneFrame()
 {
     auto const now{ std::chrono::high_resolution_clock::now() };
-    float const deltaTime{ std::chrono::duration<float>(now - lastTime).count() };
-    lastTime = now;
+    float const deltaTime{ std::chrono::duration<float>(now - m_lastTime).count() };
+    m_lastTime = now;
+    m_lag += deltaTime;
 
 #if USE_STEAMWORKS
     SteamAPI_RunCallbacks();
 #endif
     m_quit = !ServiceLocator::Request<InputManager>().value()->ProcessInput();
+
+    while (m_lag >= m_fixed_time_step)
+    {
+        SceneManager::Get().FixedUpdate(deltaTime);
+        m_lag -= m_fixed_time_step;
+    }
 
     SceneManager::Get().Update(deltaTime);
 

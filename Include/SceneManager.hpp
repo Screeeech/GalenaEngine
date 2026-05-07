@@ -21,6 +21,7 @@ public:
     auto CreateScene() -> Scene&;
 
     void Update(float deltaTime) const;
+    void FixedUpdate(float deltaTime) const;
     void Render() const;
     void DrawUI() const;
 

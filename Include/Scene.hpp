@@ -15,10 +15,11 @@ class Renderable;
 class Scene final
 {
 public:
-    void RemoveGameObject(GameObject* pObject);
-    void Update(float deltaTime);
-    void Render();
-    void DrawUI();
+    void RemoveGameObject(GameObject* pObject) const;
+    void Update(float deltaTime) const;
+    void FixedUpdate(float deltaTime) const;
+    void Render() const;
+    void DrawUI() const;
     void Load();
     void RegisterRenderComponent(Renderable* renderable);
     void UnregisterRenderComponent(Renderable* component);
@@ -32,7 +33,7 @@ public:
     Scene(Scene&& other) = delete;
     auto operator=(Scene&& other) -> Scene& = delete;
 
-    [[nodiscard]] auto GetRoot() -> GameObject*;
+    [[nodiscard]] auto GetRoot() const -> GameObject*;
 private:
     friend class SceneManager;
     explicit Scene();

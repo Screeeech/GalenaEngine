@@ -11,7 +11,7 @@ namespace gla
 class Galena final
 {
 public:
-    explicit Galena(std::string const& windowName);
+    explicit Galena(std::string const& windowName, int fixedUpdateFrameCap = 0);
     ~Galena() noexcept;
     void Run(const std::function<void()>& load);
     void RunOneFrame();
@@ -23,7 +23,9 @@ public:
 
 private:
     bool m_quit{};
-    std::chrono::time_point<std::chrono::high_resolution_clock> lastTime;
+    float m_lag{};
+    float m_fixed_time_step;
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_lastTime;
 };
 
 }  // namespace gla

@@ -18,6 +18,7 @@ public:
     auto operator=(Component&&) -> Component& = delete;
 
     virtual void Update(float deltaTime) = 0;
+    virtual void FixedUpdate(float deltaTime) = 0;
 
 protected:
     explicit Component(GameObject* pOwner)

@@ -24,6 +24,7 @@ public:
     auto operator=(Sprite &&) -> Sprite& = delete;
 
     void Update(float deltaTime) override;
+    void FixedUpdate(float /*deltaTime*/) override {};
     void Render() override;
 
     void SetTexture(std::shared_ptr<Texture2D> texture);

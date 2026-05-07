@@ -17,6 +17,7 @@ public:
     auto operator=(RotatorComponent&&) -> RotatorComponent = delete;
 
     void Update(float deltaTime) override;
+    void FixedUpdate(float /*deltaTime*/) override {};
 
 private:
     float m_rotationSpeed;

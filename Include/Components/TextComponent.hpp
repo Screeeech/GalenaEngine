@@ -26,6 +26,7 @@ public:
     auto operator=(TextComponent&&) -> TextComponent = delete;
 
     void Update(float deltaTime) override;
+    void FixedUpdate(float /*deltaTime*/) override {};
     void SetText(std::string const& text);
     [[nodiscard]] auto GetText() const -> std::string const&;
 

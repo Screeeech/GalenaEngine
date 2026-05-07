@@ -13,6 +13,14 @@ void SceneManager::Update(float deltaTime) const
     m_currentScene->Update(deltaTime);
 }
 
+void SceneManager::FixedUpdate(float deltaTime) const
+{
+    if (not m_currentScene)
+        return;
+
+    m_currentScene->FixedUpdate(deltaTime);
+}
+
 void SceneManager::Render() const
 {
     if (not m_currentScene)
