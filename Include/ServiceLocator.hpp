@@ -16,6 +16,8 @@ namespace gla
 class ServiceLocator final
 {
 public:
+    ServiceLocator() = delete;
+
     template<typename ServiceType>
     static void CustomDeleter(void* service)
     {

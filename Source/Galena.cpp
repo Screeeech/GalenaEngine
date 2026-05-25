@@ -80,7 +80,9 @@ Galena::Galena(std::string const& windowName, int fixedUpdateFrameCap)
     ServiceLocator::Provide<EventManager>();
 
 #ifndef __EMSCRIPTEN__
-    ServiceLocator::Provide<ISound, SoundService>();
+    // Just using a null sound system while developing so I don't get driven crazy by startup sounds
+    ServiceLocator::Provide<ISound, SoundNull>();
+    //ServiceLocator::Provide<ISound, SoundService>();
 #else
     // temporarily use null service on emscripten until I implement a singlethreaded sound service
     ServiceLocator::Provide<ISound, SoundNull>();

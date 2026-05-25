@@ -1,6 +1,7 @@
 #ifndef GALENA_EVENTMANAGER_H
 #define GALENA_EVENTMANAGER_H
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <queue>
@@ -13,7 +14,7 @@ struct Event;
 class EventListener;
 class Observer;
 
-using EventID = uint32_t;
+using EventID = std::uint32_t;
 using EventCallback = std::function<void(const Event&)>;
 
 class EventManager final

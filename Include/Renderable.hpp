@@ -18,11 +18,6 @@ public:
         SceneManager::Get().GetActiveScene()->RegisterRenderComponent(this);
     }
 
-    Renderable(Renderable const&) = delete;
-    auto operator=(Renderable const&) -> Renderable& = delete;
-    Renderable(Renderable&&) = delete;
-    auto operator=(Renderable&&) -> Renderable& = delete;
-
     ~Renderable() noexcept override
     {
         SceneManager::Get().UnregisterRenderComponent(this);
@@ -41,6 +36,10 @@ public:
         return m_zIndex;
     }
 
+    Renderable(Renderable const&) = delete;
+    auto operator=(Renderable const&) -> Renderable& = delete;
+    Renderable(Renderable&&) = delete;
+    auto operator=(Renderable&&) -> Renderable& = delete;
 private:
     int m_zIndex;
 };
