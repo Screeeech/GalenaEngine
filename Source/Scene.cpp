@@ -4,6 +4,7 @@
 #include <cassert>
 
 #include "Components/UIComponent.hpp"
+#include "GameObject.hpp"
 #include "Renderable.hpp"
 
 namespace gla
@@ -43,7 +44,18 @@ void Scene::DrawUI() const
 
 void Scene::Load()
 {
-    SceneManager::Get().LoadScene(this);
+    Locator::Get<SceneManager>().LoadScene(this);
+    m_pRootObject->Activate();
+}
+
+void Scene::Unload() const
+{
+    m_pRootObject->Deactivate();
+}
+
+auto Scene::IsActive() const -> bool
+{
+    return Locator::Get<SceneManager>().GetActiveScene() == this;
 }
 
 void Scene::RegisterRenderComponent(Renderable* renderable)
@@ -80,9 +92,15 @@ auto Scene::GetRoot() const -> GameObject*
     return m_pRootObject.get();
 }
 
+auto Scene::operator==(const Scene& other) const -> bool
+{
+    return other.m_pRootObject.get() == m_pRootObject.get();
+}
+
 Scene::Scene()
-    : m_pRootObject{ new GameObject(0, 0, 0, "Scene root") }
+    : m_pRootObject(new GameObject(*this, 0, 0, 0, "Scene root"))
 {
 }
+
 
 }  // namespace gla

@@ -5,18 +5,23 @@
 #include "Components/TextComponent.hpp"
 #include "GameObject.hpp"
 
-gla::FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color color)
-    : Component(pOwner)
-    , m_pTextComponent(pOwner->AddComponent<TextComponent>("FPS: ", std::move(font), 999, color))
+namespace gla
 {
+
+FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color color)
+    : Component(pOwner)
+    , m_font(std::move(font))
+    , m_color(color)
+{
+    m_pTextComponent = m_pOwner->AddComponent<TextComponent>("FPS: ", std::move(m_font), 999, m_color);
 }
 
-void gla::FpsComponent::Update(float deltaTime)
+void FpsComponent::Update(float deltaTime)
 {
     m_elapsedTime += deltaTime;
     ++m_frameCount;
 
-    if(m_elapsedTime >= 1.f)
+    if (m_elapsedTime >= 1.f)
     {
         const float fps{ static_cast<float>(m_frameCount) / m_elapsedTime };
 
@@ -25,3 +30,5 @@ void gla::FpsComponent::Update(float deltaTime)
         m_elapsedTime = 0.0f;
     }
 }
+
+}  // namespace gla

@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include "GameObject.hpp"
+#include "Locator.hpp"
 #include "SceneManager.hpp"
 
 namespace gla
@@ -11,19 +13,21 @@ UIComponent::UIComponent(GameObject* pOwner, std::function<void(GameObject* pCal
     : Component(pOwner)
     , m_drawFunc(std::move(drawFunc))
 {
-    SceneManager::Get().RegisterUIComponent(this);
 }
-
-UIComponent::~UIComponent() noexcept
-{
-    SceneManager::Get().UnregisterUIComponent(this);
-}
-
-void UIComponent::Update(float /*deltaTime*/) {}
 
 void UIComponent::DrawUI() const
 {
     m_drawFunc(m_pOwner);
+}
+
+void UIComponent::OnActivate()
+{
+    Locator::Get<SceneManager>().RegisterUIComponent(this);
+}
+
+void UIComponent::OnDeactivate()
+{
+    Locator::Get<SceneManager>().UnregisterUIComponent(this);
 }
 
 }  // namespace gla

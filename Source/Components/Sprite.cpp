@@ -4,7 +4,7 @@
 #include <utility>
 
 #include "GameObject.hpp"
-#include "ServiceLocator.hpp"
+#include "Locator.hpp"
 #include "Services/Renderer.hpp"
 #include "Texture2D.hpp"
 #include "Transform.hpp"
@@ -25,14 +25,6 @@ Sprite::Sprite(GameObject* pOwner, int zIndex)
 {
 }
 
-Sprite::~Sprite() noexcept
-{
-    auto& sm = SceneManager::Get();
-    sm.UnregisterRenderComponent(this);
-}
-
-void Sprite::Update(float /*deltaTime*/) {}
-
 void Sprite::Render()
 {
     if (not m_texture or not m_Visible)
@@ -41,10 +33,7 @@ void Sprite::Render()
     const auto& pos{ m_pOwner->GetWorldPosition() };
     const auto& scale{ m_pOwner->GetTransform().GetWorldScale() };
 
-    if (auto const* renderer{ ServiceLocator::Request<Renderer>().value_or(nullptr) })
-        renderer->RenderTextureScale(*m_texture, pos.x, pos.y, scale.x, scale.y);
-    else
-        std::println("Careful! No renderer was found, proceeding without rendering sprite");
+    Locator::Get<Renderer>().RenderTextureScale(*m_texture, pos.x, pos.y, scale.x, scale.y);
 }
 
 void Sprite::SetTexture(std::shared_ptr<Texture2D> texture)
@@ -89,7 +78,7 @@ void Sprite::SetSourceRectSize(float w, float h)
     m_sourceRect.h = h;
 }
 
-SDL_FRect Sprite::GetSourceRect() const
+auto Sprite::GetSourceRect() const -> SDL_FRect
 {
     return m_sourceRect;
 }

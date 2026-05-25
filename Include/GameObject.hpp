@@ -8,9 +8,12 @@
 
 #include "Component.hpp"
 #include "Transform.hpp"
+#include "Scene.hpp"
+
 
 namespace gla
 {
+class Scene;
 
 class Transform;
 class Sprite;
@@ -22,19 +25,22 @@ public:
     void Update(float deltaTime) const;
     void FixedUpdate(float deltaTime) const;
 
-    explicit GameObject(float x, float y, float z = 0.0f, std::string_view name = "new GameObject");
-    ~GameObject() noexcept = default;
+    ~GameObject() noexcept;
 
-    GameObject(GameObject const& other) = delete;
-    auto operator=(GameObject const& other) -> GameObject& = delete;
-    GameObject(GameObject&& other) = delete;
-    auto operator=(GameObject&& other) -> GameObject& = delete;
+    void Activate();
+    void Deactivate();
 
     template<ComponentConcept T, typename... Args>
     auto AddComponent(Args&&... args) noexcept -> T*
     {
         m_components.push_back(std::make_unique<T>(this, std::forward<Args>(args)...));
-        return dynamic_cast<T*>(m_components.back().get());
+        auto* component = dynamic_cast<T*>(m_components.back().get());
+
+        // If the current scene is already active, we should activate the new component immediately
+        if (m_parentScene.IsActive())
+            component->Activate();
+
+        return component;
     }
 
     template<ComponentConcept T>
@@ -42,8 +48,12 @@ public:
     {
         for(auto& component : m_components)
             if(auto* pComponent = dynamic_cast<T*>(component.get()))
+            {
+                pComponent->Deactivate();
                 m_components.erase(pComponent);
+            }
     }
+    void RemoveComponent(Component* pComponent);
 
     template<ComponentConcept T>
     auto GetComponent() -> T*
@@ -62,7 +72,7 @@ public:
     }
 
     auto GetTransform() -> Transform&;
-    auto GetParentWorldMatrix() -> glm::mat4;
+    auto GetParentWorldMatrix() const -> glm::mat4;
     auto GetWorldPosition() -> glm::vec3;
 
     auto CreateChild(float x, float y, float z = 0.0f, std::string_view name = "new GameObject") -> GameObject*;
@@ -76,13 +86,24 @@ public:
     // For testing purposes
     std::string_view m_name;
 
+
+    GameObject(GameObject const& other) = delete;
+    auto operator=(GameObject const& other) -> GameObject& = delete;
+    GameObject(GameObject&& other) = delete;
+    auto operator=(GameObject&& other) -> GameObject& = delete;
 private:
+    // I only want to be able to GameObjects from my scene or from other game objects
+    // So the constructor is private
+    friend class Scene;
+    explicit GameObject(Scene& parentScene, float x, float y, float z = 0.0f, std::string_view name = "new GameObject");
+
     void AddChild(std::unique_ptr<GameObject> pChild);
     auto IsChild(GameObject* pChild) -> bool;
 
+    bool m_active{ false };
 
+    Scene& m_parentScene;
     GameObject* m_pParent{};
-    // NOTE: Should the parent own the children?
     std::vector<std::unique_ptr<GameObject>> m_children;
 
     std::vector<std::unique_ptr<Component>> m_components;

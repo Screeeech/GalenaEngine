@@ -2,6 +2,7 @@
 #define GALENA_RENDERABLE_H
 
 #include "Component.hpp"
+#include "Locator.hpp"
 #include "SceneManager.hpp"
 
 namespace gla
@@ -14,21 +15,12 @@ public:
         : Component(pOwner)
         , m_zIndex(zIndex)
     {
-        // TODO: Change to Initialize and to parented scene instead of active scene
-        SceneManager::Get().GetActiveScene()->RegisterRenderComponent(this);
     }
-
-    ~Renderable() noexcept override
-    {
-        SceneManager::Get().UnregisterRenderComponent(this);
-    }
-
-    virtual void Render() = 0;
 
     void SetZIndex(int zIndex)
     {
         m_zIndex = zIndex;
-        SceneManager::Get().SortCachedRenderComponents();
+        Locator::Get<SceneManager>().SortCachedRenderComponents();
     }
 
     [[nodiscard]] auto GetZIndex() const -> int
@@ -36,10 +28,20 @@ public:
         return m_zIndex;
     }
 
-    Renderable(Renderable const&) = delete;
-    auto operator=(Renderable const&) -> Renderable& = delete;
-    Renderable(Renderable&&) = delete;
-    auto operator=(Renderable&&) -> Renderable& = delete;
+protected:
+    friend class Scene;
+    virtual void Render() = 0;
+
+    void OnActivate() override
+    {
+        // TODO: Change to Initialize and to parented scene instead of active scene
+        Locator::Get<SceneManager>().GetActiveScene()->RegisterRenderComponent(this);
+    }
+
+    void OnDeactivate() override
+    {
+        Locator::Get<SceneManager>().UnregisterRenderComponent(this);
+    }
 private:
     int m_zIndex;
 };

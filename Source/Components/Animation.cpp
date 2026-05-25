@@ -3,7 +3,8 @@
 #include <cstdint>
 #include <stdexcept>
 
-#include "ServiceLocator.hpp"
+#include "GameObject.hpp"
+#include "Locator.hpp"
 #include "Services/Renderer.hpp"
 
 namespace gla
@@ -45,18 +46,15 @@ void Animation::Render()
     const glm::vec3 worldPos{ m_pOwner->GetWorldPosition() };
     const glm::vec2 scale{ m_pOwner->GetTransform().GetWorldScale() };
 
-    if (auto const* renderer{ ServiceLocator::Request<Renderer>().value_or(nullptr) })
-        renderer->RenderTextureScaleFlipped(
-            *frame->spriteSheet->texture,
-            worldPos.x,
-            worldPos.y,
-            scale.x,
-            scale.y,
-            frame->flipX,
-            frame->flipY,
-            frame->srcRect);
-    else
-        std::println("Careful! No renderer was found, proceeding without rendering animation");
+    Locator::Get<Renderer>().RenderTextureScaleFlipped(
+        *frame->spriteSheet->texture,
+        worldPos.x,
+        worldPos.y,
+        scale.x,
+        scale.y,
+        frame->flipX,
+        frame->flipY,
+        frame->srcRect);
 }
 
 void Animation::SetPlaying(bool playing)

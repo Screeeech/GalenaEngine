@@ -1,6 +1,7 @@
 #include "SceneManager.hpp"
 
 #include "Scene.hpp"
+#include "GameObject.hpp"
 
 namespace gla
 {
@@ -44,19 +45,22 @@ void SceneManager::LoadScene(Scene* scene)
     for (auto& pScene : m_scenes)
     {
         if (auto* sceneRef = pScene.get(); sceneRef == scene)
+        {
+            if (m_currentScene)
+                m_currentScene->Unload();
             m_currentScene = sceneRef;
+        }
     }
 }
 
-Scene* SceneManager::GetActiveScene() const
+auto SceneManager::GetActiveScene() const -> Scene*
 {
     return m_currentScene;
 }
 
-Scene& SceneManager::CreateScene()
+auto SceneManager::CreateScene() -> Scene&
 {
-    m_scenes.emplace_back(new Scene());
-    return *m_scenes.back();
+    return *m_scenes.emplace_back(new Scene());
 }
 
 void SceneManager::RegisterRenderComponent(Renderable* component) const
@@ -98,7 +102,7 @@ void SceneManager::Cleanup()
     m_currentScene = nullptr;
 }
 
-void SceneManager::SortCachedRenderComponents()
+void SceneManager::SortCachedRenderComponents() const
 {
     if (not m_currentScene)
         return;

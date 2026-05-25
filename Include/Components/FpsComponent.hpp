@@ -24,11 +24,13 @@ public:
     FpsComponent(FpsComponent&&) = delete;
     auto operator=(FpsComponent&&) -> FpsComponent = delete;
 
-
+protected:
     void Update(float deltaTime) override;
-    void FixedUpdate(float /*deltaTime*/) override {};
 
 private:
+    std::shared_ptr<Font> m_font;
+    SDL_Color m_color;
+
     int m_frameCount{};
     float m_elapsedTime{};
     TextComponent* m_pTextComponent{};

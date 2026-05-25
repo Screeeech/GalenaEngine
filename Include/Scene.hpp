@@ -4,10 +4,9 @@
 #include <memory>
 #include <vector>
 
-#include "GameObject.hpp"
-
 namespace gla
 {
+class GameObject;
 
 class UIComponent;
 class Renderable;
@@ -20,20 +19,21 @@ public:
     void FixedUpdate(float deltaTime) const;
     void Render() const;
     void DrawUI() const;
+
     void Load();
+    void Unload() const;
+
+    auto IsActive() const -> bool;
     void RegisterRenderComponent(Renderable* renderable);
     void UnregisterRenderComponent(Renderable* component);
     void RegisterUIComponent(UIComponent* component);
     void UnregisterUIComponent(UIComponent* component);
     void SortCachedRenderComponents();
 
-    ~Scene() = default;
-    Scene(Scene const& other) = delete;
-    auto operator=(Scene const& other) -> Scene& = delete;
-    Scene(Scene&& other) = delete;
-    auto operator=(Scene&& other) -> Scene& = delete;
-
     [[nodiscard]] auto GetRoot() const -> GameObject*;
+
+    auto operator==(const Scene& other) const -> bool;
+
 private:
     friend class SceneManager;
     explicit Scene();
@@ -45,4 +45,4 @@ private:
 
 }  // namespace gla
 
-#endif // GALENA_SCENE_HPP
+#endif  // GALENA_SCENE_HPP

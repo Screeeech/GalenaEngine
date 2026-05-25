@@ -8,7 +8,6 @@ set(ENGINE_SOURCES
     "Source/Commands/VolumeCommand.cpp"
     "Source/Components/Animation.cpp"
     "Source/Components/FpsComponent.cpp"
-    "Source/Components/RotatorComponent.cpp"
     "Source/Components/Sprite.cpp"
     "Source/Components/TextComponent.cpp"
     "Source/Components/UIComponent.cpp"

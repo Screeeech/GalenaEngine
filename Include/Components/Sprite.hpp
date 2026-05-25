@@ -16,15 +16,7 @@ class Sprite : public Renderable
 public:
     explicit Sprite(GameObject* pOwner, std::shared_ptr<Texture2D> texture, int zIndex = 0);
     explicit Sprite(GameObject* pOwner, int zIndex = 0);
-    ~Sprite() noexcept override;
 
-    Sprite(Sprite const&) = delete;
-    auto operator=(Sprite const&) -> Sprite& = delete;
-    Sprite(Sprite &&) = delete;
-    auto operator=(Sprite &&) -> Sprite& = delete;
-
-    void Update(float deltaTime) override;
-    void FixedUpdate(float /*deltaTime*/) override {};
     void Render() override;
 
     void SetTexture(std::shared_ptr<Texture2D> texture);
@@ -33,7 +25,7 @@ public:
     void SetSourceRectPos(float x, float y);
     void SetSourceRectSize(float w, float h);
 
-    [[nodiscard]] SDL_FRect GetSourceRect() const;
+    [[nodiscard]] auto GetSourceRect() const -> SDL_FRect;
 
     bool m_Visible{ true };
 

@@ -18,23 +18,20 @@ class TextComponent : public Component
 public:
     explicit TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, int zIndex = 0,
                            SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 });
-    ~TextComponent() noexcept override = default;
 
-    TextComponent(TextComponent const&) = delete;
-    auto operator=(TextComponent const&) -> TextComponent = delete;
-    TextComponent(TextComponent&&) = delete;
-    auto operator=(TextComponent&&) -> TextComponent = delete;
-
-    void Update(float deltaTime) override;
-    void FixedUpdate(float /*deltaTime*/) override {};
     void SetText(std::string const& text);
     [[nodiscard]] auto GetText() const -> std::string const&;
 
+protected:
+    void OnActivate() override;
+
+    void Update(float deltaTime) override;
 private:
     std::shared_ptr<Font> m_Font;
     std::shared_ptr<Texture2D> m_TextTexture;
     SDL_Color m_Color;
     std::string m_Text;
+    int m_zIndex;
 
     bool m_NeedsUpdate{ false };
 

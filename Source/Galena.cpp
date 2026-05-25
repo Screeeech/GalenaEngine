@@ -1,4 +1,4 @@
-#include "ServiceLocator.hpp"
+#include "Locator.hpp"
 #include "Services/ISound.hpp"
 #include "Services/SoundNull.hpp"
 #include "Services/SoundService.hpp"
@@ -21,6 +21,7 @@
 #include "Services/Renderer.hpp"
 #include "Services/SoundNull.hpp"
 #include "Services/ResourceManager.hpp"
+#include "SceneManager.hpp"
 
 SDL_Window* g_window{};
 
@@ -74,18 +75,19 @@ Galena::Galena(std::string const& windowName, int fixedUpdateFrameCap)
         throw std::runtime_error(std::string("Fatal Error - Steam must be running to play this game (SteamAPI_Init() failed)."));
 #endif
 
-    ServiceLocator::Provide<Renderer>(g_window);
-    ServiceLocator::Provide<ResourceManager>();
-    ServiceLocator::Provide<InputManager>();
-    ServiceLocator::Provide<EventManager>();
+    Locator::Provide<Renderer>(g_window);
+    Locator::Provide<ResourceManager>();
+    Locator::Provide<InputManager>();
+    Locator::Provide<EventManager>();
+    Locator::Provide<SceneManager>();
 
 #ifndef __EMSCRIPTEN__
     // Just using a null sound system while developing so I don't get driven crazy by startup sounds
-    ServiceLocator::Provide<ISound, SoundNull>();
+    Locator::Provide<ISound, SoundNull>();
     //ServiceLocator::Provide<ISound, SoundService>();
 #else
     // temporarily use null service on emscripten until I implement a singlethreaded sound service
-    ServiceLocator::Provide<ISound, SoundNull>();
+    Locator::Provide<ISound, SoundNull>();
 #endif
 }
 
@@ -94,10 +96,10 @@ Galena::~Galena() noexcept
 #if USE_STEAMWORKS
     SteamAPI_Shutdown();
 #endif
-    SceneManager::Get().Cleanup();
+    Locator::Get<SceneManager>().Cleanup();
 
-    ServiceLocator::Destroy<Renderer>();
-    ServiceLocator::Destroy<ISound>();
+    Locator::Destroy<Renderer>();
+    Locator::Destroy<ISound>();
 
 
     SDL_DestroyWindow(g_window);
@@ -127,21 +129,17 @@ void Galena::RunOneFrame()
 #if USE_STEAMWORKS
     SteamAPI_RunCallbacks();
 #endif
-    m_quit = !ServiceLocator::Request<InputManager>().value()->ProcessInput();
+    m_quit = !Locator::Get<InputManager>().ProcessInput();
 
     while (m_lag >= m_fixed_time_step)
     {
-        SceneManager::Get().FixedUpdate(deltaTime);
+        Locator::Get<SceneManager>().FixedUpdate(deltaTime);
         m_lag -= m_fixed_time_step;
     }
 
-    SceneManager::Get().Update(deltaTime);
-
-    if (const auto em = ServiceLocator::Request<EventManager>(); em.has_value())
-        em.value()->ExecuteQueuedEvents();
-
-    if (const auto renderer = ServiceLocator::Request<Renderer>(); renderer.has_value())
-        renderer.value()->Render();
+    Locator::Get<SceneManager>().Update(deltaTime);
+    Locator::Get<EventManager>().ExecuteQueuedEvents();
+    Locator::Get<Renderer>().Render();
 }
 
 }  // namespace gla

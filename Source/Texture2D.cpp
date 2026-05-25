@@ -4,7 +4,7 @@
 
 #include <stdexcept>
 
-#include "ServiceLocator.hpp"
+#include "Locator.hpp"
 #include "Services/Renderer.hpp"
 
 namespace gla
@@ -15,7 +15,7 @@ Texture2D::~Texture2D() noexcept
     SDL_DestroyTexture(m_texture);
 }
 
-glm::vec2 Texture2D::GetSize() const
+auto Texture2D::GetSize() const -> glm::vec2
 {
     float w{};
     float h{};
@@ -23,33 +23,25 @@ glm::vec2 Texture2D::GetSize() const
     return { w, h };
 }
 
-SDL_Texture* Texture2D::GetSDLTexture() const
+auto Texture2D::GetSDLTexture() const -> SDL_Texture*
 {
     return m_texture;
 }
 
 Texture2D::Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode)
 {
-    auto const* renderer = ServiceLocator::Request<Renderer>().value_or(nullptr);
-    if (not renderer)
-    {
-        std::println("Careful! No renderer was found, proceeding without rendering texture");
-        return;
-    }
-
-
     SDL_Surface* surface = SDL_LoadPNG(fullPath.c_str());
-    if(!surface)
+    if (not surface)
     {
         throw std::runtime_error(std::string("Failed to load PNG: ") + SDL_GetError());
     }
 
-    m_texture = SDL_CreateTextureFromSurface(renderer->GetSDLRenderer(), surface);
+    m_texture = SDL_CreateTextureFromSurface(Locator::Get<Renderer>().GetSDLRenderer(), surface);
     SDL_SetTextureScaleMode(m_texture, scaleMode);
 
     SDL_DestroySurface(surface);
 
-    if(!m_texture)
+    if (not m_texture)
     {
         throw std::runtime_error(std::string("Failed to create texture from surface: ") + SDL_GetError());
     }
@@ -62,4 +54,4 @@ Texture2D::Texture2D(SDL_Texture* texture, SDL_ScaleMode scaleMode)
     SDL_SetTextureScaleMode(m_texture, scaleMode);
 }
 
-}
+}  // namespace gla

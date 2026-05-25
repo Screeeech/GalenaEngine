@@ -8,6 +8,7 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "Locator.hpp"
 #include "SceneManager.hpp"
 #include "Texture2D.hpp"
 
@@ -61,7 +62,7 @@ void Renderer::Render() const
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    SceneManager::Get().DrawUI();
+    Locator::Get<SceneManager>().DrawUI();
 
     ImGui::Render();
 
@@ -72,7 +73,7 @@ void Renderer::Render() const
     SetColor({ .r = 255, .g = 0, .b = 0, .a = 255 });
     DrawRect({ .x = 0, .y = 0, .w = static_cast<float>(m_logicalResolution.x), .h = static_cast<float>(m_logicalResolution.y) });
 
-    SceneManager::Get().Render();
+    Locator::Get<SceneManager>().Render();
 
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
     SDL_RenderPresent(m_renderer);

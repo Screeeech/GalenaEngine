@@ -13,10 +13,10 @@
 namespace gla
 {
 
-class ServiceLocator final
+class Locator final
 {
 public:
-    ServiceLocator() = delete;
+    Locator() = delete;
 
     template<typename ServiceType>
     static void CustomDeleter(void* service)
@@ -46,13 +46,13 @@ public:
     }
 
     template<typename ServiceType>
-    static auto Request() -> std::optional<ServiceType*>
+    static auto Get() -> ServiceType&
     {
         auto const it = m_services.find(typeid(ServiceType));
         if (it == m_services.end())
-            return std::nullopt;
+            throw std::runtime_error(std::format("Could not find requested service: {}", typeid(ServiceType).name()));
 
-        return static_cast<ServiceType*>(it->second.get());
+        return *static_cast<ServiceType*>(it->second.get());
     }
 
     template<typename ServiceType>

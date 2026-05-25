@@ -6,6 +6,7 @@
 
 #include "Scene.hpp"
 #include "Singleton.hpp"
+#include "GameObject.hpp"
 
 namespace gla
 {
@@ -15,7 +16,7 @@ class Scene;
 class Renderable;
 
 // NOTE: This isn't a service locator yet, because ideally I want to gut this class entirely
-class SceneManager final : public Singleton<SceneManager>
+class SceneManager final
 {
 public:
     auto CreateScene() -> Scene&;
@@ -34,10 +35,9 @@ public:
 
     void Cleanup();
 
-    void SortCachedRenderComponents();
+    void SortCachedRenderComponents() const;
 
 private:
-    friend class Singleton<SceneManager>;
     std::vector<std::unique_ptr<Scene>> m_scenes;
     Scene* m_currentScene{};
 };

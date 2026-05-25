@@ -7,7 +7,7 @@
 
 #include "Components/Sprite.hpp"
 #include "GameObject.hpp"
-#include "ServiceLocator.hpp"
+#include "Locator.hpp"
 #include "Services/Renderer.hpp"
 #include "Texture2D.hpp"
 
@@ -20,7 +20,22 @@ TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_p
     , m_Font(std::move(font))
     , m_Color(color)
     , m_Text(std::move(text))
-    , m_pRenderComponent(pOwner->AddComponent<Sprite>(zIndex))
+    , m_zIndex(zIndex)
+{
+    m_pRenderComponent = m_pOwner->AddComponent<Sprite>(m_zIndex);
+}
+
+void TextComponent::SetText(std::string const& text)
+{
+    m_Text = text;
+    m_NeedsUpdate = true;
+}
+auto TextComponent::GetText() const -> std::string const&
+{
+    return m_Text;
+}
+
+void TextComponent::OnActivate()
 {
     m_TextTexture = UpdateTexture();
     m_pRenderComponent->SetTexture(m_TextTexture);
@@ -36,17 +51,6 @@ void TextComponent::Update(float /*deltaTime*/)
     m_pRenderComponent->SetTexture(m_TextTexture);
 }
 
-void TextComponent::SetText(std::string const& text)
-{
-    m_Text = text;
-    m_NeedsUpdate = true;
-}
-
-auto TextComponent::GetText() const -> std::string const&
-{
-    return m_Text;
-}
-
 auto TextComponent::UpdateTexture() const -> std::shared_ptr<Texture2D>
 {
     auto* const surf = TTF_RenderText_Blended(m_Font->GetFont(), m_Text.c_str(), m_Text.length(), m_Color);
@@ -54,7 +58,7 @@ auto TextComponent::UpdateTexture() const -> std::shared_ptr<Texture2D>
     {
         throw std::runtime_error(std::string("Render text failed: ") + SDL_GetError());
     }
-    auto* texture = SDL_CreateTextureFromSurface(ServiceLocator::Request<Renderer>().value()->GetSDLRenderer(), surf);
+    auto* texture = SDL_CreateTextureFromSurface(Locator::Get<Renderer>().GetSDLRenderer(), surf);
     if (texture == nullptr)
     {
         throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
