@@ -32,15 +32,10 @@ public:
     void SetLogicalResolution(int width, int height, SDL_RendererLogicalPresentation mode = SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
 
     void RenderTexture(Texture2D const& texture, float x, float y, SDL_FRect srcRect = { .x = 0.f, .y = 0.f, .w = -1.f, .h = -1.f }) const;
-    void RenderTextureScale(
-        const Texture2D& texture, float x, float y, float scaleX, float scaleY, SDL_FRect srcRect = { .x = 0.f, .y = 0.f, .w = -1.f, .h = -1.f })
-        const;
-    void RenderTextureScaleFlipped(
+    void RenderTextureFlipped(
         const Texture2D& texture,
         float x,
         float y,
-        float scaleX,
-        float scaleY,
         bool flipX,
         bool flipY,
         SDL_FRect srcRect = { .x = 0.f, .y = 0.f, .w = -1.f, .h = -1.f }) const;

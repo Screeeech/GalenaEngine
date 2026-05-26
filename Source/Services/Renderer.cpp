@@ -105,38 +105,14 @@ void Renderer::RenderTexture(const Texture2D& texture, float x, float y, SDL_FRe
     SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
 }
 
-void Renderer::RenderTextureScale(const Texture2D& texture, float x, float y, float scaleX, float scaleY, SDL_FRect srcRect) const
+void Renderer::RenderTextureFlipped(
+    Texture2D const& texture, float x, float y, bool flipX, bool flipY, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;
     dst.y = y;
-
-    const SDL_FRect* pSrcRect{};
-    if (srcRect.w >= 0 and srcRect.h >= 0)
-    {
-        pSrcRect = &srcRect;
-        dst.w = srcRect.w;
-        dst.h = srcRect.w;
-    }
-    else
-    {
-        SDL_GetTextureSize(texture.GetSDLTexture(), &dst.w, &dst.h);
-    }
-
-    dst.w *= scaleX;
-    dst.h *= scaleY;
-
-    SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
-}
-
-void Renderer::RenderTextureScaleFlipped(
-    Texture2D const& texture, float x, float y, float scaleX, float scaleY, bool flipX, bool flipY, SDL_FRect srcRect) const
-{
-    SDL_FRect dst{};
-    dst.x = x;
-    dst.y = y;
-    dst.w = srcRect.w * scaleX;
-    dst.h = srcRect.w * scaleY;
+    dst.w = srcRect.w;
+    dst.h = srcRect.w;
 
     const SDL_FRect* pSrcRect{};
     if (srcRect.w >= 0 and srcRect.h >= 0)

@@ -43,15 +43,12 @@ void Animation::Render()
     if (not frame)
         return;
 
-    const glm::vec3 worldPos{ m_pOwner->GetWorldPosition() };
-    const glm::vec2 scale{ m_pOwner->GetTransform().GetWorldScale() };
+    const glm::vec2 worldPos{ m_pOwner->GetWorldPosition() };
 
-    Locator::Get<Renderer>().RenderTextureScaleFlipped(
+    Locator::Get<Renderer>().RenderTextureFlipped(
         *frame->spriteSheet->texture,
         worldPos.x,
         worldPos.y,
-        scale.x,
-        scale.y,
         frame->flipX,
         frame->flipY,
         frame->srcRect);
@@ -79,13 +76,13 @@ void Animation::AddAnimation(uint32_t animationID, SpriteSheet& spriteSheet, std
 
     std::vector<Frame> frames;
     frames.reserve(frames.size());
-    for (const auto& frame : frameData)
+    for (auto const& [colIdx, rowIdx, duration, flipX, flipY] : frameData)
     {
-        const SDL_FRect srcRect{ .x = static_cast<float>(frame.colIdx) * width,
-            .y = static_cast<float>(frame.rowIdx) * height,
+        const SDL_FRect srcRect{ .x = static_cast<float>(colIdx) * width,
+            .y = static_cast<float>(rowIdx) * height,
             .w = width,
             .h = height };
-        frames.emplace_back(&spriteSheet, frame.duration, srcRect, frame.flipX, frame.flipY);
+        frames.emplace_back(&spriteSheet, duration, srcRect, flipX, flipY);
     }
 
     m_animations.emplace(animationID, std::move(frames));

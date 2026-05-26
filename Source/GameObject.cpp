@@ -81,15 +81,15 @@ auto GameObject::GetTransform() -> Transform&
     return m_transform;
 }
 
-auto GameObject::GetParentWorldMatrix() const -> glm::mat4
+auto GameObject::GetParentWorldPosition() const -> glm::vec2
 {
     if (not m_pParent)
-        return { 1.0f };
+        return glm::vec2{ 0.0f };
 
-    return m_pParent->m_transform.GetWorldMatrix();
+    return m_pParent->m_transform.GetWorldPosition();
 }
 
-auto GameObject::GetWorldPosition() -> glm::vec3
+auto GameObject::GetWorldPosition() -> glm::vec2
 {
     return GetTransform().GetWorldPosition();
 }
@@ -191,7 +191,7 @@ void GameObject::SetDirty()
 GameObject::GameObject(Scene& parentScene, float x, float y, float z, std::string_view name)
     : m_name(name)
     , m_parentScene(parentScene)
-    , m_transform(x, y, z, this)
+    , m_transform(x, y, this)
 {
 }
 

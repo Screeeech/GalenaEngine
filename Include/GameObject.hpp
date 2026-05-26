@@ -72,8 +72,8 @@ public:
     }
 
     auto GetTransform() -> Transform&;
-    auto GetParentWorldMatrix() const -> glm::mat4;
-    auto GetWorldPosition() -> glm::vec3;
+    auto GetParentWorldPosition() const -> glm::vec2;
+    auto GetWorldPosition() -> glm::vec2;
 
     auto CreateChild(float x, float y, float z = 0.0f, std::string_view name = "new GameObject") -> GameObject*;
     auto DisownChild(GameObject* pChild) -> std::unique_ptr<GameObject>;

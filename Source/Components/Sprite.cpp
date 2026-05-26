@@ -31,9 +31,8 @@ void Sprite::Render()
         return;
 
     const auto& pos{ m_pOwner->GetWorldPosition() };
-    const auto& scale{ m_pOwner->GetTransform().GetWorldScale() };
 
-    Locator::Get<Renderer>().RenderTextureScale(*m_texture, pos.x, pos.y, scale.x, scale.y);
+    Locator::Get<Renderer>().RenderTexture(*m_texture, pos.x, pos.y);
 }
 
 void Sprite::SetTexture(std::shared_ptr<Texture2D> texture)
