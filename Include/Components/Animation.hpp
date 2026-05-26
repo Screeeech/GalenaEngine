@@ -52,7 +52,8 @@ public:
     auto AddSpriteSheet(std::shared_ptr<Texture2D> const& texture, int cols, int rows) -> SpriteSheet&;
     void AddAnimation(uint32_t animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData);
 
-    void SetActiveAnimation(uint32_t animationID, bool startPlaying = false);
+    void SetAnimation(uint32_t animationID, bool startPlaying = false);
+    void SetFrame(uint32_t frameIndex, bool startPlaying = false);
 
     Animation(Animation const&) = delete;
     auto operator=(Animation const&) -> Animation& = delete;

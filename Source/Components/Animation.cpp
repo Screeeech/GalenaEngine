@@ -91,17 +91,33 @@ void Animation::AddAnimation(uint32_t animationID, SpriteSheet& spriteSheet, std
     m_animations.emplace(animationID, std::move(frames));
 }
 
-void Animation::SetActiveAnimation(uint32_t animationID, bool startPlaying)
+void Animation::SetAnimation(uint32_t animationID, bool startPlaying)
 {
     if (not m_animations.contains(animationID))
         throw std::runtime_error("Animation not found");
 
     // Lets us set active animation over and over without resetting the frame
     if (m_currentAnimation == animationID)
+    {
+        SetPlaying(startPlaying);
         return;
+    }
 
     m_currentAnimation = animationID;
     m_frameIndex = 0;
+    m_elapsedTime = 0.0f;
+    SetPlaying(startPlaying);
+}
+
+void Animation::SetFrame(uint32_t frameIndex, bool startPlaying)
+{
+    if (m_animations.at(m_currentAnimation).size() <= frameIndex)
+    {
+        std::println("Framed index out of bounds");
+        return;
+    }
+
+    m_frameIndex = frameIndex;
     m_elapsedTime = 0.0f;
     SetPlaying(startPlaying);
 }
