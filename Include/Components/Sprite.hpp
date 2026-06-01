@@ -17,7 +17,6 @@ public:
     explicit Sprite(GameObject* pOwner, std::shared_ptr<Texture2D> texture, int zIndex = 0);
     explicit Sprite(GameObject* pOwner, int zIndex = 0);
 
-    void Render() override;
 
     void SetTexture(std::shared_ptr<Texture2D> texture);
     void SetSourceRect(SDL_FRect sourceRect);
@@ -28,6 +27,9 @@ public:
     [[nodiscard]] auto GetSourceRect() const -> SDL_FRect;
 
     bool m_Visible{ true };
+
+protected:
+    void Render() override;
 
 private:
     std::shared_ptr<Texture2D> m_texture;

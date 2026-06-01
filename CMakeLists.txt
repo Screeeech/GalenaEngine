@@ -4,9 +4,10 @@ set(ENGINE_TARGET Galena)
 
 set(ENGINE_SOURCES
     "Source/Commands/CallbackCommand.cpp"
-    "Source/Commands/GameObjectCommand.cpp"
     "Source/Commands/VolumeCommand.cpp"
     "Source/Components/Animation.cpp"
+    "Source/Components/Collider.cpp"
+    "Source/Components/CollisionRect.cpp"
     "Source/Components/FpsComponent.cpp"
     "Source/Components/Sprite.cpp"
     "Source/Components/TextComponent.cpp"

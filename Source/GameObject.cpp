@@ -94,9 +94,9 @@ auto GameObject::GetWorldPosition() -> glm::vec2
     return GetTransform().GetWorldPosition();
 }
 
-auto GameObject::CreateChild(float x, float y, float z, std::string_view name) -> GameObject*
+auto GameObject::CreateChild(float x, float y, std::string_view name) -> GameObject*
 {
-    m_children.emplace_back(new GameObject(m_parentScene, x, y, z, name));
+    m_children.emplace_back(new GameObject(m_parentScene, x, y, name));
 
     GameObject* child = m_children.back().get();
     child->m_pParent = this;
@@ -188,7 +188,7 @@ void GameObject::SetDirty()
         child->SetDirty();
 }
 
-GameObject::GameObject(Scene& parentScene, float x, float y, float z, std::string_view name)
+GameObject::GameObject(Scene& parentScene, float x, float y, std::string_view name)
     : m_name(name)
     , m_parentScene(parentScene)
     , m_transform(x, y, this)

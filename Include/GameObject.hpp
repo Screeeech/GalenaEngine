@@ -75,7 +75,7 @@ public:
     auto GetParentWorldPosition() const -> glm::vec2;
     auto GetWorldPosition() -> glm::vec2;
 
-    auto CreateChild(float x, float y, float z = 0.0f, std::string_view name = "new GameObject") -> GameObject*;
+    auto CreateChild(float x, float y, std::string_view name = "new GameObject") -> GameObject*;
     auto DisownChild(GameObject* pChild) -> std::unique_ptr<GameObject>;
     auto RemoveChild(GameObject* pChild) -> bool;
     void Reparent(GameObject* pParent, bool keepWorldPosition = true);
@@ -95,7 +95,7 @@ private:
     // I only want to be able to GameObjects from my scene or from other game objects
     // So the constructor is private
     friend class Scene;
-    explicit GameObject(Scene& parentScene, float x, float y, float z = 0.0f, std::string_view name = "new GameObject");
+    explicit GameObject(Scene& parentScene, float x, float y, std::string_view name = "new GameObject");
 
     void AddChild(std::unique_ptr<GameObject> pChild);
     auto IsChild(GameObject* pChild) -> bool;

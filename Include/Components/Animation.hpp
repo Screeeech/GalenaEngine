@@ -44,9 +44,6 @@ public:
     explicit Animation(GameObject* pOwner, int zIndex = 0);
     ~Animation() noexcept override = default;
 
-
-    void Render() override;
-
     void SetPlaying(bool playing);
 
     auto AddSpriteSheet(std::shared_ptr<Texture2D> const& texture, int cols, int rows) -> SpriteSheet&;
@@ -62,6 +59,7 @@ public:
 
 protected:
     void Update(float deltaTime) override;
+    void Render() override;
 
 private:
     auto GetActiveFrame() const -> const Frame*;

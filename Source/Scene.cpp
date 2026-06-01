@@ -98,7 +98,7 @@ auto Scene::operator==(const Scene& other) const -> bool
 }
 
 Scene::Scene()
-    : m_pRootObject(new GameObject(*this, 0, 0, 0, "Scene root"))
+    : m_pRootObject(new GameObject(*this, 0, 0, "Scene root"))
 {
 }
 

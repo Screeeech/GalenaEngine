@@ -9,9 +9,12 @@ namespace gla
 class GameObjectCommand : public Command
 {
 public:
-    explicit GameObjectCommand(GameObject* pCaller);
+    explicit GameObjectCommand(GameObject* pCaller)
+        : m_pCaller(pCaller)
+    {
+    }
 
-    void Execute() override;
+    void Execute() override = 0;
 
 protected:
     GameObject* m_pCaller;

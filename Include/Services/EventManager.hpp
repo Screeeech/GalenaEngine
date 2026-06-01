@@ -1,6 +1,7 @@
 #ifndef GALENA_EVENTMANAGER_H
 #define GALENA_EVENTMANAGER_H
 
+#include <any>
 #include <cstdint>
 #include <functional>
 #include <memory>
@@ -15,9 +16,11 @@ class EventListener;
 class Observer;
 
 using EventID = std::uint32_t;
-using EventCallback = std::function<void(const Event&)>;
+
+using EventCallback = std::function<void(std::any)>;
 
 class EventManager final
+
 {
 public:
     EventManager() = default;
@@ -28,42 +31,47 @@ public:
     EventManager(EventManager&&) = delete;
     auto operator=(EventManager&&) -> EventManager& = delete;
 
-    template<typename T>
-    void BindEvent(EventID id, T* listener, void (T::*callback)(Event const&))
+    template<typename ListenerType>
+    void BindEvent(EventID id, ListenerType* listener, void (ListenerType::*callback)(std::any const&))
     {
         m_listeners.emplace(id, std::pair{ listener, std::bind_front(callback, listener) });
     }
 
-    template<typename T>
-    void UnbindEvents(T* listener)
+    template<typename ListenerType>
+    void UnbindEvents(ListenerType* listener)
     {
         std::erase_if(m_listeners, [&](auto const& pair) { return pair.second.first == listener; });
     }
 
-    template<typename T>
-    void UnbindEvent(EventID id, T* listener)
+    template<typename ListenerType>
+    void UnbindEvent(EventID id, ListenerType* listener)
     {
         std::erase_if(m_listeners, [&](auto const& pair) { return pair.first == id and pair.second.first == listener; });
     }
 
-    void InvokeEvent(Event const& event);
+    template<typename EventType>
+        requires std::derived_from<EventType, Event>
+    void InvokeEvent(EventType const& eventArgs)
+    {
+        auto range = m_listeners.equal_range(eventArgs.eventID);
+        for (auto&& [eventID, functionPair] : std::ranges::subrange(range.first, range.second))
+            functionPair.second(std::make_any<EventType>(eventArgs));
+    }
 
-    template<typename T>
-        requires std::derived_from<T, Event>
-    void QueueEvent(T const& event)
+    template<typename EventType>
+        requires std::derived_from<EventType, Event>
+    void QueueEvent(EventType const& event)
     {
         auto range = m_listeners.equal_range(event.eventID);
-        for(auto&& [key, value] : std::ranges::subrange(range.first, range.second))
-        {
-            m_queuedEvents.emplace(std::make_unique<T>(event), value.second);
-        }
+        for (auto&& [evenID, functionPair] : std::ranges::subrange(range.first, range.second))
+            m_queuedEvents.emplace(std::make_any<EventType>(event), functionPair.second);
     }
 
     void ExecuteQueuedEvents();
 
 private:
     // What if object gets deleted before event can fire?
-    std::queue<std::pair<std::unique_ptr<Event>, EventCallback>> m_queuedEvents;
+    std::queue<std::pair<std::any, EventCallback>> m_queuedEvents;
 
     std::unordered_multimap<EventID, std::pair<void*, EventCallback>> m_listeners;
 };

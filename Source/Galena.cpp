@@ -133,7 +133,7 @@ void Galena::RunOneFrame()
 
     while (m_lag >= m_fixed_time_step)
     {
-        Locator::Get<SceneManager>().FixedUpdate(deltaTime);
+        Locator::Get<SceneManager>().FixedUpdate(m_fixed_time_step);
         m_lag -= m_fixed_time_step;
     }
 
