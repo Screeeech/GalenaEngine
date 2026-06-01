@@ -15,9 +15,16 @@ using CollisionCallback = std::function<void(Collider const&)>;
 class Collider : public Renderable
 {
 public:
-    explicit Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t collisionMasksBits, std::vector<CollisionCallback>&& callbacks);
+    explicit Collider(
+        GameObject* pOwner,
+        uint32_t collisionLayersBits,
+        uint32_t collisionMasksBits,
+        std::vector<CollisionCallback>&& callbacks,
+        bool active = true);
 
-    void Collide(Collider const& other) const;
+    void Collide(Collider const& collider) const;
+    void Enable();
+    void Disable();
 
     enum class Bits : uint32_t
     {
@@ -59,6 +66,7 @@ protected:
     void OnActivate() override;
     void OnDeactivate() override;
 
+    bool m_active{ true };
     uint32_t m_collisionLayers;
     uint32_t m_collisionMasks;
     std::vector<CollisionCallback> m_callbacks;

@@ -18,7 +18,8 @@ public:
         uint32_t collisionMasksBits,
         std::vector<CollisionCallback>&& callbacks,
         glm::vec2 position,
-        glm::vec2 size);
+        glm::vec2 size,
+        bool active = true);
 
 protected:
     void OnActivate() override;

@@ -15,8 +15,9 @@ CollisionRect::CollisionRect(
     uint32_t collisionMasksBits,
     std::vector<CollisionCallback>&& callbacks,
     glm::vec2 position,
-    glm::vec2 size)
-    : Collider(pOwner, collisionLayersBits, collisionMasksBits, std::move(callbacks))
+    glm::vec2 size,
+    bool active)
+    : Collider(pOwner, collisionLayersBits, collisionMasksBits, std::move(callbacks), active)
     , m_position(position)
     , m_size(size)
 {
@@ -37,9 +38,12 @@ void CollisionRect::OnDeactivate()
 }
 void CollisionRect::FixedUpdate(float /*fixedDeltaTime*/)
 {
+    if (not m_active)
+        return;
+
     for (auto const* collider : m_registeredColliders)
     {
-        if (collider == this)
+        if (collider == this or not collider->m_active)
             continue;
 
         if (m_collisionMasks & collider->m_collisionLayers)
@@ -50,6 +54,9 @@ void CollisionRect::FixedUpdate(float /*fixedDeltaTime*/)
 
 void CollisionRect::Render()
 {
+    if (not m_active)
+        return;
+
     auto const& renderer = Locator::Get<Renderer>();
     auto const worldPosition = m_pOwner->GetWorldPosition();
 
