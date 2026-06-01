@@ -18,14 +18,8 @@ Collider::Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t co
 
 void Collider::Collide(Collider const& collider) const
 {
-    // if (m_collisionLayers | collider.m_collisionMasks)
-    OnCollide();
-}
-
-void Collider::OnCollide() const
-{
     for (auto const& callback : m_callbacks)
-        callback(*this);
+        callback(collider);
 }
 
 void Collider::OnActivate()

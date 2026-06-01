@@ -26,6 +26,11 @@ void Scene::FixedUpdate(float deltaTime) const
     m_pRootObject->FixedUpdate(deltaTime);
 }
 
+void Scene::LateUpdate(float deltaTime) const
+{
+    m_pRootObject->LateUpdate(deltaTime);
+}
+
 void Scene::Render() const
 {
     for (auto* renderComponents : m_renderComponents)

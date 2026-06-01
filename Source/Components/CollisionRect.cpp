@@ -42,7 +42,7 @@ void CollisionRect::FixedUpdate(float /*fixedDeltaTime*/)
         if (collider == this)
             continue;
 
-        if (m_collisionLayers & collider->m_collisionMasks)
+        if (m_collisionMasks & collider->m_collisionLayers)
             if (IsColliding(*collider))
                 collider->Collide(*this);
     }

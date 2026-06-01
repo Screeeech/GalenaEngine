@@ -11,6 +11,7 @@ set(ENGINE_SOURCES
     "Source/Components/FpsComponent.cpp"
     "Source/Components/Sprite.cpp"
     "Source/Components/TextComponent.cpp"
+    "Source/Components/Timer.cpp"
     "Source/Components/UIComponent.cpp"
     "Source/Services/EventManager.cpp"
     "Source/Services/InputManager.cpp"

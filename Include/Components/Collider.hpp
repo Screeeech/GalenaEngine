@@ -1,5 +1,6 @@
 #ifndef GALENA_COLLIDER_HPP
 #define GALENA_COLLIDER_HPP
+
 #include <functional>
 #include <vector>
 
@@ -13,10 +14,8 @@ using CollisionCallback = std::function<void(Collider const&)>;
 
 class Collider : public Renderable
 {
-
 public:
-    explicit Collider(
-        GameObject* pOwner, uint32_t collisionLayersBits, uint32_t collisionMasksBits, std::vector<CollisionCallback>&& callbacks);
+    explicit Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t collisionMasksBits, std::vector<CollisionCallback>&& callbacks);
 
     void Collide(Collider const& other) const;
 
@@ -57,7 +56,6 @@ public:
     };
 
 protected:
-    void OnCollide() const;
     void OnActivate() override;
     void OnDeactivate() override;
 
@@ -68,4 +66,4 @@ protected:
 
 }  // namespace gla
 
-#endif  // BURGERTIME_COLLIDER_HPP
+#endif  // GALENA_COLLIDER_HPP

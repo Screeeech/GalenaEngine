@@ -36,6 +36,19 @@ void GameObject::FixedUpdate(float deltaTime) const
     }
 }
 
+void GameObject::LateUpdate(float deltaTime) const
+{
+    for (const auto& component : m_components)
+    {
+        component->LateUpdate(deltaTime);
+    }
+
+    for (const auto& children : m_children)
+    {
+        children->LateUpdate(deltaTime);
+    }
+}
+
 GameObject::~GameObject() noexcept
 {
     Deactivate();

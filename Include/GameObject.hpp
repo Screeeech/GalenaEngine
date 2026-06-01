@@ -24,6 +24,7 @@ class GameObject final
 public:
     void Update(float deltaTime) const;
     void FixedUpdate(float deltaTime) const;
+    void LateUpdate(float deltaTime) const;
 
     ~GameObject() noexcept;
 

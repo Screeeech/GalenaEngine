@@ -138,6 +138,7 @@ void Galena::RunOneFrame()
     }
 
     Locator::Get<SceneManager>().Update(deltaTime);
+    Locator::Get<SceneManager>().LateUpdate(deltaTime);
     Locator::Get<EventManager>().ExecuteQueuedEvents();
     Locator::Get<Renderer>().Render();
 }

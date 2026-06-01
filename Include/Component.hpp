@@ -42,6 +42,7 @@ protected:
     friend GameObject;
     virtual void Update(float /*deltaTime*/) {};
     virtual void FixedUpdate(float /*deltaTime*/) {};
+    virtual void LateUpdate(float /*deltaTime*/) {};
 private:
     void Activate()
     {
