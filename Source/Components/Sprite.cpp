@@ -30,9 +30,9 @@ void Sprite::Render()
     if (not m_texture or not m_Visible)
         return;
 
-    const auto& pos{ m_pOwner->GetWorldPosition() };
+    const auto& pos{ m_pOwner->GetWorldPosition() + m_offset };
 
-    Locator::Get<Renderer>().RenderTexture(*m_texture, pos.x, pos.y);
+    Locator::Get<Renderer>().RenderTexture(*m_texture, pos.x, pos.y, m_sourceRect);
 }
 
 void Sprite::SetTexture(std::shared_ptr<Texture2D> texture)
