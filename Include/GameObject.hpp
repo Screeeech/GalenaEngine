@@ -75,6 +75,7 @@ public:
     auto GetTransform() -> Transform&;
     auto GetParentWorldPosition() const -> glm::vec2;
     auto GetWorldPosition() -> glm::vec2;
+    auto GetLocalPosition() -> glm::vec2;
 
     auto CreateChild(float x, float y, std::string_view name = "new GameObject") -> GameObject*;
     auto DisownChild(GameObject* pChild) -> std::unique_ptr<GameObject>;

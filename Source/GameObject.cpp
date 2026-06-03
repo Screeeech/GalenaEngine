@@ -107,6 +107,11 @@ auto GameObject::GetWorldPosition() -> glm::vec2
     return GetTransform().GetWorldPosition();
 }
 
+auto GameObject::GetLocalPosition() -> glm::vec2
+{
+    return GetTransform().GetLocalPosition();
+}
+
 auto GameObject::CreateChild(float x, float y, std::string_view name) -> GameObject*
 {
     m_children.emplace_back(new GameObject(m_parentScene, x, y, name));

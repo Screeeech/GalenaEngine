@@ -22,11 +22,7 @@ public:
         std::vector<CollisionCallback>&& callbacks,
         bool active = true);
 
-    void Collide(Collider const& collider) const;
-    void Enable();
-    void Disable();
-
-    enum class Bits : uint32_t
+    enum Bits : uint32_t
     {
         Layer1 = 1U << 0,
         Layer2 = 1U << 1,
@@ -62,13 +58,17 @@ public:
         Layer32 = 1U << 31,
     };
 
+    void Collide(Collider const& collider) const;
+    void Enable();
+    void Disable();
+
+    uint32_t m_collisionLayers;
+    uint32_t m_collisionMasks;
 protected:
     void OnActivate() override;
     void OnDeactivate() override;
 
     bool m_active{ true };
-    uint32_t m_collisionLayers;
-    uint32_t m_collisionMasks;
     std::vector<CollisionCallback> m_callbacks;
 };
 
