@@ -77,7 +77,7 @@ public:
     auto GetWorldPosition() -> glm::vec2;
     auto GetLocalPosition() -> glm::vec2;
 
-    auto CreateChild(float x, float y, std::string_view name = "new GameObject") -> GameObject*;
+    auto CreateChild(float x, float y, std::string const& name = "new GameObject") -> GameObject*;
     auto DisownChild(GameObject* pChild) -> std::unique_ptr<GameObject>;
     auto RemoveChild(GameObject* pChild) -> bool;
     void Reparent(GameObject* pParent, bool keepWorldPosition = true);
@@ -86,7 +86,7 @@ public:
     void SetDirty();
 
     // For testing purposes
-    std::string_view m_name;
+    std::string m_name;
 
 
     GameObject(GameObject const& other) = delete;
