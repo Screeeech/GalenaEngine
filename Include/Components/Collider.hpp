@@ -4,13 +4,14 @@
 #include <functional>
 #include <vector>
 
+#include "Events.hpp"
 #include "Renderable.hpp"
 
 namespace gla
 {
 
 class Collider;
-using CollisionCallback = std::function<void(Collider const&)>;
+using CollisionCallback = std::function<void(Collider&, Collider&)>;
 
 class Collider : public Renderable
 {
@@ -19,7 +20,14 @@ public:
         GameObject* pOwner,
         uint32_t collisionLayersBits,
         uint32_t collisionMasksBits,
-        std::vector<CollisionCallback>&& callbacks,
+        EventID eventID,
+        bool active = true);
+
+    explicit Collider(
+        GameObject* pOwner,
+        uint32_t collisionLayersBits,
+        uint32_t collisionMasksBits,
+        CollisionCallback const& callback,
         bool active = true);
 
     enum Bits : uint32_t
@@ -58,7 +66,7 @@ public:
         Layer32 = 1U << 31,
     };
 
-    void Collide(Collider const& collider) const;
+    void Collide(Collider& collider, Collider& other) const;
     void Enable();
     void Disable();
 
@@ -69,7 +77,7 @@ protected:
     void OnDeactivate() override;
 
     bool m_active{ true };
-    std::vector<CollisionCallback> m_callbacks;
+    std::variant<CollisionCallback, EventID> m_trigger;
 };
 
 }  // namespace gla

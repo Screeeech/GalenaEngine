@@ -4,23 +4,35 @@
 #include <ranges>
 
 #include "Components/Animation.hpp"
+#include "Services/EventManager.hpp"
 
 namespace gla
 {
 
-Collider::Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t collisionMasksBits, std::vector<CollisionCallback>&& callbacks, bool active)
+Collider::Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t collisionMasksBits, EventID eventID, bool active)
     : Renderable(pOwner, 5)
-    , m_active(active)
     , m_collisionLayers(collisionLayersBits)
     , m_collisionMasks(collisionMasksBits)
-    , m_callbacks(std::move(callbacks))
+    , m_active(active)
+    , m_trigger(eventID)
 {
 }
 
-void Collider::Collide(Collider const& collider) const
+Collider::Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t collisionMasksBits, CollisionCallback const& callback, bool active)
+    : Renderable(pOwner, 5)
+    , m_collisionLayers(collisionLayersBits)
+    , m_collisionMasks(collisionMasksBits)
+    , m_active(active)
+    , m_trigger(callback)
 {
-    for (auto const& callback : m_callbacks)
-        callback(collider);
+}
+
+void Collider::Collide(Collider& collider, Collider& other) const
+{
+    if (std::holds_alternative<EventID>(m_trigger))
+        Locator::Get<EventManager>().InvokeEvent(CollisionEvent{ std::get<EventID>(m_trigger), &collider, &other });
+    else
+        std::get<CollisionCallback>(m_trigger)(collider, other);
 }
 
 void Collider::Enable()

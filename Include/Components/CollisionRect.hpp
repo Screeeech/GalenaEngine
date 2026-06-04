@@ -16,7 +16,15 @@ public:
         GameObject* pOwner,
         uint32_t collisionLayersBits,
         uint32_t collisionMasksBits,
-        std::vector<CollisionCallback>&& callbacks,
+        EventID eventID,
+        glm::vec2 position,
+        glm::vec2 size,
+        bool active = true);
+    explicit CollisionRect(
+        GameObject* pOwner,
+        uint32_t collisionLayersBits,
+        uint32_t collisionMasksBits,
+        CollisionCallback const& callback,
         glm::vec2 position,
         glm::vec2 size,
         bool active = true);

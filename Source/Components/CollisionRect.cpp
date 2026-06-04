@@ -12,11 +12,24 @@ CollisionRect::CollisionRect(
     GameObject* pOwner,
     uint32_t collisionLayersBits,
     uint32_t collisionMasksBits,
-    std::vector<CollisionCallback>&& callbacks,
+    EventID eventID,
     glm::vec2 position,
     glm::vec2 size,
     bool active)
-    : Collider(pOwner, collisionLayersBits, collisionMasksBits, std::move(callbacks), active)
+    : Collider(pOwner, collisionLayersBits, collisionMasksBits, eventID, active)
+    , m_position(position)
+    , m_size(size)
+{
+}
+CollisionRect::CollisionRect(
+    GameObject* pOwner,
+    uint32_t collisionLayersBits,
+    uint32_t collisionMasksBits,
+    CollisionCallback const& callback,
+    glm::vec2 position,
+    glm::vec2 size,
+    bool active)
+    : Collider(pOwner, collisionLayersBits, collisionMasksBits, callback, active)
     , m_position(position)
     , m_size(size)
 {
@@ -40,14 +53,14 @@ void CollisionRect::FixedUpdate(float /*fixedDeltaTime*/)
     if (not m_active)
         return;
 
-    for (auto const* collider : m_registeredColliders)
+    for (auto* collider : m_registeredColliders)
     {
         if (collider == this or not collider->m_active)
             continue;
 
         if (m_collisionMasks & collider->m_collisionLayers)
             if (IsColliding(*collider))
-                collider->Collide(*this);
+                collider->Collide(*collider, *this);
     }
 }
 

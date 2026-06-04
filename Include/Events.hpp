@@ -7,6 +7,7 @@ using EventID = uint32_t;
 
 namespace gla
 {
+class Collider;
 
 struct Event
 {
@@ -31,6 +32,21 @@ struct PlayerEvent : Event
     }
 
     int playerIndex;
+};
+
+struct CollisionEvent : Event
+{
+    ~CollisionEvent() override = default;
+
+    explicit CollisionEvent(EventID id, Collider* pCollider, Collider* pOtherCollider)
+        : Event(id)
+        , pCollider(pCollider)
+        , pOtherCollider(pOtherCollider)
+    {
+    }
+
+    Collider* pCollider;
+    Collider* pOtherCollider;
 };
 
 struct HealthEvent : PlayerEvent
