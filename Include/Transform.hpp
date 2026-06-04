@@ -22,7 +22,6 @@ public:
     [[nodiscard]] auto GetWorldPosition() -> glm::vec2;
 
     void UpdateWorldPosition();
-    void ApplyInverseTransform(const Transform& parentTransform);
 
     bool isDirty{ true };
 

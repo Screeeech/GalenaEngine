@@ -26,12 +26,12 @@ public:
     Component(Component&&) = delete;
     auto operator=(Component&&) -> Component& = delete;
 
+    GameObject* const m_pOwner;
 protected:
     explicit Component(GameObject* pOwner)
         : m_pOwner(pOwner)
     {
     }
-    GameObject* const m_pOwner;
 
     bool m_active{ false };
     virtual void OnActivate() {}

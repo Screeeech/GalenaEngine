@@ -38,6 +38,8 @@ public:
 
     void SortCachedRenderComponents() const;
 
+    void ExecuteReparentingQueue() const;
+
 private:
     std::vector<std::unique_ptr<Scene>> m_scenes;
     Scene* m_currentScene{};

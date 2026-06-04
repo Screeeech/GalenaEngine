@@ -1,11 +1,12 @@
 #include "GameObject.hpp"
 
 #include <algorithm>
+#include <print>
 #include <ranges>
 #include <utility>
 
-#include "Services/ResourceManager.hpp"
 #include "Scene.hpp"
+#include "Services/ResourceManager.hpp"
 
 namespace gla
 {
@@ -162,38 +163,60 @@ bool GameObject::RemoveChild(GameObject* pChild)
 
     return false;
 }
-
-void GameObject::Reparent(GameObject* pParent, bool keepWorldPosition)
+void GameObject::QueueReparent(GameObject& newParent, bool keepWorldPosition)
 {
-    // Is the parent valid?
-    if (IsChild(pParent) or pParent == this or pParent == m_pParent or m_parentScene != pParent->m_parentScene)
+    if (m_pParent == nullptr)
+    {
+        std::println("Warning! cannot reparent the scene root object");
         return;
+    }
+    if (IsChild(newParent))
+    {
+        std::println("Warning! GameObject is already a child of the given parent");
+        return;
+    }
+    if (&newParent == this)
+    {
+        std::println("Warning! Cannot reparent GameObject to itself");
+        return;
+    }
+    if (&newParent == m_pParent)
+    {
+        std::println("Warning! GameObject is already parented to this parent");
+        return;
+    }
+    if (m_parentScene != newParent.m_parentScene)
+    {
+        std::println("Warning! Cannot reparent GameObject to a GameObject of a different scene");
+        return;
+    }
 
+    m_parentScene.QueueReparent(*this, newParent, keepWorldPosition);
+}
+
+void GameObject::Reparent(GameObject& newParent, bool keepWorldPosition)
+{
     // Is parent root?
-    if (not pParent->m_pParent)  // Then set local pos to world pos
+    if (not newParent.m_pParent)  // Then set local pos to world pos
     {
         m_transform.SetLocalPosition(m_transform.GetWorldPosition());
     }
     else  // If it isn't root, then check if we need to keep the world position
     {
         if (keepWorldPosition)
-            m_transform.ApplyInverseTransform(pParent->GetTransform());
+            m_transform.SetLocalPosition(GetWorldPosition() - newParent.GetWorldPosition());
         else
             SetDirty();
     }
 
-    std::unique_ptr<GameObject> self{ this };
-
     // Remove the object itself from the current parent's list of children
-    if (m_pParent)
-        self = m_pParent->DisownChild(this);
+    std::unique_ptr<GameObject> self = m_pParent->DisownChild(this);
 
     // Set new parent
-    m_pParent = pParent;
+    m_pParent = &newParent;
 
     // Add this as a new child to parent's list of children
-    if (m_pParent)
-        m_pParent->AddChild(std::move(self));
+    m_pParent->AddChild(std::move(self));
 }
 
 void GameObject::SetDirty()
@@ -215,19 +238,15 @@ GameObject::GameObject(Scene& parentScene, float x, float y, std::string_view na
 
 void GameObject::AddChild(std::unique_ptr<GameObject> pChild)
 {
-    if (not pChild or pChild.get() == this or IsChild(pChild.get()))
+    if (not pChild or pChild.get() == this or IsChild(*pChild))
         return;
 
-    // Is this a good way of moving ownership?
     m_children.push_back(std::move(pChild));
 }
 
-auto GameObject::IsChild(GameObject* pChild) -> bool
+auto GameObject::IsChild(GameObject& pChild) -> bool
 {
-    if (not pChild or pChild == this)
-        return false;
-
-    const auto it = std::ranges::find(m_children, pChild, [](const auto& child) { return child.get(); });
+    const auto it = std::ranges::find(m_children, &pChild, [](auto const& child) { return child.get(); });
     return it != m_children.end();
 }
 

@@ -129,7 +129,7 @@ void Galena::RunOneFrame()
 #if USE_STEAMWORKS
     SteamAPI_RunCallbacks();
 #endif
-    m_quit = !Locator::Get<InputManager>().ProcessInput();
+    m_quit = not Locator::Get<InputManager>().ProcessInput();
 
     while (m_lag >= m_fixed_time_step)
     {
@@ -140,6 +140,7 @@ void Galena::RunOneFrame()
     Locator::Get<SceneManager>().Update(deltaTime);
     Locator::Get<SceneManager>().LateUpdate(deltaTime);
     Locator::Get<EventManager>().ExecuteQueuedEvents();
+    Locator::Get<SceneManager>().ExecuteReparentingQueue();
     Locator::Get<Renderer>().Render();
 }
 

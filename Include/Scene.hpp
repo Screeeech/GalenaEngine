@@ -2,6 +2,7 @@
 #define GALENA_SCENE_HPP
 
 #include <memory>
+#include <queue>
 #include <vector>
 
 namespace gla
@@ -25,6 +26,10 @@ public:
     void Unload() const;
 
     auto IsActive() const -> bool;
+
+    void QueueReparent(GameObject& child, GameObject& newParent, bool keepWorldPosition);
+    void ExecuteReparentingQueue();
+
     void RegisterRenderComponent(Renderable* renderable);
     void UnregisterRenderComponent(Renderable* component);
     void RegisterUIComponent(UIComponent* component);
@@ -42,6 +47,15 @@ private:
     std::unique_ptr<GameObject> m_pRootObject;
     std::vector<Renderable*> m_renderComponents;
     std::vector<UIComponent*> m_uiComponents;
+
+    struct ReparentOperation final
+    {
+        GameObject& child;
+        GameObject& newParent;
+        bool keepWorldPosition;
+    };
+
+    std::queue<ReparentOperation> m_reparentQueue;
 };
 
 }  // namespace gla

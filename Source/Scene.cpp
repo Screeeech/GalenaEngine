@@ -58,9 +58,27 @@ void Scene::Unload() const
     m_pRootObject->Deactivate();
 }
 
+
 auto Scene::IsActive() const -> bool
 {
     return Locator::Get<SceneManager>().GetActiveScene() == this;
+}
+
+void Scene::QueueReparent(GameObject& child, GameObject& newParent, bool keepWorldPosition)
+{
+    m_reparentQueue.emplace(child, newParent, keepWorldPosition);
+}
+
+void Scene::ExecuteReparentingQueue()
+{
+    while(not m_reparentQueue.empty())
+    {
+        auto const& [child, newParent, keepWorldPosition] = m_reparentQueue.front();
+
+        child.Reparent(newParent, keepWorldPosition);
+
+        m_reparentQueue.pop();
+    }
 }
 
 void Scene::RegisterRenderComponent(Renderable* renderable)

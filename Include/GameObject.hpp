@@ -80,7 +80,7 @@ public:
     auto CreateChild(float x, float y, std::string const& name = "new GameObject") -> GameObject*;
     auto DisownChild(GameObject* pChild) -> std::unique_ptr<GameObject>;
     auto RemoveChild(GameObject* pChild) -> bool;
-    void Reparent(GameObject* pParent, bool keepWorldPosition = true);
+    void QueueReparent(GameObject& newParent, bool keepWorldPosition = true);
 
     // Recursive function
     void SetDirty();
@@ -98,9 +98,10 @@ private:
     // So the constructor is private
     friend class Scene;
     explicit GameObject(Scene& parentScene, float x, float y, std::string_view name = "new GameObject");
+    void Reparent(GameObject& newParent, bool keepWorldPosition = true);
 
     void AddChild(std::unique_ptr<GameObject> pChild);
-    auto IsChild(GameObject* pChild) -> bool;
+    auto IsChild(GameObject& pChild) -> bool;
 
     bool m_active{ false };
 
@@ -110,6 +111,12 @@ private:
 
     std::vector<std::unique_ptr<Component>> m_components;
     Transform m_transform;
+
+    // TODO:
+    // Create a component handler for my transforms, this will hold an ID for the component and a cached pointer
+    // I will try to overload the derefence operators to be able to easily use it and use the dirty flag pattern to try
+    // and figure out when I need to reacquire the pointer to the component
+    // this way I will be able to safely hold the reference without it becoming dangling at any point
 };
 
 template<typename ObjectType>

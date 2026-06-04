@@ -72,9 +72,4 @@ void Transform::UpdateWorldPosition()
     isDirty = false;
 }
 
-void Transform::ApplyInverseTransform(const Transform& parentTransform)
-{
-    m_worldPosition -= parentTransform.m_worldPosition;
-}
-
 }  // namespace gla

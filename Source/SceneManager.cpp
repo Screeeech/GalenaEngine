@@ -118,4 +118,12 @@ void SceneManager::SortCachedRenderComponents() const
     m_currentScene->SortCachedRenderComponents();
 }
 
+void SceneManager::ExecuteReparentingQueue() const
+{
+    if (not m_currentScene)
+        return;
+
+    m_currentScene->ExecuteReparentingQueue();
+}
+
 }  // namespace gla
