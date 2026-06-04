@@ -31,8 +31,8 @@ public:
     EventManager(EventManager&&) = delete;
     auto operator=(EventManager&&) -> EventManager& = delete;
 
-    template<typename ListenerType>
-    void BindEvent(EventID id, ListenerType* listener, void (ListenerType::*callback)(std::any const&))
+    template<typename ListenerType, typename MemFn>
+    void BindEvent(EventID id, ListenerType* listener, MemFn callback)
     {
         m_listeners.emplace(id, std::pair{ listener, std::bind_front(callback, listener) });
     }
