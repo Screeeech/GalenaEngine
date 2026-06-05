@@ -31,7 +31,7 @@ void Animation::Update()
     }
 
     m_elapsedTime += Time::Get().DeltaTime();
-    while (m_elapsedTime >= frame->duration)
+    while (m_elapsedTime >= frame->duration and m_playing)
     {
         m_elapsedTime -= frame->duration;
         AdvanceFrame();
@@ -132,9 +132,15 @@ void Animation::AdvanceFrame()
     ++m_frameIndex;
     if (m_frameIndex >= m_animations.at(m_currentAnimation).size())
     {
-        m_frameIndex = 0;
         if (not m_looping)
+        {
             m_playing = false;
+            --m_frameIndex;
+        }
+        else
+        {
+            m_frameIndex = 0;
+        }
     }
 }
 
