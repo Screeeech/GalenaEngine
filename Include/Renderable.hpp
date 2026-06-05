@@ -3,7 +3,7 @@
 
 #include "Component.hpp"
 #include "Locator.hpp"
-#include "SceneManager.hpp"
+#include "Services/SceneManager.hpp"
 
 namespace gla
 {

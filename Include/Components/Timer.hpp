@@ -19,7 +19,7 @@ public:
     [[nodiscard]] auto IsFinished() const -> bool;
 
 protected:
-    void LateUpdate(float deltaTime) override;
+    void LateUpdate() override;
 
 private:
     bool m_running{};

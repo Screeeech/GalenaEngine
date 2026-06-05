@@ -14,14 +14,13 @@
 #include <vector>
 
 #include "Command.hpp"
-#include "Singleton.hpp"
 
 namespace gla
 {
 using ActionID = uint32_t;
 
 template<typename InputDataType>
-concept InputConcept = std::same_as<InputDataType, SDL_Scancode> || std::same_as<InputDataType, SDL_GamepadButton>;
+concept InputConcept = std::same_as<InputDataType, SDL_Scancode> or std::same_as<InputDataType, SDL_GamepadButton>;
 
 struct Input
 {

@@ -32,7 +32,7 @@ public:
 protected:
     void OnActivate() override;
     void OnDeactivate() override;
-    void FixedUpdate(float fixedDeltaTime) override;
+    void FixedUpdate() override;
     void Render() override;
 
 private:

@@ -24,8 +24,7 @@ public:
 private:
     bool m_quit{};
     float m_lag{};
-    float m_fixed_time_step;
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_lastTime;
+    float m_fixedTimeStep;
 };
 
 }  // namespace gla

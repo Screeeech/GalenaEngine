@@ -41,7 +41,7 @@ void TextComponent::OnActivate()
     m_pRenderComponent->SetTexture(m_TextTexture);
 }
 
-void TextComponent::Update(float /*deltaTime*/)
+void TextComponent::Update()
 {
     if (not m_Text.empty() and not m_NeedsUpdate)
         return;

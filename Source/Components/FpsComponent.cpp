@@ -4,6 +4,7 @@
 
 #include "Components/TextComponent.hpp"
 #include "GameObject.hpp"
+#include "Time.hpp"
 
 namespace gla
 {
@@ -16,9 +17,9 @@ FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_C
     m_pTextComponent = m_pOwner->AddComponent<TextComponent>("FPS: ", std::move(m_font), 999, m_color);
 }
 
-void FpsComponent::Update(float deltaTime)
+void FpsComponent::Update()
 {
-    m_elapsedTime += deltaTime;
+    m_elapsedTime += Time::Get().DeltaTime();
     ++m_frameCount;
 
     if (m_elapsedTime >= 1.f)

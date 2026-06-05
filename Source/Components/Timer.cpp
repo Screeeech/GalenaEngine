@@ -1,5 +1,7 @@
 #include "Components/Timer.hpp"
 
+#include "Time.hpp"
+
 namespace gla
 {
 
@@ -42,12 +44,12 @@ auto Timer::IsFinished() const -> bool
    return m_elapsedTime >= m_timeLimit;
 }
 
-void Timer::LateUpdate(float deltaTime)
+void Timer::LateUpdate()
 {
     if (not m_running)
         return;
 
-    m_elapsedTime += deltaTime;
+    m_elapsedTime += Time::Get().DeltaTime();
 
     if (m_elapsedTime >= m_timeLimit)
         m_running = false;

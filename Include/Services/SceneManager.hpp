@@ -4,9 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include "Scene.hpp"
-#include "Singleton.hpp"
 #include "GameObject.hpp"
+#include "Scene.hpp"
 
 namespace gla
 {
@@ -21,9 +20,9 @@ class SceneManager final
 public:
     auto CreateScene() -> Scene&;
 
-    void Update(float deltaTime) const;
-    void FixedUpdate(float deltaTime) const;
-    void LateUpdate(float deltaTime) const;
+    void Update() const;
+    void FixedUpdate() const;
+    void LateUpdate() const;
     void Render() const;
     void DrawUI() const;
 

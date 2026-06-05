@@ -2,6 +2,7 @@
 #include "Services/ISound.hpp"
 #include "Services/SoundNull.hpp"
 #include "Services/SoundService.hpp"
+#include "Time.hpp"
 #if USE_STEAMWORKS
 #include <steam_api.h>
 #endif
@@ -13,15 +14,14 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "Services/SceneManager.hpp"
 #include "Events.hpp"
 #include "Galena.hpp"
-#include "SceneManager.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/Renderer.hpp"
-#include "Services/SoundNull.hpp"
 #include "Services/ResourceManager.hpp"
-#include "SceneManager.hpp"
+#include "Services/SoundNull.hpp"
 
 SDL_Window* g_window{};
 
@@ -53,8 +53,7 @@ namespace gla
 {
 
 Galena::Galena(std::string const& windowName, int fixedUpdateFrameCap)
-    : m_fixed_time_step(fixedUpdateFrameCap == 0 ? 0.f : 1.f / static_cast<float>(fixedUpdateFrameCap))
-    , m_lastTime(std::chrono::high_resolution_clock::now())
+    : m_fixedTimeStep(fixedUpdateFrameCap == 0 ? 0.f : 1.f / static_cast<float>(fixedUpdateFrameCap))
 {
     PrintSDLVersion();
 
@@ -121,24 +120,24 @@ void Galena::Run(std::function<void()> const& load)
 
 void Galena::RunOneFrame()
 {
-    auto const now{ std::chrono::high_resolution_clock::now() };
-    float const deltaTime{ std::chrono::duration<float>(now - m_lastTime).count() };
-    m_lastTime = now;
-    m_lag += deltaTime;
+    auto& time = Time::Get();
+
+    time.Update(m_fixedTimeStep);
+    m_lag += time.DeltaTime();
 
 #if USE_STEAMWORKS
     SteamAPI_RunCallbacks();
 #endif
     m_quit = not Locator::Get<InputManager>().ProcessInput();
 
-    while (m_lag >= m_fixed_time_step)
+    while (m_lag >= m_fixedTimeStep)
     {
-        Locator::Get<SceneManager>().FixedUpdate(m_fixed_time_step);
-        m_lag -= m_fixed_time_step;
+        Locator::Get<SceneManager>().FixedUpdate();
+        m_lag -= m_fixedTimeStep;
     }
 
-    Locator::Get<SceneManager>().Update(deltaTime);
-    Locator::Get<SceneManager>().LateUpdate(deltaTime);
+    Locator::Get<SceneManager>().Update();
+    Locator::Get<SceneManager>().LateUpdate();
     Locator::Get<EventManager>().ExecuteQueuedEvents();
     Locator::Get<SceneManager>().ExecuteReparentingQueue();
     Locator::Get<Renderer>().Render();

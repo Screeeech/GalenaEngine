@@ -1,33 +1,33 @@
-#include "SceneManager.hpp"
+#include "Services/SceneManager.hpp"
 
-#include "Scene.hpp"
 #include "GameObject.hpp"
+#include "Scene.hpp"
 
 namespace gla
 {
 
-void SceneManager::Update(float deltaTime) const
+void SceneManager::Update() const
 {
     if (not m_currentScene)
         return;
 
-    m_currentScene->Update(deltaTime);
+    m_currentScene->Update();
 }
 
-void SceneManager::FixedUpdate(float deltaTime) const
+void SceneManager::FixedUpdate() const
 {
     if (not m_currentScene)
         return;
 
-    m_currentScene->FixedUpdate(deltaTime);
+    m_currentScene->FixedUpdate();
 }
 
-void SceneManager::LateUpdate(float deltaTime) const
+void SceneManager::LateUpdate() const
 {
     if (not m_currentScene)
         return;
 
-    m_currentScene->LateUpdate(deltaTime);
+    m_currentScene->LateUpdate();
 }
 
 void SceneManager::Render() const

@@ -17,14 +17,15 @@ set(ENGINE_SOURCES
     "Source/Services/InputManager.cpp"
     "Source/Services/Renderer.cpp"
     "Source/Services/ResourceManager.cpp"
+    "Source/Services/SceneManager.cpp"
     "Source/Services/SoundService.cpp"
     "Source/Font.cpp"
     "Source/GameObject.cpp"
     "Source/Galena.cpp"
     "Source/Scene.cpp"
-    "Source/SceneManager.cpp"
     "Source/Texture2D.cpp"
     "Source/Transform.cpp"
+    "Source/Time.cpp"
 
     # Add an if statement later on to switch between implementations
     "Source/Services/Sound_MixerImpl.cpp"

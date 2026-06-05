@@ -11,42 +11,42 @@
 namespace gla
 {
 
-void GameObject::Update(float deltaTime) const
+void GameObject::Update() const
 {
     for (const auto& component : m_components)
     {
-        component->Update(deltaTime);
+        component->Update();
     }
 
     for (const auto& children : m_children)
     {
-        children->Update(deltaTime);
+        children->Update();
     }
 }
 
-void GameObject::FixedUpdate(float deltaTime) const
+void GameObject::FixedUpdate() const
 {
     for (const auto& component : m_components)
     {
-        component->FixedUpdate(deltaTime);
+        component->FixedUpdate();
     }
 
     for (const auto& children : m_children)
     {
-        children->FixedUpdate(deltaTime);
+        children->FixedUpdate();
     }
 }
 
-void GameObject::LateUpdate(float deltaTime) const
+void GameObject::LateUpdate() const
 {
     for (const auto& component : m_components)
     {
-        component->LateUpdate(deltaTime);
+        component->LateUpdate();
     }
 
     for (const auto& children : m_children)
     {
-        children->LateUpdate(deltaTime);
+        children->LateUpdate();
     }
 }
 

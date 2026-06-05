@@ -8,8 +8,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "Services/SceneManager.hpp"
 #include "Locator.hpp"
-#include "SceneManager.hpp"
 #include "Texture2D.hpp"
 
 namespace gla

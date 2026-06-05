@@ -22,9 +22,9 @@ class Texture2D;
 class GameObject final
 {
 public:
-    void Update(float deltaTime) const;
-    void FixedUpdate(float deltaTime) const;
-    void LateUpdate(float deltaTime) const;
+    void Update() const;
+    void FixedUpdate() const;
+    void LateUpdate() const;
 
     ~GameObject() noexcept;
 

@@ -25,7 +25,7 @@ public:
 protected:
     void OnActivate() override;
 
-    void Update(float deltaTime) override;
+    void Update() override;
 private:
     std::shared_ptr<Font> m_Font;
     std::shared_ptr<Texture2D> m_TextTexture;

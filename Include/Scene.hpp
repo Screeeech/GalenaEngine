@@ -16,9 +16,9 @@ class Scene final
 {
 public:
     void RemoveGameObject(GameObject* pObject) const;
-    void Update(float deltaTime) const;
-    void FixedUpdate(float deltaTime) const;
-    void LateUpdate(float deltaTime) const;
+    void Update() const;
+    void FixedUpdate() const;
+    void LateUpdate() const;
     void Render() const;
     void DrawUI() const;
 

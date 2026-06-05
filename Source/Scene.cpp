@@ -16,19 +16,19 @@ void Scene::RemoveGameObject(GameObject* pObject) const
     m_pRootObject->RemoveChild(pObject);
 }
 
-void Scene::Update(float deltaTime) const
+void Scene::Update() const
 {
-    m_pRootObject->Update(deltaTime);
+    m_pRootObject->Update();
 }
 
-void Scene::FixedUpdate(float deltaTime) const
+void Scene::FixedUpdate() const
 {
-    m_pRootObject->FixedUpdate(deltaTime);
+    m_pRootObject->FixedUpdate();
 }
 
-void Scene::LateUpdate(float deltaTime) const
+void Scene::LateUpdate() const
 {
-    m_pRootObject->LateUpdate(deltaTime);
+    m_pRootObject->LateUpdate();
 }
 
 void Scene::Render() const

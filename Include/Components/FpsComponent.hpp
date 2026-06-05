@@ -25,7 +25,7 @@ public:
     auto operator=(FpsComponent&&) -> FpsComponent = delete;
 
 protected:
-    void Update(float deltaTime) override;
+    void Update() override;
 
 private:
     std::shared_ptr<Font> m_font;

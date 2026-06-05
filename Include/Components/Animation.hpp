@@ -8,6 +8,8 @@
 #include "Renderable.hpp"
 #include "Texture2D.hpp"
 
+using AnimationID = uint32_t;
+
 namespace gla
 {
 
@@ -45,12 +47,13 @@ public:
     ~Animation() noexcept override = default;
 
     void SetPlaying(bool playing);
+    auto IsPlaying() const -> bool;
 
     auto AddSpriteSheet(std::shared_ptr<Texture2D> const& texture, int cols, int rows) -> SpriteSheet&;
-    void AddAnimation(uint32_t animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData);
+    void AddAnimation(AnimationID animationID, SpriteSheet& spriteSheet, std::initializer_list<FrameData> frameData);
 
-    void SetAnimation(uint32_t animationID, bool startPlaying = false);
-    void SetFrame(uint32_t frameIndex, bool startPlaying = false);
+    void SetAnimation(AnimationID animationID, bool startPlaying = false, bool looping = true);
+    void SetFrame(AnimationID frameIndex, bool startPlaying = false, bool looping = true);
 
     Animation(Animation const&) = delete;
     auto operator=(Animation const&) -> Animation& = delete;
@@ -58,7 +61,7 @@ public:
     auto operator=(Animation&&) -> Animation& = delete;
 
 protected:
-    void Update(float deltaTime) override;
+    void Update() override;
     void Render() override;
 
 private:
@@ -69,9 +72,10 @@ private:
     std::unordered_map<uint32_t, std::vector<Frame>> m_animations;
 
     float m_elapsedTime{};
-    uint32_t m_currentAnimation{};
+    AnimationID m_currentAnimation{};
     size_t m_frameIndex{};
     bool m_playing{};
+    bool m_looping{ true };
 };
 
 }  // namespace gla

@@ -48,7 +48,8 @@ void CollisionRect::OnDeactivate()
 
     std::erase_if(m_registeredColliders, [this](auto* other) -> bool { return other == this; });
 }
-void CollisionRect::FixedUpdate(float /*fixedDeltaTime*/)
+
+void CollisionRect::FixedUpdate()
 {
     if (not m_active)
         return;

@@ -40,9 +40,9 @@ protected:
 
     // I prefer not being able to call Update on my components from any other place, other than the GameObject updating them
     friend GameObject;
-    virtual void Update(float /*deltaTime*/) {};
-    virtual void FixedUpdate(float /*deltaTime*/) {};
-    virtual void LateUpdate(float /*deltaTime*/) {};
+    virtual void Update() {};
+    virtual void FixedUpdate() {};
+    virtual void LateUpdate() {};
 private:
     void Activate()
     {

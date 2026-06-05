@@ -2,9 +2,9 @@
 
 #include <utility>
 
+#include "Services/SceneManager.hpp"
 #include "GameObject.hpp"
 #include "Locator.hpp"
-#include "SceneManager.hpp"
 
 namespace gla
 {
