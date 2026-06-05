@@ -55,9 +55,14 @@ void Collider::ClearCollisionMask(uint32_t masks)
 void Collider::Collide(Collider& collider, Collider& other) const
 {
     if (std::holds_alternative<EventID>(m_trigger))
-        Locator::Get<EventManager>().InvokeEvent(CollisionEvent{ std::get<EventID>(m_trigger), &collider, &other });
+    {
+        CollisionEvent eventArgs{ std::get<EventID>(m_trigger), &collider, &other };
+        Locator::Get<EventManager>().QueueEvent(eventArgs);
+    }
     else
+    {
         std::get<CollisionCallback>(m_trigger)(collider, other);
+    }
 }
 
 void Collider::Enable()

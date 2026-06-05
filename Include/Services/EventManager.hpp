@@ -54,8 +54,11 @@ public:
     void InvokeEvent(EventType const& eventArgs)
     {
         auto range = m_listeners.equal_range(eventArgs.eventID);
-        for (auto&& [eventID, functionPair] : std::ranges::subrange(range.first, range.second))
+        auto subrange = std::ranges::subrange(range.first, range.second);
+        for (auto&& [eventID, functionPair] : subrange)
+        {
             functionPair.second(std::make_any<EventType>(eventArgs));
+        }
     }
 
     template<typename EventType>
