@@ -66,13 +66,21 @@ public:
         Layer32 = 1U << 31,
     };
 
+    void SetCollisionLayer(uint32_t layers);
+    void CombineCollisionLayer(uint32_t layers);
+    void ClearCollisionLayer(uint32_t layers);
+    void SetCollisionMask(uint32_t masks);
+    void CombineCollisionMask(uint32_t masks);
+    void ClearCollisionMask(uint32_t masks);
+
     void Collide(Collider& collider, Collider& other) const;
     void Enable();
     void Disable();
 
+protected:
     uint32_t m_collisionLayers;
     uint32_t m_collisionMasks;
-protected:
+
     void OnActivate() override;
     void OnDeactivate() override;
 

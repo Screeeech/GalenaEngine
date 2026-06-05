@@ -27,6 +27,31 @@ Collider::Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t co
 {
 }
 
+void Collider::SetCollisionLayer(uint32_t layers)
+{
+    m_collisionLayers = layers;
+}
+void Collider::CombineCollisionLayer(uint32_t layers)
+{
+    m_collisionLayers |= layers;
+}
+void Collider::ClearCollisionLayer(uint32_t layers)
+{
+    m_collisionLayers &= ~layers;
+}
+void Collider::SetCollisionMask(uint32_t masks)
+{
+    m_collisionMasks = masks;
+}
+void Collider::CombineCollisionMask(uint32_t masks)
+{
+    m_collisionMasks |= masks;
+}
+void Collider::ClearCollisionMask(uint32_t masks)
+{
+    m_collisionMasks &= ~masks;
+}
+
 void Collider::Collide(Collider& collider, Collider& other) const
 {
     if (std::holds_alternative<EventID>(m_trigger))
