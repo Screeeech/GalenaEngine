@@ -27,27 +27,27 @@ Collider::Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t co
 {
 }
 
-void Collider::SetCollisionLayer(uint32_t layers)
+void Collider::SetCollisionLayers(uint32_t layers)
 {
     m_collisionLayers = layers;
 }
-void Collider::CombineCollisionLayer(uint32_t layers)
+void Collider::EnableCollisionLayers(uint32_t layers)
 {
     m_collisionLayers |= layers;
 }
-void Collider::ClearCollisionLayer(uint32_t layers)
+void Collider::DisableCollisionLayers(uint32_t layers)
 {
     m_collisionLayers &= ~layers;
 }
-void Collider::SetCollisionMask(uint32_t masks)
+void Collider::SetCollisionMasks(uint32_t masks)
 {
     m_collisionMasks = masks;
 }
-void Collider::CombineCollisionMask(uint32_t masks)
+void Collider::EnableCollisionMasks(uint32_t masks)
 {
     m_collisionMasks |= masks;
 }
-void Collider::ClearCollisionMask(uint32_t masks)
+void Collider::DisableCollisionMasks(uint32_t masks)
 {
     m_collisionMasks &= ~masks;
 }

@@ -66,12 +66,12 @@ public:
         Layer32 = 1U << 31,
     };
 
-    void SetCollisionLayer(uint32_t layers);
-    void CombineCollisionLayer(uint32_t layers);
-    void ClearCollisionLayer(uint32_t layers);
-    void SetCollisionMask(uint32_t masks);
-    void CombineCollisionMask(uint32_t masks);
-    void ClearCollisionMask(uint32_t masks);
+    void SetCollisionLayers(uint32_t layers);
+    void EnableCollisionLayers(uint32_t layers);
+    void DisableCollisionLayers(uint32_t layers);
+    void SetCollisionMasks(uint32_t masks);
+    void EnableCollisionMasks(uint32_t masks);
+    void DisableCollisionMasks(uint32_t masks);
 
     void Collide(Collider& collider, Collider& other) const;
     void Enable();
