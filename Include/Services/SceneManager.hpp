@@ -23,6 +23,8 @@ public:
     void Update() const;
     void FixedUpdate() const;
     void LateUpdate() const;
+    void LateFixedUpdate() const;
+
     void Render() const;
     void DrawUI() const;
 

@@ -43,6 +43,7 @@ protected:
     virtual void Update() {};
     virtual void FixedUpdate() {};
     virtual void LateUpdate() {};
+    virtual void LateFixedUpdate() {};
 private:
     void Activate()
     {

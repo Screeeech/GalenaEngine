@@ -130,14 +130,21 @@ void Galena::RunOneFrame()
 #endif
     m_quit = not Locator::Get<InputManager>().ProcessInput();
 
-    while (m_lag >= m_fixedTimeStep)
+    auto lag = m_lag;
+    while (lag >= m_fixedTimeStep)
     {
         Locator::Get<SceneManager>().FixedUpdate();
+        lag -= m_fixedTimeStep;
+    }
+    Locator::Get<SceneManager>().Update();
+
+    while (m_lag >= m_fixedTimeStep)
+    {
+        Locator::Get<SceneManager>().LateFixedUpdate();
         m_lag -= m_fixedTimeStep;
     }
-
-    Locator::Get<SceneManager>().Update();
     Locator::Get<SceneManager>().LateUpdate();
+
     Locator::Get<EventManager>().ExecuteQueuedEvents();
     Locator::Get<SceneManager>().ExecuteReparentingQueue();
     Locator::Get<Renderer>().Render();

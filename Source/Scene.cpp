@@ -26,6 +26,11 @@ void Scene::FixedUpdate() const
     m_pRootObject->FixedUpdate();
 }
 
+void Scene::LateFixedUpdate() const
+{
+    m_pRootObject->LateFixedUpdate();
+}
+
 void Scene::LateUpdate() const
 {
     m_pRootObject->LateUpdate();

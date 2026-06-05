@@ -25,6 +25,7 @@ public:
     void Update() const;
     void FixedUpdate() const;
     void LateUpdate() const;
+    void LateFixedUpdate() const;
 
     ~GameObject() noexcept;
 

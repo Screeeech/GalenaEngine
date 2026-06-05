@@ -18,6 +18,7 @@ public:
     void RemoveGameObject(GameObject* pObject) const;
     void Update() const;
     void FixedUpdate() const;
+    void LateFixedUpdate() const;
     void LateUpdate() const;
     void Render() const;
     void DrawUI() const;

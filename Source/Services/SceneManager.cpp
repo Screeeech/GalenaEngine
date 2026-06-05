@@ -30,6 +30,14 @@ void SceneManager::LateUpdate() const
     m_currentScene->LateUpdate();
 }
 
+void SceneManager::LateFixedUpdate() const
+{
+    if (not m_currentScene)
+        return;
+
+    m_currentScene->LateFixedUpdate();
+}
+
 void SceneManager::Render() const
 {
     if (not m_currentScene)

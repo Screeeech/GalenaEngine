@@ -50,6 +50,19 @@ void GameObject::LateUpdate() const
     }
 }
 
+void GameObject::LateFixedUpdate() const
+{
+    for (const auto& component : m_components)
+    {
+        component->LateFixedUpdate();
+    }
+
+    for (const auto& children : m_children)
+    {
+        children->LateFixedUpdate();
+    }
+}
+
 GameObject::~GameObject() noexcept
 {
     Deactivate();
