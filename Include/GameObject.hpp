@@ -78,6 +78,7 @@ public:
     auto GetWorldPosition() -> glm::vec2;
     auto GetLocalPosition() -> glm::vec2;
 
+    auto CreateChild(glm::vec2 startPosition, std::string const& name = "new GameObject") -> GameObject*;
     auto CreateChild(float x, float y, std::string const& name = "new GameObject") -> GameObject*;
     auto DisownChild(GameObject* pChild) -> std::unique_ptr<GameObject>;
     auto RemoveChild(GameObject* pChild) -> bool;

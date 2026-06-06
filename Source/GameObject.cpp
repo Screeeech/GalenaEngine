@@ -126,6 +126,11 @@ auto GameObject::GetLocalPosition() -> glm::vec2
     return GetTransform().GetLocalPosition();
 }
 
+auto GameObject::CreateChild(glm::vec2 startPosition, std::string const& name) -> GameObject*
+{
+    return CreateChild(startPosition.x, startPosition.y, name);
+}
+
 auto GameObject::CreateChild(float x, float y, std::string const& name) -> GameObject*
 {
     m_children.emplace_back(new GameObject(m_parentScene, x, y, name));

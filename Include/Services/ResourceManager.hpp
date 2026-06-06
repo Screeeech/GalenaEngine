@@ -13,7 +13,6 @@ namespace gla
 class Texture2D;
 class Font;
 
-// TODO: Rework this entire class cause this is pretttyyy bad
 class ResourceManager final
 {
 public:
