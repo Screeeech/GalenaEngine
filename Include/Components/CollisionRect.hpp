@@ -12,14 +12,21 @@ namespace gla
 class CollisionRect final : public Collider
 {
 public:
-    explicit CollisionRect(
+    template<typename EventType>
+        requires std::derived_from<EventType, Event>
+    CollisionRect(
         GameObject* pOwner,
         uint32_t collisionLayersBits,
         uint32_t collisionMasksBits,
-        EventID eventID,
+        EventType const& eventArgs,
         glm::vec2 position,
         glm::vec2 size,
-        bool active = true);
+        bool active = true)
+        : Collider(pOwner, collisionLayersBits, collisionMasksBits, eventArgs, active)
+        , m_position(position)
+        , m_size(size)
+    {
+    }
     explicit CollisionRect(
         GameObject* pOwner,
         uint32_t collisionLayersBits,
@@ -31,6 +38,7 @@ public:
 
     glm::vec2 m_position;
     glm::vec2 m_size;
+
 protected:
     void OnActivate() override;
     void OnDeactivate() override;

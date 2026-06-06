@@ -9,15 +9,6 @@
 namespace gla
 {
 
-Collider::Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t collisionMasksBits, EventID eventID, bool active)
-    : Renderable(pOwner, 5)
-    , m_collisionLayers(collisionLayersBits)
-    , m_collisionMasks(collisionMasksBits)
-    , m_active(active)
-    , m_trigger(eventID)
-{
-}
-
 Collider::Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t collisionMasksBits, CollisionCallback const& callback, bool active)
     : Renderable(pOwner, 5)
     , m_collisionLayers(collisionLayersBits)
@@ -54,10 +45,10 @@ void Collider::DisableCollisionMasks(uint32_t masks)
 
 void Collider::Collide(Collider& collider, Collider& other) const
 {
-    if (std::holds_alternative<EventID>(m_trigger))
+    if (std::holds_alternative<EventPayload>(m_trigger))
     {
-        CollisionEvent const eventArgs{ std::get<EventID>(m_trigger), &collider, &other };
-        Locator::Get<EventManager>().InvokeEvent(eventArgs);
+        auto const& [id, args] = std::get<EventPayload>(m_trigger);
+        Locator::Get<EventManager>().InvokeEvent(id, args);
     }
     else
     {

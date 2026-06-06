@@ -5,6 +5,17 @@
 namespace gla
 {
 
+void EventManager::InvokeEvent(EventID eventID, std::any const& eventArgs)
+{
+    auto range = m_listeners.equal_range(eventID);
+    auto subrange = std::ranges::subrange(range.first, range.second);
+    for (auto&& [listener, callback, unbindFlag] : subrange | std::views::values)
+    {
+        if (not unbindFlag)
+            callback(eventArgs);
+    }
+}
+
 void EventManager::EraseFlaggedEventBindings()
 {
     std::erase_if(m_queuedEvents, [](EventQueueEntry const& queueEntry) -> bool { return queueEntry.entry->unbindFlag; });

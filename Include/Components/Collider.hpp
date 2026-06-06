@@ -16,19 +16,20 @@ using CollisionCallback = std::function<void(Collider&, Collider&)>;
 class Collider : public Renderable
 {
 public:
-    explicit Collider(
-        GameObject* pOwner,
-        uint32_t collisionLayersBits,
-        uint32_t collisionMasksBits,
-        EventID eventID,
-        bool active = true);
+    template<typename EventType>
+        requires std::derived_from<EventType, Event>
+    Collider(GameObject* pOwner, uint32_t collisionLayersBits, uint32_t collisionMasksBits, EventType const& eventArgs, bool active = true)
+        : Renderable(pOwner, 5)
+        , m_collisionLayers(collisionLayersBits)
+        , m_collisionMasks(collisionMasksBits)
+        , m_active(active)
+        , m_trigger(EventPayload{ eventArgs.eventID, std::make_any<EventType>(eventArgs) })
+    {
+    }
+
 
     explicit Collider(
-        GameObject* pOwner,
-        uint32_t collisionLayersBits,
-        uint32_t collisionMasksBits,
-        CollisionCallback const& callback,
-        bool active = true);
+        GameObject* pOwner, uint32_t collisionLayersBits, uint32_t collisionMasksBits, CollisionCallback const& callback, bool active = true);
 
     enum Bits : uint32_t
     {
@@ -85,7 +86,13 @@ protected:
     void OnDeactivate() override;
 
     bool m_active{ true };
-    std::variant<CollisionCallback, EventID> m_trigger;
+
+    struct EventPayload final
+    {
+        EventID id;
+        std::any args;
+    };
+    std::variant<CollisionCallback, EventPayload> m_trigger;
 };
 
 }  // namespace gla

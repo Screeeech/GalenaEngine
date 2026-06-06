@@ -75,6 +75,8 @@ public:
         }
     }
 
+    void InvokeEvent(EventID eventID, std::any const& eventArgs);
+
     template<typename EventType>
         requires std::derived_from<EventType, Event>
     void InvokeEvent(EventType const& eventArgs)

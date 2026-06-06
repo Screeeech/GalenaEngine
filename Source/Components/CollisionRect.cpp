@@ -12,19 +12,6 @@ CollisionRect::CollisionRect(
     GameObject* pOwner,
     uint32_t collisionLayersBits,
     uint32_t collisionMasksBits,
-    EventID eventID,
-    glm::vec2 position,
-    glm::vec2 size,
-    bool active)
-    : Collider(pOwner, collisionLayersBits, collisionMasksBits, eventID, active)
-    , m_position(position)
-    , m_size(size)
-{
-}
-CollisionRect::CollisionRect(
-    GameObject* pOwner,
-    uint32_t collisionLayersBits,
-    uint32_t collisionMasksBits,
     CollisionCallback const& callback,
     glm::vec2 position,
     glm::vec2 size,
