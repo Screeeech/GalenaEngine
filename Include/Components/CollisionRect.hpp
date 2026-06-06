@@ -29,6 +29,8 @@ public:
         glm::vec2 size,
         bool active = true);
 
+    glm::vec2 m_position;
+    glm::vec2 m_size;
 protected:
     void OnActivate() override;
     void OnDeactivate() override;
@@ -41,8 +43,6 @@ private:
     [[nodiscard]] auto Bottom() const -> float;
     [[nodiscard]] auto Top() const -> float;
 
-    glm::vec2 m_position;
-    glm::vec2 m_size;
 
     static std::vector<CollisionRect*> m_registeredColliders;
 
