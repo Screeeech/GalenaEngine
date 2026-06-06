@@ -79,39 +79,6 @@ auto SceneManager::CreateScene() -> Scene&
     return *m_scenes.emplace_back(new Scene());
 }
 
-void SceneManager::RegisterRenderComponent(Renderable* component) const
-{
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->RegisterRenderComponent(component);
-}
-
-void SceneManager::UnregisterRenderComponent(Renderable* component) const
-{
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->UnregisterRenderComponent(component);
-}
-
-void SceneManager::RegisterUIComponent(UIComponent* component) const
-{
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->RegisterUIComponent(component);
-}
-
-void SceneManager::UnregisterUIComponent(UIComponent* component) const
-{
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->UnregisterUIComponent(component);
-}
-
-
 void SceneManager::Cleanup()
 {
     m_scenes.clear();

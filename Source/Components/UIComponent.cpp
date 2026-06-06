@@ -22,12 +22,12 @@ void UIComponent::DrawUI() const
 
 void UIComponent::OnActivate()
 {
-    Locator::Get<SceneManager>().RegisterUIComponent(this);
+    m_pOwner->GetParentScene().RegisterUIComponent(this);
 }
 
 void UIComponent::OnDeactivate()
 {
-    Locator::Get<SceneManager>().UnregisterUIComponent(this);
+    m_pOwner->GetParentScene().UnregisterUIComponent(this);
 }
 
 }  // namespace gla

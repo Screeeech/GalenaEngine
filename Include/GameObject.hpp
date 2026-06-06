@@ -84,6 +84,8 @@ public:
     auto RemoveChild(GameObject* pChild) -> bool;
     void QueueReparent(GameObject& newParent, bool keepWorldPosition = true);
 
+    auto GetParentScene() const -> Scene&;
+
     // Recursive function
     void SetDirty();
 

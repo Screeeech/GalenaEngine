@@ -212,6 +212,11 @@ void GameObject::QueueReparent(GameObject& newParent, bool keepWorldPosition)
     m_parentScene.QueueReparent(*this, newParent, keepWorldPosition);
 }
 
+auto GameObject::GetParentScene() const -> Scene&
+{
+    return m_parentScene;
+}
+
 void GameObject::Reparent(GameObject& newParent, bool keepWorldPosition)
 {
     // Is parent root?

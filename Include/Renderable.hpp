@@ -34,13 +34,12 @@ protected:
 
     void OnActivate() override
     {
-        // TODO: Change to Initialize and to parented scene instead of active scene
-        Locator::Get<SceneManager>().GetActiveScene()->RegisterRenderComponent(this);
+        m_pOwner->GetParentScene().RegisterRenderComponent(this);
     }
 
     void OnDeactivate() override
     {
-        Locator::Get<SceneManager>().UnregisterRenderComponent(this);
+        m_pOwner->GetParentScene().UnregisterRenderComponent(this);
     }
 private:
     int m_zIndex;

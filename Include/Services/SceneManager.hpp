@@ -30,10 +30,6 @@ public:
 
     void LoadScene(Scene* scene);
     [[nodiscard]] auto GetActiveScene() const -> Scene*;
-    void RegisterRenderComponent(Renderable* component) const;
-    void UnregisterRenderComponent(Renderable* component) const;
-    void RegisterUIComponent(UIComponent* component) const;
-    void UnregisterUIComponent(UIComponent* component) const;
 
     void Cleanup();
 
