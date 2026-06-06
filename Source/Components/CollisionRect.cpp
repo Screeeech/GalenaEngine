@@ -67,6 +67,7 @@ void CollisionRect::FixedUpdate()
 
 void CollisionRect::Render()
 {
+    return;
     if (not m_active)
         return;
 

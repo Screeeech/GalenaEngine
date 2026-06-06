@@ -56,8 +56,8 @@ void Collider::Collide(Collider& collider, Collider& other) const
 {
     if (std::holds_alternative<EventID>(m_trigger))
     {
-        CollisionEvent eventArgs{ std::get<EventID>(m_trigger), &collider, &other };
-        Locator::Get<EventManager>().QueueEvent(eventArgs);
+        CollisionEvent const eventArgs{ std::get<EventID>(m_trigger), &collider, &other };
+        Locator::Get<EventManager>().InvokeEvent(eventArgs);
     }
     else
     {

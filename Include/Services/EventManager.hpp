@@ -3,9 +3,10 @@
 
 #include <any>
 #include <cstdint>
+#include <deque>
 #include <functional>
 #include <memory>
-#include <queue>
+#include <ranges>
 #include <string>
 #include <unordered_map>
 
@@ -34,19 +35,44 @@ public:
     template<typename ListenerType, typename MemFn>
     void BindEvent(EventID id, ListenerType* listener, MemFn callback)
     {
-        m_listeners.emplace(id, std::pair{ listener, std::bind_front(callback, listener) });
+        m_listeners.emplace(id, EventEntry{ listener, std::bind_front(callback, listener), false });
     }
 
     template<typename ListenerType>
     void UnbindEvents(ListenerType* listener)
     {
-        std::erase_if(m_listeners, [&](auto const& pair) { return pair.second.first == listener; });
+        // std::erase_if(m_listeners, [&](auto const& pair) { return pair.second.first == listener; });
+        for (auto& [storedListener, callback, unbindFlag] : m_listeners | std::views::values)
+        {
+            if (storedListener == listener)
+                unbindFlag = true;
+        }
+
+        for (auto& [eventArgs, eventID, entry] : m_queuedEvents)
+        {
+            auto& [storedListener, callback, unbindFlag] = *entry;
+            if (storedListener == listener)
+                unbindFlag = true;
+        }
     }
 
     template<typename ListenerType>
     void UnbindEvent(EventID id, ListenerType* listener)
     {
-        std::erase_if(m_listeners, [&](auto const& pair) { return pair.first == id and pair.second.first == listener; });
+        // std::erase_if(m_listeners, [&](auto const& pair) { return pair.first == id and pair.second.first == listener; });
+        for (auto& [eventID, entry] : m_listeners)
+        {
+            auto& [storedListener, callback, unbindFlag] = entry;
+            if (storedListener == listener and eventID == id)
+                unbindFlag = true;
+        }
+
+        for (auto&& [eventArgs, eventID, entry] : m_queuedEvents)
+        {
+            auto& [storedListener, callback, unbindFlag] = *entry;
+            if (storedListener == listener and eventID == id)
+                unbindFlag = true;
+        }
     }
 
     template<typename EventType>
@@ -55,28 +81,45 @@ public:
     {
         auto range = m_listeners.equal_range(eventArgs.eventID);
         auto subrange = std::ranges::subrange(range.first, range.second);
-        for (auto&& [eventID, functionPair] : subrange)
+        for (auto&& [listener, callback, unbindFlag] : subrange | std::views::values)
         {
-            functionPair.second(std::make_any<EventType>(eventArgs));
+            if (not unbindFlag)
+                callback(std::make_any<EventType>(eventArgs));
         }
     }
 
     template<typename EventType>
         requires std::derived_from<EventType, Event>
-    void QueueEvent(EventType const& event)
+    void QueueEvent(EventType const& eventArgs)
     {
-        auto range = m_listeners.equal_range(event.eventID);
-        for (auto&& [evenID, functionPair] : std::ranges::subrange(range.first, range.second))
-            m_queuedEvents.emplace(std::make_any<EventType>(event), functionPair.second);
+        auto range = m_listeners.equal_range(eventArgs.eventID);
+        for (auto& entry : std::ranges::subrange(range.first, range.second) | std::views::values)
+            if (not entry.unbindFlag)
+                m_queuedEvents.emplace_back(std::make_any<EventType>(eventArgs), eventArgs.eventID, &entry);
     }
 
+    void EraseFlaggedEventBindings();
     void ExecuteQueuedEvents();
 
 private:
-    // What if object gets deleted before event can fire?
-    std::queue<std::pair<std::any, EventCallback>> m_queuedEvents;
+    struct EventEntry final
+    {
+        void* listener;
+        EventCallback callback;
+        bool unbindFlag;
+    };
 
-    std::unordered_multimap<EventID, std::pair<void*, EventCallback>> m_listeners;
+    struct EventQueueEntry final
+    {
+        std::any eventArgs;
+        EventID id;
+        EventEntry* entry;
+    };
+
+    // What if object gets deleted before event can fire?
+    std::deque<EventQueueEntry> m_queuedEvents;
+
+    std::unordered_multimap<EventID, EventEntry> m_listeners;
 };
 
 }  // namespace gla

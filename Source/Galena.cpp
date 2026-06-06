@@ -146,6 +146,8 @@ void Galena::RunOneFrame()
     Locator::Get<SceneManager>().LateUpdate();
 
     Locator::Get<EventManager>().ExecuteQueuedEvents();
+    Locator::Get<EventManager>().EraseFlaggedEventBindings();
+
     Locator::Get<SceneManager>().ExecuteReparentingQueue();
     Locator::Get<Renderer>().Render();
 }
