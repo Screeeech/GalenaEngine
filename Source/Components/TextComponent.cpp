@@ -15,13 +15,14 @@ namespace gla
 {
 
 
-TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, int zIndex, SDL_Color color)
+TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, int zIndex, Align alignment, SDL_Color color)
     : Component(pOwner)
     , m_Font(std::move(font))
+    , m_alignment(alignment)
     , m_Color(color)
     , m_Text(std::move(text))
     , m_zIndex(zIndex)
-    , m_pRenderComponent(m_pOwner->AddComponent<Sprite>(m_zIndex))
+    , m_pTextSprite(m_pOwner->AddComponent<Sprite>(m_zIndex))
 {
 }
 
@@ -38,17 +39,17 @@ auto TextComponent::GetText() const -> std::string const&
 void TextComponent::OnActivate()
 {
     m_TextTexture = UpdateTexture();
-    m_pRenderComponent->SetTexture(m_TextTexture);
+    m_pTextSprite->SetTexture(m_TextTexture);
 }
 
 void TextComponent::Update()
 {
-    if (not m_Text.empty() and not m_NeedsUpdate)
+    if (m_Text.empty() or not m_NeedsUpdate)
         return;
 
-    m_TextTexture = UpdateTexture();
     m_NeedsUpdate = false;
-    m_pRenderComponent->SetTexture(m_TextTexture);
+    m_TextTexture = UpdateTexture();
+    m_pTextSprite->SetTexture(m_TextTexture);
 }
 
 auto TextComponent::UpdateTexture() const -> std::shared_ptr<Texture2D>
@@ -64,6 +65,15 @@ auto TextComponent::UpdateTexture() const -> std::shared_ptr<Texture2D>
         throw std::runtime_error(std::string("Create text texture from surface failed: ") + SDL_GetError());
     }
     SDL_DestroySurface(surf);
+
+    if (m_alignment == Align::Left)
+    {
+        m_pTextSprite->m_offset = {};
+    }
+    else if (m_alignment == Align::Right)
+    {
+        m_pTextSprite->m_offset = { -texture->w, 0 };
+    }
 
     return std::make_shared<Texture2D>(texture);
 }

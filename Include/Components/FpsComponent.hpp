@@ -17,7 +17,7 @@ class FpsComponent : public Component
 {
 public:
     explicit FpsComponent(
-        GameObject* pOwner, std::shared_ptr<Font> font, int zIndex = 999, SDL_Color = { .r = 255, .g = 255, .b = 255, .a = 255 });
+        GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color = { .r = 255, .g = 255, .b = 255, .a = 255 });
 
 protected:
     void Update() override;
