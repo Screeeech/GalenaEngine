@@ -21,8 +21,8 @@ TextComponent::TextComponent(GameObject* pOwner, std::string text, std::shared_p
     , m_Color(color)
     , m_Text(std::move(text))
     , m_zIndex(zIndex)
+    , m_pRenderComponent(m_pOwner->AddComponent<Sprite>(m_zIndex))
 {
-    m_pRenderComponent = m_pOwner->AddComponent<Sprite>(m_zIndex);
 }
 
 void TextComponent::SetText(std::string const& text)

@@ -16,24 +16,18 @@ class Font;
 class FpsComponent : public Component
 {
 public:
-    explicit FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color = { .r = 255, .g = 255, .b = 255, .a = 255 });
-    ~FpsComponent() noexcept override = default;
-
-    FpsComponent(FpsComponent const&) = delete;
-    auto operator=(FpsComponent const&) -> FpsComponent = delete;
-    FpsComponent(FpsComponent&&) = delete;
-    auto operator=(FpsComponent&&) -> FpsComponent = delete;
+    explicit FpsComponent(
+        GameObject* pOwner, std::shared_ptr<Font> font, int zIndex = 999, SDL_Color = { .r = 255, .g = 255, .b = 255, .a = 255 });
 
 protected:
     void Update() override;
 
 private:
     std::shared_ptr<Font> m_font;
-    SDL_Color m_color;
 
     int m_frameCount{};
     float m_elapsedTime{};
-    TextComponent* m_pTextComponent{};
+    TextComponent* m_pTextComponent;
 };
 
 }  // namespace gla

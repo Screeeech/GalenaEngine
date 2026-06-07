@@ -44,7 +44,6 @@ class Animation final : public Renderable
 {
 public:
     explicit Animation(GameObject* pOwner, int zIndex = 0);
-    ~Animation() noexcept override = default;
 
     void SetPlaying(bool playing);
     auto IsPlaying() const -> bool;
@@ -54,11 +53,6 @@ public:
 
     void SetAnimation(AnimationID animationID, bool startPlaying = false, bool looping = true);
     void SetFrame(AnimationID frameIndex, bool startPlaying = false, bool looping = true);
-
-    Animation(Animation const&) = delete;
-    auto operator=(Animation const&) -> Animation& = delete;
-    Animation(Animation&&) = delete;
-    auto operator=(Animation&&) -> Animation& = delete;
 
 protected:
     void Update() override;

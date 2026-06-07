@@ -27,12 +27,24 @@ Sprite::Sprite(GameObject* pOwner, int zIndex)
 
 void Sprite::Render()
 {
-    if (not m_texture or not m_Visible)
+    if (not m_texture or not m_visible)
         return;
 
     const auto& pos{ m_pOwner->GetWorldPosition() + m_offset };
 
     Locator::Get<Renderer>().RenderTexture(*m_texture, pos.x, pos.y, m_sourceRect);
+}
+
+void Sprite::OnActivate()
+{
+    Renderable::OnActivate();
+    m_visible = true;
+}
+
+void Sprite::OnDeactivate()
+{
+    Renderable::OnDeactivate();
+    m_visible = false;
 }
 
 void Sprite::SetTexture(std::shared_ptr<Texture2D> texture)

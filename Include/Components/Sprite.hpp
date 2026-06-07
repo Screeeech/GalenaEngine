@@ -25,11 +25,12 @@ public:
 
     [[nodiscard]] auto GetSourceRect() const -> SDL_FRect;
 
-    bool m_Visible{ true };
-
+    bool m_visible{};
     glm::vec2 m_offset{};
 protected:
     void Render() override;
+    void OnActivate() override;
+    void OnDeactivate() override;
 
 private:
     std::shared_ptr<Texture2D> m_texture;

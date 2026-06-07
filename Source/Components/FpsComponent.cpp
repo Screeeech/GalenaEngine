@@ -9,12 +9,11 @@
 namespace gla
 {
 
-FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, SDL_Color color)
+FpsComponent::FpsComponent(GameObject* pOwner, std::shared_ptr<Font> font, int zIndex, SDL_Color color)
     : Component(pOwner)
     , m_font(std::move(font))
-    , m_color(color)
+    , m_pTextComponent(m_pOwner->AddComponent<TextComponent>("FPS: ", std::move(m_font), zIndex, color))
 {
-    m_pTextComponent = m_pOwner->AddComponent<TextComponent>("FPS: ", std::move(m_font), 999, m_color);
 }
 
 void FpsComponent::Update()

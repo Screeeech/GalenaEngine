@@ -13,18 +13,16 @@ struct Event
 {
     virtual ~Event() = default;
 
-    Event(EventID id)
+    explicit Event(EventID id)
         : eventID{ id }
     {
     }
 
-    const EventID eventID{};
+    EventID eventID{};
 };
 
 struct PlayerEvent : Event
 {
-    ~PlayerEvent() override = default;
-
     explicit PlayerEvent(EventID id, int playerIndex)
         : Event(id)
         , playerIndex{ playerIndex }
@@ -36,8 +34,6 @@ struct PlayerEvent : Event
 
 struct CollisionEvent : Event
 {
-    ~CollisionEvent() override = default;
-
     explicit CollisionEvent(EventID id, Collider* pCollider, Collider* pOtherCollider)
         : Event(id)
         , pCollider(pCollider)
@@ -49,31 +45,6 @@ struct CollisionEvent : Event
     Collider* pOtherCollider;
 };
 
-struct HealthEvent : PlayerEvent
-{
-    ~HealthEvent() override = default;
-
-    explicit HealthEvent(EventID id, int playerIndex, int healthChange)
-        : PlayerEvent(id, playerIndex)
-        , healthChange(healthChange)
-    {
-    }
-
-    int healthChange;
-};
-
-struct ScoreEvent : PlayerEvent
-{
-    ~ScoreEvent() override = default;
-
-    explicit ScoreEvent(EventID id, int playerIndex, int scoreChange)
-        : PlayerEvent(id, playerIndex)
-        , scoreChange{ scoreChange }
-    {
-    }
-
-    int scoreChange;
-};
 
 }  // namespace gla
 

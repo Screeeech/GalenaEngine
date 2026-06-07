@@ -16,7 +16,6 @@ class Texture2D final
 public:
     [[nodiscard]] auto GetSDLTexture() const -> SDL_Texture*;
     explicit Texture2D(SDL_Texture* texture, SDL_ScaleMode scaleMode = SDL_SCALEMODE_PIXELART);
-
     explicit Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode = SDL_SCALEMODE_PIXELART);
 
     ~Texture2D() noexcept;

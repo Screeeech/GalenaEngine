@@ -91,7 +91,7 @@ void Renderer::RenderTexture(const Texture2D& texture, float x, float y, SDL_FRe
     dst.x = x;
     dst.y = y;
     const SDL_FRect* pSrcRect{};
-    if (srcRect.w >= 0 and srcRect.h >= 0)
+    if (srcRect.w > 0 and srcRect.h > 0)
     {
         pSrcRect = &srcRect;
         dst.w = srcRect.w;

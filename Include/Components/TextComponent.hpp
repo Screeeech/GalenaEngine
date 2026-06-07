@@ -16,8 +16,12 @@ class Texture2D;
 class TextComponent : public Component
 {
 public:
-    explicit TextComponent(GameObject* pOwner, std::string text, std::shared_ptr<Font> font, int zIndex = 0,
-                           SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 });
+    explicit TextComponent(
+        GameObject* pOwner,
+        std::string text,
+        std::shared_ptr<Font> font,
+        int zIndex = 0,
+        SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 });
 
     void SetText(std::string const& text);
     [[nodiscard]] auto GetText() const -> std::string const&;
@@ -26,6 +30,7 @@ protected:
     void OnActivate() override;
 
     void Update() override;
+
 private:
     std::shared_ptr<Font> m_Font;
     std::shared_ptr<Texture2D> m_TextTexture;
