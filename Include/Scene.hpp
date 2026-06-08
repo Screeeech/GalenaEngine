@@ -1,32 +1,32 @@
 #ifndef GALENA_SCENE_HPP
 #define GALENA_SCENE_HPP
 
+#include <functional>
 #include <memory>
 #include <queue>
 #include <vector>
 
 namespace gla
 {
+class Scene;
 class GameObject;
-
 class UIComponent;
 class Renderable;
 
+using SceneLoader = std::function<void(Scene&)>;
+
 class Scene final
 {
-public:
-    void RemoveGameObject(GameObject* pObject) const;
-    void Update() const;
-    void FixedUpdate() const;
-    void LateFixedUpdate() const;
-    void LateUpdate() const;
-    void Render() const;
-    void DrawUI() const;
+    friend class SceneManager;
+    explicit Scene(SceneLoader  loadFunction, std::string  sceneName);
 
     void Load();
     void Unload() const;
+public:
+    void RemoveGameObject(GameObject* pObject) const;
 
-    auto IsActive() const -> bool;
+
+    [[nodiscard]] auto IsActive() const -> bool;
 
     void QueueReparent(GameObject& child, GameObject& newParent, bool keepWorldPosition);
     void ExecuteReparentingQueue();
@@ -39,11 +39,17 @@ public:
 
     [[nodiscard]] auto GetRoot() const -> GameObject*;
 
+    void Update() const;
+    void FixedUpdate() const;
+    void LateFixedUpdate() const;
+    void LateUpdate() const;
+    void Render() const;
+    void DrawUI() const;
     auto operator==(const Scene& other) const -> bool;
 
 private:
-    friend class SceneManager;
-    explicit Scene();
+    SceneLoader m_loadFunction;
+    std::string m_sceneName;
 
     std::unique_ptr<GameObject> m_pRootObject;
     std::vector<Renderable*> m_renderComponents;

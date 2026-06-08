@@ -20,7 +20,7 @@ public:
     void SetZIndex(int zIndex)
     {
         m_zIndex = zIndex;
-        Locator::Get<SceneManager>().SortCachedRenderComponents();
+        m_pOwner->GetParentScene().SortCachedRenderComponents();
     }
 
     [[nodiscard]] auto GetZIndex() const -> int

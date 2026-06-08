@@ -6,67 +6,27 @@
 namespace gla
 {
 
-void SceneManager::Update() const
+auto SceneManager::CreateScene(SceneLoader const& loadFunction, std::string const& sceneName) -> Scene&
 {
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->Update();
+    return *m_scenes.emplace_back(new Scene(loadFunction, sceneName));
 }
 
-void SceneManager::FixedUpdate() const
+void SceneManager::LoadScene(Scene& scene)
 {
-    if (not m_currentScene)
+    if (m_currentScene == &scene)
         return;
 
-    m_currentScene->FixedUpdate();
+    if (m_currentScene)
+        m_currentScene->Unload();
+
+    m_currentScene = &scene;
+    m_currentScene->Load();
 }
 
-void SceneManager::LateUpdate() const
+void SceneManager::UnloadActiveScene() const
 {
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->LateUpdate();
-}
-
-void SceneManager::LateFixedUpdate() const
-{
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->LateFixedUpdate();
-}
-
-void SceneManager::Render() const
-{
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->Render();
-}
-
-void SceneManager::DrawUI() const
-{
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->DrawUI();
-}
-
-void SceneManager::LoadScene(Scene* scene)
-{
-    // Check if scene exists
-    // If it does store a reference in m_currentScene
-    for (auto& pScene : m_scenes)
-    {
-        if (auto* sceneRef = pScene.get(); sceneRef == scene)
-        {
-            if (m_currentScene)
-                m_currentScene->Unload();
-            m_currentScene = sceneRef;
-        }
-    }
+    if (m_currentScene)
+        m_currentScene->Unload();
 }
 
 auto SceneManager::GetActiveScene() const -> Scene*
@@ -74,31 +34,10 @@ auto SceneManager::GetActiveScene() const -> Scene*
     return m_currentScene;
 }
 
-auto SceneManager::CreateScene() -> Scene&
-{
-    return *m_scenes.emplace_back(new Scene());
-}
-
 void SceneManager::Cleanup()
 {
     m_scenes.clear();
     m_currentScene = nullptr;
-}
-
-void SceneManager::SortCachedRenderComponents() const
-{
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->SortCachedRenderComponents();
-}
-
-void SceneManager::ExecuteReparentingQueue() const
-{
-    if (not m_currentScene)
-        return;
-
-    m_currentScene->ExecuteReparentingQueue();
 }
 
 }  // namespace gla

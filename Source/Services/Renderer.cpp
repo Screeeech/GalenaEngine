@@ -62,7 +62,11 @@ void Renderer::Render() const
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    Locator::Get<SceneManager>().DrawUI();
+    auto const* currentScene = Locator::Get<SceneManager>().GetActiveScene();
+    if (not currentScene)
+        return;
+
+    currentScene->DrawUI();
 
     ImGui::Render();
 
@@ -73,7 +77,7 @@ void Renderer::Render() const
     SetColor({ .r = 255, .g = 0, .b = 0, .a = 255 });
     DrawRect({ .x = 0, .y = 0, .w = static_cast<float>(m_logicalResolution.x), .h = static_cast<float>(m_logicalResolution.y) });
 
-    Locator::Get<SceneManager>().Render();
+    currentScene->Render();
 
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
     SDL_RenderPresent(m_renderer);

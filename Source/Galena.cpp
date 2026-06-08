@@ -14,16 +14,18 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "Services/SceneManager.hpp"
 #include "Events.hpp"
 #include "Galena.hpp"
 #include "Services/EventManager.hpp"
 #include "Services/InputManager.hpp"
 #include "Services/Renderer.hpp"
 #include "Services/ResourceManager.hpp"
-#include "Services/SoundNull.hpp"
+#include "Services/SceneManager.hpp"
 
+namespace
+{
 SDL_Window* g_window{};
+}
 
 namespace
 {
@@ -83,7 +85,7 @@ Galena::Galena(std::string const& windowName, int fixedUpdateFrameCap)
 #ifndef __EMSCRIPTEN__
     // Just using a null sound system while developing so I don't get driven crazy by startup sounds
     Locator::Provide<ISound, SoundNull>();
-    //ServiceLocator::Provide<ISound, SoundService>();
+    // ServiceLocator::Provide<ISound, SoundService>();
 #else
     // temporarily use null service on emscripten until I implement a singlethreaded sound service
     Locator::Provide<ISound, SoundNull>();
@@ -121,34 +123,38 @@ void Galena::Run(std::function<void()> const& load)
 void Galena::RunOneFrame()
 {
     auto& time = Time::Get();
+    auto const& sceneManager = Locator::Get<SceneManager>();
+    auto& inputManager = Locator::Get<InputManager>();
+    auto& eventManager = Locator::Get<EventManager>();
 
     time.Update(m_fixedTimeStep);
     m_lag += time.DeltaTime();
 
-#if USE_STEAMWORKS
-    SteamAPI_RunCallbacks();
-#endif
-    m_quit = not Locator::Get<InputManager>().ProcessInput();
+    m_quit = not inputManager.ProcessInput();
+
+    auto* currentScene = sceneManager.GetActiveScene();
+    if (not currentScene)
+        return;
 
     auto lag = m_lag;
     while (lag >= m_fixedTimeStep)
     {
-        Locator::Get<SceneManager>().FixedUpdate();
+        currentScene->FixedUpdate();
         lag -= m_fixedTimeStep;
     }
-    Locator::Get<SceneManager>().Update();
+    currentScene->Update();
 
     while (m_lag >= m_fixedTimeStep)
     {
-        Locator::Get<SceneManager>().LateFixedUpdate();
+        currentScene->LateFixedUpdate();
         m_lag -= m_fixedTimeStep;
     }
-    Locator::Get<SceneManager>().LateUpdate();
+    currentScene->LateUpdate();
 
-    Locator::Get<EventManager>().ExecuteQueuedEvents();
-    Locator::Get<EventManager>().EraseFlaggedEventBindings();
+    eventManager.ExecuteQueuedEvents();
+    eventManager.EraseFlaggedEventBindings();
 
-    Locator::Get<SceneManager>().ExecuteReparentingQueue();
+    currentScene->ExecuteReparentingQueue();
     Locator::Get<Renderer>().Render();
 }
 

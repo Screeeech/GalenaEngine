@@ -1,6 +1,7 @@
 #ifndef GALENA_SCENEMANAGER_HPP
 #define GALENA_SCENEMANAGER_HPP
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -14,28 +15,15 @@ class UIComponent;
 class Scene;
 class Renderable;
 
-// NOTE: This isn't a service locator yet, because ideally I want to gut this class entirely
 class SceneManager final
 {
 public:
-    auto CreateScene() -> Scene&;
-
-    void Update() const;
-    void FixedUpdate() const;
-    void LateUpdate() const;
-    void LateFixedUpdate() const;
-
-    void Render() const;
-    void DrawUI() const;
-
-    void LoadScene(Scene* scene);
-    [[nodiscard]] auto GetActiveScene() const -> Scene*;
-
     void Cleanup();
 
-    void SortCachedRenderComponents() const;
-
-    void ExecuteReparentingQueue() const;
+    auto CreateScene(SceneLoader const& loadFunction, std::string const& sceneName) -> Scene&;
+    void LoadScene(Scene& scene);
+    void UnloadActiveScene() const;
+    [[nodiscard]] auto GetActiveScene() const -> Scene*;
 
 private:
     std::vector<std::unique_ptr<Scene>> m_scenes;
@@ -44,4 +32,4 @@ private:
 
 }  // namespace gla
 
-#endif // GALENA_SCENEMANAGER_HPP
+#endif  // GALENA_SCENEMANAGER_HPP
