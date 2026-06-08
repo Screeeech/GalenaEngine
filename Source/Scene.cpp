@@ -11,8 +11,9 @@
 namespace gla
 {
 
-Scene::Scene(SceneLoader loadFunction, std::string sceneName)
+Scene::Scene(SceneLoader loadFunction, SceneUnloader unloadFunction, std::string sceneName)
     : m_loadFunction(std::move(loadFunction))
+    , m_unloadFunction(std::move(unloadFunction))
     , m_sceneName(std::move(sceneName))
     , m_pRootObject(new GameObject(*this, 0, 0, "Scene root"))
 {
@@ -33,6 +34,7 @@ void Scene::Load()
 void Scene::Unload() const
 {
     m_pRootObject->Deactivate();
+    m_unloadFunction();
 }
 
 auto Scene::IsActive() const -> bool

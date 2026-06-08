@@ -14,14 +14,16 @@ class UIComponent;
 class Renderable;
 
 using SceneLoader = std::function<void(Scene&)>;
+using SceneUnloader = std::function<void()>;
 
 class Scene final
 {
     friend class SceneManager;
-    explicit Scene(SceneLoader  loadFunction, std::string  sceneName);
+    explicit Scene(SceneLoader loadFunction, SceneUnloader unloadFunction, std::string sceneName);
 
     void Load();
     void Unload() const;
+
 public:
     void RemoveGameObject(GameObject* pObject) const;
 
@@ -49,6 +51,7 @@ public:
 
 private:
     SceneLoader m_loadFunction;
+    SceneUnloader m_unloadFunction;
     std::string m_sceneName;
 
     std::unique_ptr<GameObject> m_pRootObject;

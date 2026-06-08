@@ -123,7 +123,7 @@ void Galena::Run(std::function<void()> const& load)
 void Galena::RunOneFrame()
 {
     auto& time = Time::Get();
-    auto const& sceneManager = Locator::Get<SceneManager>();
+    auto& sceneManager = Locator::Get<SceneManager>();
     auto& inputManager = Locator::Get<InputManager>();
     auto& eventManager = Locator::Get<EventManager>();
 
@@ -131,6 +131,8 @@ void Galena::RunOneFrame()
     m_lag += time.DeltaTime();
 
     m_quit = not inputManager.ProcessInput();
+
+    sceneManager.LoadNewScene();
 
     auto* currentScene = sceneManager.GetActiveScene();
     if (not currentScene)

@@ -20,14 +20,18 @@ class SceneManager final
 public:
     void Cleanup();
 
-    auto CreateScene(SceneLoader const& loadFunction, std::string const& sceneName) -> Scene&;
+    auto CreateScene(SceneLoader const& loadFunction, SceneUnloader const& unloadFunction, std::string const& sceneName) -> Scene&;
     void LoadScene(Scene& scene);
+    void LoadScene(std::string const& sceneName);
     void UnloadActiveScene() const;
     [[nodiscard]] auto GetActiveScene() const -> Scene*;
+
+    void LoadNewScene();
 
 private:
     std::vector<std::unique_ptr<Scene>> m_scenes;
     Scene* m_currentScene{};
+    Scene* m_nextScene{};
 };
 
 }  // namespace gla
