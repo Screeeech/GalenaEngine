@@ -8,9 +8,16 @@
 namespace gla
 {
 
-auto SceneManager::CreateScene(SceneLoader const& loadFunction, SceneUnloader const& unloadFunction, std::string const& sceneName) -> Scene&
+SceneManager::SceneManager()
+    : m_persistentScene(new Scene(persistentSceneName))
 {
-    return *m_scenes.emplace_back(new Scene(loadFunction, unloadFunction, sceneName));
+    m_persistentScene->Load();
+}
+
+auto SceneManager::CreateScene(
+    std::string const& sceneName, std::optional<SceneLoader> const& loadFunction, std::optional<SceneUnloader> const& unloadFunction) -> Scene&
+{
+    return *m_scenes.emplace_back(new Scene(sceneName, loadFunction, unloadFunction));
 }
 
 void SceneManager::LoadScene(Scene& scene)
@@ -60,10 +67,9 @@ void SceneManager::LoadNewScene()
     }
 }
 
-void SceneManager::Cleanup()
+auto SceneManager::GetPersistentScene() const -> Scene&
 {
-    m_scenes.clear();
-    m_currentScene = nullptr;
+    return *m_persistentScene;
 }
 
 }  // namespace gla

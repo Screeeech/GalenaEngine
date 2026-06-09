@@ -8,8 +8,8 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "Services/SceneManager.hpp"
 #include "Locator.hpp"
+#include "Services/SceneManager.hpp"
 #include "Texture2D.hpp"
 
 namespace gla
@@ -62,11 +62,13 @@ void Renderer::Render() const
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    auto const* currentScene = Locator::Get<SceneManager>().GetActiveScene();
-    if (not currentScene)
-        return;
+    auto const& sceneManager = Locator::Get<SceneManager>();
+    auto const* currentScene = sceneManager.GetActiveScene();
+    auto& persistentScene = sceneManager.GetPersistentScene();
 
-    currentScene->DrawUI();
+    persistentScene.DrawUI();
+    if (currentScene)
+        currentScene->DrawUI();
 
     ImGui::Render();
 
@@ -77,7 +79,9 @@ void Renderer::Render() const
     SetColor({ .r = 255, .g = 0, .b = 0, .a = 255 });
     DrawRect({ .x = 0, .y = 0, .w = static_cast<float>(m_logicalResolution.x), .h = static_cast<float>(m_logicalResolution.y) });
 
-    currentScene->Render();
+    persistentScene.Render();
+    if (currentScene)
+        currentScene->Render();
 
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
     SDL_RenderPresent(m_renderer);
@@ -109,8 +113,7 @@ void Renderer::RenderTexture(const Texture2D& texture, float x, float y, SDL_FRe
     SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
 }
 
-void Renderer::RenderTextureFlipped(
-    Texture2D const& texture, float x, float y, bool flipX, bool flipY, SDL_FRect srcRect) const
+void Renderer::RenderTextureFlipped(Texture2D const& texture, float x, float y, bool flipX, bool flipY, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;

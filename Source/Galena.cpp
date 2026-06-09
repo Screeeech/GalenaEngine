@@ -97,8 +97,8 @@ Galena::~Galena() noexcept
 #if USE_STEAMWORKS
     SteamAPI_Shutdown();
 #endif
-    Locator::Get<SceneManager>().Cleanup();
 
+    Locator::Destroy<SceneManager>();
     Locator::Destroy<Renderer>();
     Locator::Destroy<ISound>();
 
@@ -135,28 +135,38 @@ void Galena::RunOneFrame()
     sceneManager.LoadNewScene();
 
     auto* currentScene = sceneManager.GetActiveScene();
-    if (not currentScene)
-        return;
+    auto& persistentScene = sceneManager.GetPersistentScene();
 
     auto lag = m_lag;
     while (lag >= m_fixedTimeStep)
     {
-        currentScene->FixedUpdate();
+        if (currentScene)
+            currentScene->FixedUpdate();
+        persistentScene.FixedUpdate();
         lag -= m_fixedTimeStep;
     }
-    currentScene->Update();
+    if (currentScene)
+        currentScene->Update();
+    persistentScene.Update();
 
     while (m_lag >= m_fixedTimeStep)
     {
-        currentScene->LateFixedUpdate();
+        if (currentScene)
+            currentScene->LateFixedUpdate();
+        persistentScene.LateFixedUpdate();
         m_lag -= m_fixedTimeStep;
     }
-    currentScene->LateUpdate();
+    if (currentScene)
+        currentScene->LateUpdate();
+    persistentScene.LateUpdate();
 
     eventManager.ExecuteQueuedEvents();
     eventManager.EraseFlaggedEventBindings();
 
-    currentScene->ExecuteReparentingQueue();
+    if (currentScene)
+        currentScene->ExecuteReparentingQueue();
+    persistentScene.ExecuteReparentingQueue();
+
     Locator::Get<Renderer>().Render();
 }
 

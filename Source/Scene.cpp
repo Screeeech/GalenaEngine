@@ -11,12 +11,30 @@
 namespace gla
 {
 
-Scene::Scene(SceneLoader loadFunction, SceneUnloader unloadFunction, std::string sceneName)
+Scene::Scene(std::string sceneName, std::optional<SceneLoader> loadFunction, std::optional<SceneUnloader> unloadFunction)
     : m_loadFunction(std::move(loadFunction))
     , m_unloadFunction(std::move(unloadFunction))
     , m_sceneName(std::move(sceneName))
     , m_pRootObject(new GameObject(*this, 0, 0, "Scene root"))
 {
+}
+
+void Scene::Load()
+{
+    m_active = true;
+
+    if (m_loadFunction)
+        (*m_loadFunction)(*this);
+    m_pRootObject->Activate();
+}
+
+void Scene::Unload()
+{
+    m_pRootObject->Deactivate();
+    if (m_unloadFunction)
+        (*m_unloadFunction)();
+
+    m_active = false;
 }
 
 void Scene::RemoveGameObject(GameObject* pObject) const
@@ -25,21 +43,9 @@ void Scene::RemoveGameObject(GameObject* pObject) const
     m_pRootObject->RemoveChild(pObject);
 }
 
-void Scene::Load()
-{
-    m_loadFunction(*this);
-    m_pRootObject->Activate();
-}
-
-void Scene::Unload() const
-{
-    m_pRootObject->Deactivate();
-    m_unloadFunction();
-}
-
 auto Scene::IsActive() const -> bool
 {
-    return Locator::Get<SceneManager>().GetActiveScene() == this;
+    return m_active;
 }
 
 void Scene::QueueReparent(GameObject& child, GameObject& newParent, bool keepWorldPosition)
@@ -118,7 +124,8 @@ void Scene::Render() const
 {
     for (auto* renderComponents : m_renderComponents)
     {
-        renderComponents->Render();
+        if (renderComponents->m_pOwner->IsActive())
+            renderComponents->Render();
     }
 }
 
@@ -126,7 +133,8 @@ void Scene::DrawUI() const
 {
     for (const auto* uiComponent : m_uiComponents)
     {
-        uiComponent->DrawUI();
+        if (uiComponent->m_pOwner->IsActive())
+            uiComponent->DrawUI();
     }
 }
 

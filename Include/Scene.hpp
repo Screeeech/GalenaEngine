@@ -19,10 +19,13 @@ using SceneUnloader = std::function<void()>;
 class Scene final
 {
     friend class SceneManager;
-    explicit Scene(SceneLoader loadFunction, SceneUnloader unloadFunction, std::string sceneName);
+    explicit Scene(
+        std::string sceneName,
+        std::optional<SceneLoader> loadFunction = std::nullopt,
+        std::optional<SceneUnloader> unloadFunction = std::nullopt);
 
     void Load();
-    void Unload() const;
+    void Unload();
 
 public:
     void RemoveGameObject(GameObject* pObject) const;
@@ -50,8 +53,9 @@ public:
     auto operator==(const Scene& other) const -> bool;
 
 private:
-    SceneLoader m_loadFunction;
-    SceneUnloader m_unloadFunction;
+    bool m_active{};
+    std::optional<SceneLoader> m_loadFunction;
+    std::optional<SceneUnloader> m_unloadFunction;
     std::string m_sceneName;
 
     std::unique_ptr<GameObject> m_pRootObject;

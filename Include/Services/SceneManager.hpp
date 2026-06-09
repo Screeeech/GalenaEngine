@@ -17,10 +17,15 @@ class Renderable;
 
 class SceneManager final
 {
-public:
-    void Cleanup();
+    static constexpr auto persistentSceneName{ "__persistent" };
 
-    auto CreateScene(SceneLoader const& loadFunction, SceneUnloader const& unloadFunction, std::string const& sceneName) -> Scene&;
+public:
+    explicit SceneManager();
+
+    auto CreateScene(
+        std::string const& sceneName,
+        std::optional<SceneLoader> const& loadFunction = std::nullopt,
+        std::optional<SceneUnloader> const& unloadFunction = std::nullopt) -> Scene&;
     void LoadScene(Scene& scene);
     void LoadScene(std::string const& sceneName);
     void UnloadActiveScene() const;
@@ -28,8 +33,11 @@ public:
 
     void LoadNewScene();
 
+    [[nodiscard]] auto GetPersistentScene() const -> Scene&;
+
 private:
     std::vector<std::unique_ptr<Scene>> m_scenes;
+    std::unique_ptr<Scene> m_persistentScene;
     Scene* m_currentScene{};
     Scene* m_nextScene{};
 };
