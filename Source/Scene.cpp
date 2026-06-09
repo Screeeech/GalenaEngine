@@ -12,7 +12,7 @@ namespace gla
 {
 
 Scene::Scene(std::string sceneName, std::optional<SceneLoader> loadFunction, std::optional<SceneUnloader> unloadFunction)
-    : m_loadFunction(std::move(loadFunction))
+    : m_initFunction(std::move(loadFunction))
     , m_unloadFunction(std::move(unloadFunction))
     , m_sceneName(std::move(sceneName))
     , m_pRootObject(new GameObject(*this, 0, 0, "Scene root"))
@@ -23,18 +23,31 @@ void Scene::Load()
 {
     m_active = true;
 
-    if (m_loadFunction)
-        (*m_loadFunction)(*this);
+    if (m_initFunction and not m_initialised)
+    {
+        (*m_initFunction)(*this);
+        m_initialised = true;
+    }
     m_pRootObject->Activate();
 }
 
 void Scene::Unload()
 {
     m_pRootObject->Deactivate();
+
+    m_active = false;
+}
+
+void Scene::Reset()
+{
+    if (not m_initialised)
+        return;
+
     if (m_unloadFunction)
         (*m_unloadFunction)();
 
-    m_active = false;
+    m_pRootObject.reset(new GameObject(*this, 0, 0, "Scene root"));
+    m_initialised = false;
 }
 
 void Scene::RemoveGameObject(GameObject* pObject) const

@@ -26,10 +26,10 @@ class Scene final
 
     void Load();
     void Unload();
+    void Reset();
 
 public:
     void RemoveGameObject(GameObject* pObject) const;
-
 
     [[nodiscard]] auto IsActive() const -> bool;
 
@@ -54,7 +54,8 @@ public:
 
 private:
     bool m_active{};
-    std::optional<SceneLoader> m_loadFunction;
+    bool m_initialised{};
+    std::optional<SceneLoader> m_initFunction;
     std::optional<SceneUnloader> m_unloadFunction;
     std::string m_sceneName;
 

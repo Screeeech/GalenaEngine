@@ -15,9 +15,9 @@ SceneManager::SceneManager()
 }
 
 auto SceneManager::CreateScene(
-    std::string const& sceneName, std::optional<SceneLoader> const& loadFunction, std::optional<SceneUnloader> const& unloadFunction) -> Scene&
+    std::string const& sceneName, std::optional<SceneLoader> const& initFunction, std::optional<SceneUnloader> const& unloadFunction) -> Scene&
 {
-    return *m_scenes.emplace_back(new Scene(sceneName, loadFunction, unloadFunction));
+    return *m_scenes.emplace_back(new Scene(sceneName, initFunction, unloadFunction));
 }
 
 void SceneManager::LoadScene(Scene& scene)
@@ -39,7 +39,21 @@ void SceneManager::LoadScene(std::string const& sceneName)
         }
     }
 
-    std::println("Warning, no scene with name {} found", sceneName);
+    std::println("Warning, no scene with name {} found when trying to load scene", sceneName);
+}
+
+void SceneManager::ResetScene(std::string const& sceneName) const
+{
+    for (auto const& pScene : m_scenes)
+    {
+        if (pScene->m_sceneName == sceneName)
+        {
+            pScene->Reset();
+            return;
+        }
+    }
+
+    std::println("Warning, no scene with name {} found when trying to reset scene", sceneName);
 }
 
 void SceneManager::UnloadActiveScene() const

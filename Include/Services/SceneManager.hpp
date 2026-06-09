@@ -24,10 +24,13 @@ public:
 
     auto CreateScene(
         std::string const& sceneName,
-        std::optional<SceneLoader> const& loadFunction = std::nullopt,
+        std::optional<SceneLoader> const& initFunction = std::nullopt,
         std::optional<SceneUnloader> const& unloadFunction = std::nullopt) -> Scene&;
+
     void LoadScene(Scene& scene);
     void LoadScene(std::string const& sceneName);
+    void ResetScene(std::string const& sceneName) const;
+
     void UnloadActiveScene() const;
     [[nodiscard]] auto GetActiveScene() const -> Scene*;
 
