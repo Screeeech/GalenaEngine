@@ -66,13 +66,17 @@ auto TextComponent::UpdateTexture() const -> std::shared_ptr<Texture2D>
     }
     SDL_DestroySurface(surf);
 
-    if (m_alignment == Align::Left)
+    switch (m_alignment)
     {
-        m_pTextSprite->m_offset = {};
-    }
-    else if (m_alignment == Align::Right)
-    {
-        m_pTextSprite->m_offset = { -texture->w, 0 };
+        case Align::Left:
+            m_pTextSprite->m_offset = {};
+            break;
+        case Align::Right:
+            m_pTextSprite->m_offset = { -texture->w, 0 };
+            break;
+        case Align::Center:
+            m_pTextSprite->m_offset = { -texture->w / 2, 0 };
+            break;
     }
 
     return std::make_shared<Texture2D>(texture);

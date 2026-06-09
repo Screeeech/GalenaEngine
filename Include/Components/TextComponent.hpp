@@ -20,7 +20,8 @@ public:
     enum class Align : std::uint8_t
     {
         Left,
-        Right
+        Right,
+        Center
     };
 
     explicit TextComponent(
