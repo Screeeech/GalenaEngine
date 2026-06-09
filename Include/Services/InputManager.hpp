@@ -142,7 +142,7 @@ private:
         auto actionFilter = [&](const auto& pair) -> bool
         {
             const auto& [action, registeredInput] = pair;
-            return action.playerIndex == playerIndex and registeredInput.type != inputType and registeredInput.InputDataMatches(inputData);
+            return action.playerIndex == playerIndex and registeredInput.type == inputType and registeredInput.InputDataMatches(inputData);
         };
 
         auto getCommands = [this](const Action& action) -> auto
