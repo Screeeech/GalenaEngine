@@ -14,12 +14,12 @@ class UIComponent : public Component
 
 public:
     UIComponent(GameObject* pOwner, std::function<void(GameObject* pCaller)> drawFunc);
+    ~UIComponent() override;
 
     void DrawUI() const;
 
 protected:
     void OnActivate() override;
-    void OnDeactivate() override;
 
 private:
     std::function<void(GameObject* pCaller)> m_drawFunc;

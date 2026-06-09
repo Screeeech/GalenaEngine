@@ -31,9 +31,11 @@ void Scene::Load()
     m_pRootObject->Activate();
 }
 
-void Scene::Unload() const
+void Scene::Unload()
 {
-    m_pRootObject->Deactivate();
+    // Destruct all the game objects
+    m_pRootObject.reset(new GameObject(*this, 0,0, "Scene root"));
+
     m_unloadFunction();
 }
 
