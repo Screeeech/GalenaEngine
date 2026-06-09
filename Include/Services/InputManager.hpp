@@ -26,7 +26,7 @@ using ActionID = uint32_t;
 template<typename InputDataType>
 concept InputConcept = std::same_as<InputDataType, SDL_Scancode> or std::same_as<InputDataType, SDL_GamepadButton>;
 
-struct Input
+struct Input final
 {
     using InputData = std::variant<SDL_Scancode, SDL_GamepadButton>;
     InputData data;
@@ -71,7 +71,7 @@ struct Input
     }
 };
 
-struct Action
+struct Action final
 {
     ActionID name;
     int playerIndex{};
@@ -137,6 +137,8 @@ public:
     }
 
     void UnbindAction(const ActionID& name, int playerIndex);
+
+    auto GetActivePlayerIndices() -> std::set<int>;
 
 private:
     template<InputConcept T>

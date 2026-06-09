@@ -117,6 +117,11 @@ void InputManager::UnbindAction(const ActionID& name, int playerIndex)
     m_commands.erase(Action{ name, playerIndex });
 }
 
+auto InputManager::GetActivePlayerIndices() -> std::set<int>
+{
+    return m_usedPlayerIndices;
+}
+
 void InputManager::HandleGamepadConnect(SDL_JoystickID id)
 {
     SDL_Gamepad* newPad = SDL_OpenGamepad(id);
