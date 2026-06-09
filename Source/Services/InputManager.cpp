@@ -7,91 +7,90 @@
 #include <print>
 
 #include "Commands/CallbackCommand.hpp"
+#include "Events.hpp"
+#include "Locator.hpp"
+#include "Services/EventManager.hpp"
+#include "Utils.hpp"
+
+namespace vw = std::ranges::views;
 
 namespace gla
 {
 
+InputManager::InputManager()
+{
+    // int count{};
+    // auto* ids = SDL_GetGamepads(&count);
+    //
+    // for (int i = 0; i < count; ++i)
+    //{
+    //     SDL_Gamepad* gp = SDL_OpenGamepad(ids[i]);
+    //     if (gp)
+    //     {
+    //         m_gamepadHandles[ids[i]] = gp;
+    //         m_registeredGamepads[ids[i]] = std::nullopt;  // unassigned initially
+    //
+    //         std::println("Gamepad connected (unassigned): {}", SDL_GetGamepadName(gp));
+    //     }
+    // }
+    //
+    // SDL_free(ids);
+}
+
 InputManager::~InputManager() noexcept
 {
-    if(m_pGamepad)
-        SDL_CloseGamepad(m_pGamepad);
+    for (auto const& gamepad : m_gamepadHandles | vw::values)
+        SDL_CloseGamepad(gamepad);
 }
 
-void InputManager::Init()
-{
-    int count = 0;
-    SDL_JoystickID* ids = SDL_GetGamepads(&count);
-    const SDL_Gamepad* gamepad{};
-
-    for(int i{}; i < count; i++)
-    {
-        SDL_Gamepad* gp = SDL_OpenGamepad(ids[i]);
-        if(not gamepad)
-            gamepad = gp;
-
-        std::println("Gamepad connected: {}", SDL_GetGamepadName(gp));
-
-        // Close the other gamepads
-        if(i > 0)
-        {
-            SDL_CloseGamepad(gp);
-        }
-    }
-
-    SDL_free(ids);
-}
-
-bool InputManager::ProcessInput()
+auto InputManager::ProcessInput() -> bool
 {
     ProcessInputHeld();
 
     SDL_Event e;
-    while(SDL_PollEvent(&e))
+    while (SDL_PollEvent(&e))
     {
         ImGui_ImplSDL3_ProcessEvent(&e);
 
-        if(e.type == SDL_EVENT_QUIT)
+        if (e.type == SDL_EVENT_QUIT)
             return false;
 
-        switch(e.type)
+        switch (e.type)
         {
             case SDL_EVENT_KEY_UP:
-                HandleInputEvent(Input::Type::released, e.key.scancode);
+                HandleInputEvent(Input::Type::released, e.key.scancode, GetOrAssignPlayerIndex());
                 break;
 
             case SDL_EVENT_KEY_DOWN:
-                if(e.key.repeat)
+                if (e.key.repeat)
                     break;
-                HandleInputEvent(Input::Type::pressed, e.key.scancode);
+
+                HandleInputEvent(Input::Type::pressed, e.key.scancode, GetOrAssignPlayerIndex());
                 break;
 
             case SDL_EVENT_GAMEPAD_ADDED:
-                std::println("Gamepad added event");
-                if(not m_pGamepad)
-                {
-                    m_pGamepad = SDL_OpenGamepad(e.gdevice.which);
-                    if(m_pGamepad)
-                        std::println("Gamepad connected!");
-                }
-                else
-                    std::println("Gamepad already connected");
+                HandleGamepadConnect(e.gdevice.which);
                 break;
+
             case SDL_EVENT_GAMEPAD_REMOVED:
-                if(m_pGamepad)
-                {
-                    std::println("Gamepad removed!");
-                    m_pGamepad = nullptr;
-                }
+                HandleGamepadDisconnect(e.gdevice.which);
                 break;
 
             case SDL_EVENT_GAMEPAD_BUTTON_UP:
-                HandleInputEvent(Input::Type::released, static_cast<SDL_GamepadButton>(e.gbutton.button));
+                HandleInputEvent(
+                    Input::Type::released,
+                    static_cast<SDL_GamepadButton>(e.gbutton.button),
+                    GetOrAssignPlayerIndex(e.gbutton.which));
                 break;
 
             case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
-                if(e.key.repeat)
+                if (e.key.repeat)
                     break;
-                HandleInputEvent(Input::Type::pressed, static_cast<SDL_GamepadButton>(e.gbutton.button));
+
+                HandleInputEvent(
+                    Input::Type::pressed,
+                    static_cast<SDL_GamepadButton>(e.gbutton.button),
+                    GetOrAssignPlayerIndex(e.gbutton.which));
                 break;
 
             default:;
@@ -103,27 +102,31 @@ bool InputManager::ProcessInput()
 
 void InputManager::ProcessInputHeld()
 {
-    for(auto& [action, input] : m_registeredInputs)
+    for (auto& [action, input] : m_registeredInputs)
     {
-        if(input.type != Input::Type::held)
+        if (input.type != Input::Type::held)
             continue;
 
-        if(std::holds_alternative<SDL_Scancode>(input.data))
+        if (std::holds_alternative<SDL_Scancode>(input.data))
         {
-            const auto* pKeyboard = SDL_GetKeyboardState(nullptr);
-            const auto key = std::get<SDL_Scancode>(input.data);
-            if(input.type != Input::Type::held or not pKeyboard[key])
+            auto const* pKeyboard = SDL_GetKeyboardState(nullptr);
+            auto const key = std::get<SDL_Scancode>(input.data);
+            if (input.type != Input::Type::held or not pKeyboard[key])
                 continue;
         }
         else
         {
-            const auto button = std::get<SDL_GamepadButton>(input.data);
-            if(not SDL_GetGamepadButton(m_pGamepad, button))
+            auto* gamepad = GetGamepadForPlayer(action.playerIndex);
+            if (not gamepad)
+                continue;
+
+            auto const button = std::get<SDL_GamepadButton>(input.data);
+            if (SDL_GetGamepadButton(gamepad, button))
                 continue;
         }
 
         auto [fst, snd] = m_commands.equal_range(action);
-        for(auto& [k, command] : std::ranges::subrange(fst, snd))
+        for (auto& [k, command] : std::ranges::subrange(fst, snd))
         {
             command->Execute();
         }
@@ -135,4 +138,94 @@ void InputManager::UnbindAction(const ActionID& name, int playerIndex)
     m_commands.erase(Action{ name, playerIndex });
 }
 
+void InputManager::HandleGamepadConnect(SDL_JoystickID id)
+{
+    SDL_Gamepad* newPad = SDL_OpenGamepad(id);
+    if (not newPad)
+        return;
+
+    m_gamepadHandles[id] = newPad;
+    m_registeredGamepads[id] = std::nullopt;
+    std::println("Gamepad connected, Joystick ID: {}", id);
+}
+
+void InputManager::HandleGamepadDisconnect(SDL_JoystickID id)
+{
+    std::println("Gamepad disconnected, Joystick ID: {}", id);
+    if (auto const it = m_registeredGamepads.find(id); it != m_registeredGamepads.end())
+    {
+        if (it->second.has_value())
+        {
+            int const playerIndex = *it->second;
+            FreePlayerIndex(playerIndex, id);
+        }
+        m_registeredGamepads.erase(it);
+    }
+    if (auto const handleIt = m_gamepadHandles.find(id); handleIt != m_gamepadHandles.end())
+    {
+        if (handleIt->second)
+            SDL_CloseGamepad(handleIt->second);
+        m_gamepadHandles.erase(handleIt);
+    }
+}
+
+auto InputManager::GetOrAssignPlayerIndex(SDL_JoystickID id) -> int
+{
+    auto& playerIndex = m_registeredGamepads.at(id);
+    if (playerIndex.has_value())
+        return *playerIndex;
+
+    int newIndex{};
+    while (m_usedPlayerIndices.contains(newIndex))
+        ++newIndex;
+
+    playerIndex = newIndex;
+    m_usedPlayerIndices.insert(newIndex);
+    m_playerIndexToJoystick[newIndex] = id;
+
+    std::println("Player {} connected (Joystick ID: {})", newIndex, id);
+    Locator::Get<EventManager>().InvokeEvent(PlayerEvent("OnPlayerIndexAssign"_h, newIndex));
+
+    return newIndex;
+}
+
+auto InputManager::GetOrAssignPlayerIndex() -> int
+{
+    if (m_keyboardPlayerIndex.has_value())
+        return *m_keyboardPlayerIndex;
+
+    int newIndex{};
+    while (m_usedPlayerIndices.contains(newIndex))
+        ++newIndex;
+
+    m_usedPlayerIndices.insert(newIndex);
+    m_keyboardPlayerIndex = newIndex;
+
+    std::println("Player {} connected (Keyboard)", newIndex);
+    Locator::Get<EventManager>().InvokeEvent(PlayerEvent("OnPlayerIndexAssign"_h, newIndex));
+
+    return newIndex;
+}
+
+void InputManager::FreePlayerIndex(int playerIndex, SDL_JoystickID id)
+{
+    m_usedPlayerIndices.erase(playerIndex);
+    m_playerIndexToJoystick.erase(playerIndex);
+
+    std::println("Player {} disconnected (Joystick ID: {})", playerIndex, id);
+    Locator::Get<EventManager>().InvokeEvent(PlayerEvent("OnPlayerIndexRemove"_h, playerIndex));
+}
+
+auto InputManager::GetGamepadForPlayer(int playerIndex) const -> SDL_Gamepad*
+{
+    auto const it = m_playerIndexToJoystick.find(playerIndex);
+    if (it == m_playerIndexToJoystick.end())
+        return nullptr;
+
+    auto const handleIt = m_gamepadHandles.find(it->second);
+    if (handleIt == m_gamepadHandles.end())
+        return nullptr;
+
+    return handleIt->second;
+}
 }  // namespace gla

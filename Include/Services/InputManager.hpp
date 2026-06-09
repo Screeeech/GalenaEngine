@@ -8,6 +8,7 @@
 #include <optional>
 #include <print>
 #include <ranges>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -34,14 +35,14 @@ struct Input
     } type{};
 
     explicit Input(SDL_Scancode _key, Type _type = Type::released)
-        : data{_key}
-        , type{_type}
+        : data{ _key }
+        , type{ _type }
     {
     }
 
     explicit Input(SDL_GamepadButton _key, Type _type = Type::released)
-        : data{_key}
-        , type{_type}
+        : data{ _key }
+        , type{ _type }
     {
     }
 
@@ -83,7 +84,7 @@ struct Action
 class InputManager final
 {
 public:
-    InputManager() = default;
+    InputManager();
     ~InputManager() noexcept;
 
     InputManager(InputManager const&) = delete;
@@ -91,14 +92,13 @@ public:
     InputManager(InputManager&&) = delete;
     auto operator=(InputManager&&) -> InputManager& = delete;
 
-    void Init();
     auto ProcessInput() -> bool;
     void ProcessInputHeld();
 
     template<InputConcept T>
     void RegisterInput(T inputData, Input::Type inputType, const ActionID& name, int playerIndex)
     {
-        if (m_registeredInputs.contains(Action{.name = name, .playerIndex = playerIndex}))
+        if (m_registeredInputs.contains(Action{ .name = name, .playerIndex = playerIndex }))
         {
             if constexpr (std::same_as<T, SDL_Scancode>)
                 std::println(
@@ -114,7 +114,7 @@ public:
                     playerIndex);
         }
 
-        m_registeredInputs.insert(std::pair{Action{.name = name, .playerIndex = playerIndex}, Input{inputData, inputType}});
+        m_registeredInputs.insert(std::pair{ Action{ .name = name, .playerIndex = playerIndex }, Input{ inputData, inputType } });
     }
 
     template<InputConcept T>
@@ -130,25 +130,25 @@ public:
         requires std::derived_from<CommandType, Command>
     void BindAction(const ActionID& name, int playerIndex, Args... args)
     {
-        m_commands.emplace(Action{.name = name, .playerIndex = playerIndex}, std::make_unique<CommandType>(args...));
+        m_commands.emplace(Action{ .name = name, .playerIndex = playerIndex }, std::make_unique<CommandType>(args...));
     }
 
     void UnbindAction(const ActionID& name, int playerIndex);
 
 private:
     template<InputConcept T>
-    auto HandleInputEvent(Input::Type inputType, T inputData) -> bool
+    auto HandleInputEvent(Input::Type inputType, T inputData, int playerIndex) -> bool
     {
         auto actionFilter = [&](const auto& pair) -> bool
         {
             const auto& [action, registeredInput] = pair;
-            return registeredInput.type != inputType and registeredInput.InputDataMatches(inputData);
+            return action.playerIndex == playerIndex and registeredInput.type != inputType and registeredInput.InputDataMatches(inputData);
         };
 
         auto getCommands = [this](const Action& action) -> auto
         {
-            auto range = m_commands.equal_range(action);
-            return std::ranges::subrange(range.first, range.second) | std::views::values;
+            auto [fst, snd] = m_commands.equal_range(action);
+            return std::ranges::subrange(fst, snd) | std::views::values;
         };
 
         // clang-format off
@@ -157,9 +157,10 @@ private:
             | std::views::keys
             | std::views::transform(getCommands)
             | std::views::join;
+        // clang-format on
 
         bool executed{};
-        for(auto& command : allCommands)
+        for (auto& command : allCommands)
         {
             command->Execute();
             executed = true;
@@ -168,12 +169,28 @@ private:
         return executed;
     }
 
+    void HandleGamepadConnect(SDL_JoystickID id);
+    void HandleGamepadDisconnect(SDL_JoystickID id);
+
     std::unordered_multimap<Action, Input, Action::Hash> m_registeredInputs;
     std::unordered_multimap<Action, std::unique_ptr<Command>, Action::Hash> m_commands;
 
-    SDL_Gamepad* m_pGamepad{};
+    auto GetOrAssignPlayerIndex(SDL_JoystickID id) -> int;
+    auto GetOrAssignPlayerIndex() -> int;
+
+    void FreePlayerIndex(int playerIndex, SDL_JoystickID id);
+    auto GetGamepadForPlayer(int playerIndex) const -> SDL_Gamepad*;
+
+    std::unordered_map<SDL_JoystickID, std::optional<int>> m_registeredGamepads;
+    std::optional<int> m_keyboardPlayerIndex;
+
+    std::unordered_map<int, SDL_JoystickID> m_playerIndexToJoystick;
+    std::set<int> m_usedPlayerIndices;
+
+    std::unordered_map<SDL_JoystickID, SDL_Gamepad*> m_gamepadHandles;
+    // SDL_JoystickID* m_joystickIDs;
 };
 
-}
+}  // namespace gla
 
-#endif // GALENA_INPUTMANAGER_HPP
+#endif  // GALENA_INPUTMANAGER_HPP
