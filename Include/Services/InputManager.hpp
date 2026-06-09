@@ -18,6 +18,9 @@
 
 namespace gla
 {
+
+static constexpr int maxPlayers{ 10 };
+
 using ActionID = uint32_t;
 
 template<typename InputDataType>
@@ -84,7 +87,7 @@ struct Action
 class InputManager final
 {
 public:
-    InputManager();
+    explicit InputManager() = default;
     ~InputManager() noexcept;
 
     InputManager(InputManager const&) = delete;
@@ -175,8 +178,8 @@ private:
     std::unordered_multimap<Action, Input, Action::Hash> m_registeredInputs;
     std::unordered_multimap<Action, std::unique_ptr<Command>, Action::Hash> m_commands;
 
-    auto GetOrAssignPlayerIndex(SDL_JoystickID id) -> int;
-    auto GetOrAssignPlayerIndex() -> int;
+    auto GetOrAssignPlayerIndex(SDL_JoystickID id) -> std::optional<int>;
+    auto GetOrAssignPlayerIndex() -> std::optional<int>;
 
     void FreePlayerIndex(int playerIndex, SDL_JoystickID id);
     auto GetGamepadForPlayer(int playerIndex) const -> SDL_Gamepad*;

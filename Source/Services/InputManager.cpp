@@ -17,26 +17,6 @@ namespace vw = std::ranges::views;
 namespace gla
 {
 
-InputManager::InputManager()
-{
-    // int count{};
-    // auto* ids = SDL_GetGamepads(&count);
-    //
-    // for (int i = 0; i < count; ++i)
-    //{
-    //     SDL_Gamepad* gp = SDL_OpenGamepad(ids[i]);
-    //     if (gp)
-    //     {
-    //         m_gamepadHandles[ids[i]] = gp;
-    //         m_registeredGamepads[ids[i]] = std::nullopt;  // unassigned initially
-    //
-    //         std::println("Gamepad connected (unassigned): {}", SDL_GetGamepadName(gp));
-    //     }
-    // }
-    //
-    // SDL_free(ids);
-}
-
 InputManager::~InputManager() noexcept
 {
     for (auto const& gamepad : m_gamepadHandles | vw::values)
@@ -58,14 +38,16 @@ auto InputManager::ProcessInput() -> bool
         switch (e.type)
         {
             case SDL_EVENT_KEY_UP:
-                HandleInputEvent(Input::Type::released, e.key.scancode, GetOrAssignPlayerIndex());
+                if (auto const playerIndex = GetOrAssignPlayerIndex(); playerIndex.has_value())
+                    HandleInputEvent(Input::Type::released, e.key.scancode, *playerIndex);
                 break;
 
             case SDL_EVENT_KEY_DOWN:
                 if (e.key.repeat)
                     break;
 
-                HandleInputEvent(Input::Type::pressed, e.key.scancode, GetOrAssignPlayerIndex());
+                if (auto const playerIndex = GetOrAssignPlayerIndex(); playerIndex.has_value())
+                    HandleInputEvent(Input::Type::pressed, e.key.scancode, *playerIndex);
                 break;
 
             case SDL_EVENT_GAMEPAD_ADDED:
@@ -77,20 +59,17 @@ auto InputManager::ProcessInput() -> bool
                 break;
 
             case SDL_EVENT_GAMEPAD_BUTTON_UP:
-                HandleInputEvent(
-                    Input::Type::released,
-                    static_cast<SDL_GamepadButton>(e.gbutton.button),
-                    GetOrAssignPlayerIndex(e.gbutton.which));
+
+                if (auto const playerIndex = GetOrAssignPlayerIndex(e.gbutton.which); playerIndex.has_value())
+                    HandleInputEvent(Input::Type::released, static_cast<SDL_GamepadButton>(e.gbutton.button), *playerIndex);
                 break;
 
             case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
                 if (e.key.repeat)
                     break;
 
-                HandleInputEvent(
-                    Input::Type::pressed,
-                    static_cast<SDL_GamepadButton>(e.gbutton.button),
-                    GetOrAssignPlayerIndex(e.gbutton.which));
+                if (auto const playerIndex = GetOrAssignPlayerIndex(e.gbutton.which); playerIndex.has_value())
+                    HandleInputEvent(Input::Type::pressed, static_cast<SDL_GamepadButton>(e.gbutton.button), *playerIndex);
                 break;
 
             default:;
@@ -169,11 +148,17 @@ void InputManager::HandleGamepadDisconnect(SDL_JoystickID id)
     }
 }
 
-auto InputManager::GetOrAssignPlayerIndex(SDL_JoystickID id) -> int
+auto InputManager::GetOrAssignPlayerIndex(SDL_JoystickID id) -> std::optional<int>
 {
     auto& playerIndex = m_registeredGamepads.at(id);
     if (playerIndex.has_value())
-        return *playerIndex;
+        return playerIndex;
+
+    if (m_usedPlayerIndices.size() >= maxPlayers)
+    {
+        std::println("Max player count ({}) reached, cannot assign Gamepad", maxPlayers);
+        return std::nullopt;
+    }
 
     int newIndex{};
     while (m_usedPlayerIndices.contains(newIndex))
@@ -189,10 +174,16 @@ auto InputManager::GetOrAssignPlayerIndex(SDL_JoystickID id) -> int
     return newIndex;
 }
 
-auto InputManager::GetOrAssignPlayerIndex() -> int
+auto InputManager::GetOrAssignPlayerIndex() -> std::optional<int>
 {
     if (m_keyboardPlayerIndex.has_value())
-        return *m_keyboardPlayerIndex;
+        return m_keyboardPlayerIndex;
+
+    if (m_usedPlayerIndices.size() >= maxPlayers)
+    {
+        std::println("Max player count ({}) reached, cannot assign Gamepad", maxPlayers);
+        return std::nullopt;
+    }
 
     int newIndex{};
     while (m_usedPlayerIndices.contains(newIndex))
