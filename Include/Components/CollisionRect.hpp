@@ -35,13 +35,13 @@ public:
         glm::vec2 position,
         glm::vec2 size,
         bool active = true);
-    ~CollisionRect() override;
 
     glm::vec2 m_position;
     glm::vec2 m_size;
 
 protected:
     void OnActivate() override;
+    void OnDeactivate() override;
     void FixedUpdate() override;
     void Render() override;
 

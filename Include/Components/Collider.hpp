@@ -83,6 +83,7 @@ protected:
     uint32_t m_collisionMasks;
 
     void OnActivate() override;
+    void OnDeactivate() override;
 
     bool m_active{ true };
 

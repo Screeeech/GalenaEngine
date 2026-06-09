@@ -17,11 +17,6 @@ public:
     {
     }
 
-    ~Renderable() override
-    {
-        m_pOwner->GetParentScene().UnregisterRenderComponent(this);
-    }
-
     void SetZIndex(int zIndex)
     {
         m_zIndex = zIndex;
@@ -42,6 +37,10 @@ protected:
         m_pOwner->GetParentScene().RegisterRenderComponent(this);
     }
 
+    void OnDeactivate() override
+    {
+        m_pOwner->GetParentScene().UnregisterRenderComponent(this);
+    }
 private:
     int m_zIndex;
 };

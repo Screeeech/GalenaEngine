@@ -14,10 +14,6 @@ UIComponent::UIComponent(GameObject* pOwner, std::function<void(GameObject* pCal
     , m_drawFunc(std::move(drawFunc))
 {
 }
-UIComponent::~UIComponent()
-{
-    m_pOwner->GetParentScene().UnregisterUIComponent(this);
-}
 
 void UIComponent::DrawUI() const
 {
@@ -27,6 +23,11 @@ void UIComponent::DrawUI() const
 void UIComponent::OnActivate()
 {
     m_pOwner->GetParentScene().RegisterUIComponent(this);
+}
+
+void UIComponent::OnDeactivate()
+{
+    m_pOwner->GetParentScene().UnregisterUIComponent(this);
 }
 
 }  // namespace gla

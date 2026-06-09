@@ -41,6 +41,12 @@ void Sprite::OnActivate()
     m_visible = true;
 }
 
+void Sprite::OnDeactivate()
+{
+    Renderable::OnDeactivate();
+    m_visible = false;
+}
+
 void Sprite::SetTexture(std::shared_ptr<Texture2D> texture)
 {
     m_texture = std::move(texture);

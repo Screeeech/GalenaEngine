@@ -21,16 +21,19 @@ CollisionRect::CollisionRect(
     , m_size(size)
 {
 }
-CollisionRect::~CollisionRect()
-{
-    std::erase_if(m_registeredColliders, [this](auto* other) -> bool { return other == this; });
-}
 
 void CollisionRect::OnActivate()
 {
     Collider::OnActivate();
 
     m_registeredColliders.push_back(this);
+}
+
+void CollisionRect::OnDeactivate()
+{
+    Collider::OnDeactivate();
+
+    std::erase_if(m_registeredColliders, [this](auto* other) -> bool { return other == this; });
 }
 
 void CollisionRect::FixedUpdate()

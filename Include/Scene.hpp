@@ -22,7 +22,7 @@ class Scene final
     explicit Scene(SceneLoader loadFunction, SceneUnloader unloadFunction, std::string sceneName);
 
     void Load();
-    void Unload();
+    void Unload() const;
 
 public:
     void RemoveGameObject(GameObject* pObject) const;

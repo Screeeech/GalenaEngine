@@ -70,5 +70,9 @@ void Collider::OnActivate()
 {
     Renderable::OnActivate();
 }
+void Collider::OnDeactivate()
+{
+    Renderable::OnDeactivate();
+}
 
 }  // namespace gla

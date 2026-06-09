@@ -30,6 +30,7 @@ public:
 protected:
     void Render() override;
     void OnActivate() override;
+    void OnDeactivate() override;
 
 private:
     std::shared_ptr<Texture2D> m_texture;

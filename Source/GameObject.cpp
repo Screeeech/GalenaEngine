@@ -63,6 +63,11 @@ void GameObject::LateFixedUpdate() const
     }
 }
 
+GameObject::~GameObject() noexcept
+{
+    Deactivate();
+}
+
 void GameObject::Activate()
 {
     if (not m_active)
@@ -75,11 +80,25 @@ void GameObject::Activate()
     }
 }
 
+void GameObject::Deactivate()
+{
+    if (m_active)
+    {
+        for (auto const& component : m_components)
+            component->Deactivate();
+        for (auto const& child : m_children)
+            child->Deactivate();
+
+        m_active = false;
+    }
+}
+
 void GameObject::RemoveComponent(Component* pComponent)
 {
     auto const it = std::ranges::find_if(m_components, [pComponent](auto const& comp) { return pComponent == comp.get(); });
     if (it != m_components.end())
     {
+        pComponent->Deactivate();
         m_components.erase(it);
     }
 }

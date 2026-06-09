@@ -27,9 +27,10 @@ public:
     void LateUpdate() const;
     void LateFixedUpdate() const;
 
-    ~GameObject() noexcept = default;
+    ~GameObject() noexcept;
 
     void Activate();
+    void Deactivate();
 
     template<ComponentConcept T, typename... Args>
     auto AddComponent(Args&&... args) noexcept -> T*
