@@ -7,8 +7,8 @@
 #include <vector>
 
 #include "Component.hpp"
-#include "Transform.hpp"
 #include "Scene.hpp"
+#include "Transform.hpp"
 
 
 namespace gla
@@ -31,6 +31,7 @@ public:
 
     void Activate();
     void Deactivate();
+    auto IsActive() const -> bool;
 
     template<ComponentConcept T, typename... Args>
     auto AddComponent(Args&&... args) noexcept -> T*
@@ -48,8 +49,8 @@ public:
     template<ComponentConcept T>
     void RemoveComponent() noexcept
     {
-        for(auto& component : m_components)
-            if(auto* pComponent = dynamic_cast<T*>(component.get()))
+        for (auto& component : m_components)
+            if (auto* pComponent = dynamic_cast<T*>(component.get()))
             {
                 pComponent->Deactivate();
                 m_components.erase(pComponent);
@@ -58,19 +59,24 @@ public:
     void RemoveComponent(Component* pComponent);
 
     template<ComponentConcept T>
-    auto GetComponent() -> T*
+    auto GetComponent() const -> T*
     {
-        for(auto& component : m_components)
-            if(auto* pComponent = dynamic_cast<T*>(component.get()))
+        for (auto const& component : m_components)
+            if (auto* pComponent = dynamic_cast<T*>(component.get()))
                 return pComponent;
         return nullptr;
     }
 
     template<ComponentConcept T>
-    auto GetAllComponents()
+    auto GetAllComponents() const
     {
         return m_components | std::views::transform([](auto const& comp) -> auto { return dynamic_cast<T*>(comp.get()); }) |
             std::views::filter([](auto* comp) { return comp != nullptr; });
+    }
+
+    [[nodiscard]] auto GetChildren() const
+    {
+        return m_children | std::views::transform([](std::unique_ptr<GameObject> const& child) -> GameObject const* { return child.get(); });
     }
 
     auto GetTransform() -> Transform&;
@@ -97,6 +103,7 @@ public:
     auto operator=(GameObject const& other) -> GameObject& = delete;
     GameObject(GameObject&& other) = delete;
     auto operator=(GameObject&& other) -> GameObject& = delete;
+
 private:
     // I only want to be able to GameObjects from my scene or from other game objects
     // So the constructor is private

@@ -93,6 +93,11 @@ void GameObject::Deactivate()
     }
 }
 
+auto GameObject::IsActive() const -> bool
+{
+    return m_active;
+}
+
 void GameObject::RemoveComponent(Component* pComponent)
 {
     auto const it = std::ranges::find_if(m_components, [pComponent](auto const& comp) { return pComponent == comp.get(); });
