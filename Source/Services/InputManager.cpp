@@ -121,7 +121,7 @@ void InputManager::ProcessInputHeld()
                 continue;
 
             auto const button = std::get<SDL_GamepadButton>(input.data);
-            if (SDL_GetGamepadButton(gamepad, button))
+            if (not SDL_GetGamepadButton(gamepad, button))
                 continue;
         }
 
@@ -184,7 +184,7 @@ auto InputManager::GetOrAssignPlayerIndex(SDL_JoystickID id) -> int
     m_playerIndexToJoystick[newIndex] = id;
 
     std::println("Player {} connected (Joystick ID: {})", newIndex, id);
-    Locator::Get<EventManager>().InvokeEvent(PlayerEvent("OnPlayerIndexAssign"_h, newIndex));
+    Locator::Get<EventManager>().InvokeEvent(PlayerConnectionEvent("OnPlayerConnect"_h, newIndex, true));
 
     return newIndex;
 }
@@ -202,7 +202,7 @@ auto InputManager::GetOrAssignPlayerIndex() -> int
     m_keyboardPlayerIndex = newIndex;
 
     std::println("Player {} connected (Keyboard)", newIndex);
-    Locator::Get<EventManager>().InvokeEvent(PlayerEvent("OnPlayerIndexAssign"_h, newIndex));
+    Locator::Get<EventManager>().InvokeEvent(PlayerConnectionEvent("OnPlayerConnect"_h, newIndex, false));
 
     return newIndex;
 }
@@ -213,7 +213,7 @@ void InputManager::FreePlayerIndex(int playerIndex, SDL_JoystickID id)
     m_playerIndexToJoystick.erase(playerIndex);
 
     std::println("Player {} disconnected (Joystick ID: {})", playerIndex, id);
-    Locator::Get<EventManager>().InvokeEvent(PlayerEvent("OnPlayerIndexRemove"_h, playerIndex));
+    Locator::Get<EventManager>().InvokeEvent(PlayerConnectionEvent("OnPlayerDisconnect"_h, playerIndex, true));
 }
 
 auto InputManager::GetGamepadForPlayer(int playerIndex) const -> SDL_Gamepad*

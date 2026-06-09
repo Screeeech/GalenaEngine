@@ -45,6 +45,16 @@ struct CollisionEvent : Event
     Collider* pOtherCollider;
 };
 
+struct PlayerConnectionEvent final : PlayerEvent
+{
+    explicit PlayerConnectionEvent(EventID id, int playerIndex, bool isGamepad)
+        : PlayerEvent(id, playerIndex)
+        , isGamepad(isGamepad)
+    {
+    }
+
+    bool isGamepad;
+};
 
 }  // namespace gla
 
