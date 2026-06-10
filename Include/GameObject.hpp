@@ -44,7 +44,7 @@ public:
         m_componentMap.insert({ std::type_index(typeid(T)), component });
 
         // If the current scene is already active, we should activate the new component immediately
-        if (m_parentScene.IsActive())
+        if (m_parentScene.IsActive() and IsActive())
             component->Activate();
 
         return component;

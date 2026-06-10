@@ -3,6 +3,7 @@
 
 #include "Component.hpp"
 #include "Locator.hpp"
+#include "Services/Renderer.hpp"
 #include "Services/SceneManager.hpp"
 
 namespace gla
@@ -20,7 +21,7 @@ public:
     void SetZIndex(int zIndex)
     {
         m_zIndex = zIndex;
-        m_pOwner->GetParentScene().SortCachedRenderComponents();
+        Locator::Get<Renderer>().SortCachedRenderables();
     }
 
     [[nodiscard]] auto GetZIndex() const -> int
@@ -29,17 +30,17 @@ public:
     }
 
 protected:
-    friend class Scene;
+    friend class Renderer;
     virtual void Render() = 0;
 
     void OnActivate() override
     {
-        m_pOwner->GetParentScene().RegisterRenderComponent(this);
+        Locator::Get<Renderer>().RegisterRenderable(this);
     }
 
     void OnDeactivate() override
     {
-        m_pOwner->GetParentScene().UnregisterRenderComponent(this);
+        Locator::Get<Renderer>().UnregisterRenderable(this);
     }
 private:
     int m_zIndex;

@@ -6,9 +6,12 @@
 #include <glm/vec2.hpp>
 #include <initializer_list>
 #include <utility>
+#include <vector>
 
 namespace gla
 {
+class Renderable;
+class UIComponent;
 class Texture2D;
 
 class Renderer final
@@ -18,6 +21,8 @@ class Renderer final
     SDL_Color m_clearColor{};
     SDL_Point m_logicalResolution{};
 
+    std::vector<Renderable*> m_renderables;
+    std::vector<UIComponent*> m_uiComponents;
 public:
     explicit Renderer(SDL_Window* pWindow);
     ~Renderer() noexcept;
@@ -44,6 +49,12 @@ public:
     void DrawLines(std::initializer_list<std::tuple<glm::vec2, glm::vec2, SDL_Color>> lines) const;
     void DrawLines(std::initializer_list<std::tuple<glm::vec2, glm::vec2>> lines) const;
     void DrawRect(SDL_FRect rect) const;
+
+    void RegisterRenderable(Renderable* renderable);
+    void UnregisterRenderable(Renderable* component);
+    void RegisterUIComponent(UIComponent* component);
+    void UnregisterUIComponent(UIComponent* component);
+    void SortCachedRenderables();
 
     [[nodiscard]] auto GetSDLRenderer() const -> SDL_Renderer* { return m_renderer; }
     [[nodiscard]] auto GetBackgroundColor() const -> const SDL_Color& { return m_clearColor; }

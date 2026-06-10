@@ -36,12 +36,6 @@ public:
     void QueueReparent(GameObject& child, GameObject& newParent, bool keepWorldPosition);
     void ExecuteReparentingQueue();
 
-    void RegisterRenderComponent(Renderable* renderable);
-    void UnregisterRenderComponent(Renderable* component);
-    void RegisterUIComponent(UIComponent* component);
-    void UnregisterUIComponent(UIComponent* component);
-    void SortCachedRenderComponents();
-
     [[nodiscard]] auto GetRoot() const -> GameObject*;
 
     void Update() const;
@@ -60,8 +54,6 @@ private:
     std::string m_sceneName;
 
     std::unique_ptr<GameObject> m_pRootObject;
-    std::vector<Renderable*> m_renderComponents;
-    std::vector<UIComponent*> m_uiComponents;
 
     struct ReparentOperation final
     {

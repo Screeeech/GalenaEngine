@@ -5,10 +5,13 @@
 #include <imgui_impl_sdlrenderer3.h>
 #include <implot.h>
 
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
+#include "Components/UIComponent.hpp"
 #include "Locator.hpp"
+#include "Renderable.hpp"
 #include "Services/SceneManager.hpp"
 #include "Texture2D.hpp"
 
@@ -58,30 +61,24 @@ Renderer::~Renderer() noexcept
 
 void Renderer::Render() const
 {
+    SetColor(m_clearColor);
+    SDL_RenderClear(m_renderer);
+
     ImGui_ImplSDLRenderer3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
 
-    auto const& sceneManager = Locator::Get<SceneManager>();
-    auto const* currentScene = sceneManager.GetActiveScene();
-    auto& persistentScene = sceneManager.GetPersistentScene();
 
-    persistentScene.DrawUI();
-    if (currentScene)
-        currentScene->DrawUI();
+    for (auto* renderable : m_renderables)
+        renderable->Render();
+    for (const auto* uiComponent : m_uiComponents)
+        uiComponent->DrawUI();
 
     ImGui::Render();
-
-    SetColor(m_clearColor);
-    SDL_RenderClear(m_renderer);
 
     // Draw temporary bounding box around game canvas
     SetColor({ .r = 255, .g = 0, .b = 0, .a = 255 });
     DrawRect({ .x = 0, .y = 0, .w = static_cast<float>(m_logicalResolution.x), .h = static_cast<float>(m_logicalResolution.y) });
-
-    persistentScene.Render();
-    if (currentScene)
-        currentScene->Render();
 
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
     SDL_RenderPresent(m_renderer);
@@ -157,6 +154,35 @@ void Renderer::DrawLines(std::initializer_list<std::tuple<glm::vec2, glm::vec2>>
 void Renderer::DrawRect(SDL_FRect rect) const
 {
     SDL_RenderRect(m_renderer, &rect);
+}
+
+void Renderer::RegisterRenderable(Renderable* renderable)
+{
+    m_renderables.push_back(renderable);
+    SortCachedRenderables();
+}
+
+void Renderer::UnregisterRenderable(Renderable* component)
+{
+    if (not m_renderables.empty())
+        std::erase(m_renderables, component);
+}
+
+void Renderer::RegisterUIComponent(UIComponent* component)
+{
+    m_uiComponents.push_back(component);
+}
+
+void Renderer::UnregisterUIComponent(UIComponent* component)
+{
+    std::erase(m_uiComponents, component);
+}
+
+void Renderer::SortCachedRenderables()
+{
+    std::ranges::sort(
+        m_renderables,
+        [](Renderable const* pComp1, Renderable const* pComp2) -> bool { return pComp1->GetZIndex() < pComp2->GetZIndex(); });
 }
 
 void Renderer::SetColor(SDL_Color color) const

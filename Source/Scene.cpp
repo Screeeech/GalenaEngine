@@ -78,36 +78,6 @@ void Scene::ExecuteReparentingQueue()
     }
 }
 
-void Scene::RegisterRenderComponent(Renderable* renderable)
-{
-    m_renderComponents.push_back(renderable);
-    SortCachedRenderComponents();
-}
-
-void Scene::UnregisterRenderComponent(Renderable* component)
-{
-    if (not m_renderComponents.empty())
-        std::erase(m_renderComponents, component);
-}
-
-void Scene::RegisterUIComponent(UIComponent* component)
-{
-    m_uiComponents.push_back(component);
-}
-
-
-void Scene::UnregisterUIComponent(UIComponent* component)
-{
-    std::erase(m_uiComponents, component);
-}
-
-void Scene::SortCachedRenderComponents()
-{
-    std::ranges::sort(
-        m_renderComponents,
-        [](Renderable const* pComp1, Renderable const* pComp2) -> bool { return pComp1->GetZIndex() < pComp2->GetZIndex(); });
-}
-
 auto Scene::GetRoot() const -> GameObject*
 {
     return m_pRootObject.get();
@@ -131,24 +101,6 @@ void Scene::LateFixedUpdate() const
 void Scene::LateUpdate() const
 {
     m_pRootObject->LateUpdate();
-}
-
-void Scene::Render() const
-{
-    for (auto* renderComponents : m_renderComponents)
-    {
-        if (renderComponents->m_pOwner->IsActive())
-            renderComponents->Render();
-    }
-}
-
-void Scene::DrawUI() const
-{
-    for (const auto* uiComponent : m_uiComponents)
-    {
-        if (uiComponent->m_pOwner->IsActive())
-            uiComponent->DrawUI();
-    }
 }
 
 auto Scene::operator==(const Scene& other) const -> bool

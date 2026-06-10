@@ -59,9 +59,9 @@ void Timer::LateUpdate()
 
     if (m_elapsedTime >= m_timeLimit)
     {
+        m_running = false;
         if (m_timerFinishedCallback)
             m_timerFinishedCallback();
-        m_running = false;
     }
 }
 

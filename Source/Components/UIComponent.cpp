@@ -2,12 +2,14 @@
 
 #include <utility>
 
-#include "Services/SceneManager.hpp"
 #include "GameObject.hpp"
 #include "Locator.hpp"
+#include "Services/Renderer.hpp"
+#include "Services/SceneManager.hpp"
 
 namespace gla
 {
+class Renderer;
 
 UIComponent::UIComponent(GameObject* pOwner, std::function<void(GameObject* pCaller)> drawFunc)
     : Component(pOwner)
@@ -22,12 +24,12 @@ void UIComponent::DrawUI() const
 
 void UIComponent::OnActivate()
 {
-    m_pOwner->GetParentScene().RegisterUIComponent(this);
+    Locator::Get<Renderer>().RegisterUIComponent(this);
 }
 
 void UIComponent::OnDeactivate()
 {
-    m_pOwner->GetParentScene().UnregisterUIComponent(this);
+    Locator::Get<Renderer>().UnregisterUIComponent(this);
 }
 
 }  // namespace gla
