@@ -146,6 +146,7 @@ SoundService::SoundService()
 {
     // We have to use bind_front here since stop_token always has to be the first parameter
     m_thread = std::jthread(std::bind_front(&SoundService::ProcessAudioCommands, this));
+    SetGlobalVolume(defaultVolume);
 }
 
 SoundService::~SoundService() noexcept

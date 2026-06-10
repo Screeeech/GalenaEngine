@@ -10,6 +10,10 @@ namespace gla
 class Sound
 {
 public:
+    static constexpr float defaultVolume{ 0.2f };
+    static constexpr float minimumVolume{ 0.0f };
+    static constexpr float maximumVolume{ 1.5f };
+
     explicit Sound() = default;
     virtual ~Sound() noexcept = default;
 

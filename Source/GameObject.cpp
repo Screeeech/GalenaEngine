@@ -17,53 +17,45 @@ namespace gla
 void GameObject::Update() const
 {
     for (const auto& component : m_components)
-    {
-        component->Update();
-    }
+        if (component->m_active)
+            component->Update();
 
-    for (const auto& children : m_children)
-    {
-        children->Update();
-    }
+    for (const auto& child : m_children)
+        if (child->IsActive())
+            child->Update();
 }
 
 void GameObject::FixedUpdate() const
 {
     for (const auto& component : m_components)
-    {
-        component->FixedUpdate();
-    }
+        if (component->m_active)
+            component->FixedUpdate();
 
-    for (const auto& children : m_children)
-    {
-        children->FixedUpdate();
-    }
+    for (const auto& child : m_children)
+        if (child->IsActive())
+            child->FixedUpdate();
 }
 
 void GameObject::LateUpdate() const
 {
     for (const auto& component : m_components)
-    {
-        component->LateUpdate();
-    }
+        if (component->m_active)
+            component->LateUpdate();
 
-    for (const auto& children : m_children)
-    {
-        children->LateUpdate();
-    }
+    for (const auto& child : m_children)
+        if (child->IsActive())
+            child->LateUpdate();
 }
 
 void GameObject::LateFixedUpdate() const
 {
     for (const auto& component : m_components)
-    {
-        component->LateFixedUpdate();
-    }
+        if (component->m_active)
+            component->LateFixedUpdate();
 
-    for (const auto& children : m_children)
-    {
-        children->LateFixedUpdate();
-    }
+    for (const auto& child : m_children)
+        if (child->IsActive())
+            child->LateFixedUpdate();
 }
 
 GameObject::~GameObject() noexcept
@@ -153,7 +145,7 @@ auto GameObject::CreateChild(glm::vec2 startPosition, std::string const& name) -
 
 auto GameObject::CreateChild(float x, float y, std::string const& name) -> GameObject*
 {
-    m_children.emplace_back(new GameObject(m_parentScene, x, y, name));
+    m_children.emplace_back(new GameObject(*m_parentScene, x, y, name));
 
     GameObject* child = m_children.back().get();
     child->m_pParent = this;
@@ -223,18 +215,18 @@ void GameObject::QueueReparent(GameObject& newParent, bool keepWorldPosition)
         std::println("Warning! GameObject is already parented to this parent");
         return;
     }
-    if (m_parentScene != newParent.m_parentScene)
-    {
-        std::println("Warning! Cannot reparent GameObject to a GameObject of a different scene");
-        return;
-    }
+    // if (m_parentScene != newParent.m_parentScene)
+    //{
+    //     std::println("Warning! Cannot reparent GameObject to a GameObject of a different scene");
+    //     return;
+    // }
 
-    m_parentScene.QueueReparent(*this, newParent, keepWorldPosition);
+    m_parentScene->QueueReparent(*this, newParent, keepWorldPosition);
 }
 
 auto GameObject::GetParentScene() const -> Scene&
 {
-    return m_parentScene;
+    return *m_parentScene;
 }
 
 void GameObject::Reparent(GameObject& newParent, bool keepWorldPosition)
@@ -257,6 +249,7 @@ void GameObject::Reparent(GameObject& newParent, bool keepWorldPosition)
 
     // Set new parent
     m_pParent = &newParent;
+    m_parentScene = &newParent.GetParentScene();
 
     // Add this as a new child to parent's list of children
     m_pParent->AddChild(std::move(self));
@@ -274,7 +267,7 @@ void GameObject::SetDirty()
 
 GameObject::GameObject(Scene& parentScene, float x, float y, std::string_view name)
     : m_name(name)
-    , m_parentScene(parentScene)
+    , m_parentScene(&parentScene)
     , m_transform(x, y, this)
 {
 }

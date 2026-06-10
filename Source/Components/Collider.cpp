@@ -30,6 +30,12 @@ void Collider::DisableCollisionLayers(uint32_t layers)
 {
     m_collisionLayers &= ~layers;
 }
+
+auto Collider::GetCollisionLayers() const -> uint32_t
+{
+    return m_collisionLayers;
+}
+
 void Collider::SetCollisionMasks(uint32_t masks)
 {
     m_collisionMasks = masks;
@@ -41,6 +47,11 @@ void Collider::EnableCollisionMasks(uint32_t masks)
 void Collider::DisableCollisionMasks(uint32_t masks)
 {
     m_collisionMasks &= ~masks;
+}
+
+auto Collider::GetCollisionMasks() const -> uint32_t
+{
+    return m_collisionMasks;
 }
 
 void Collider::Collide(Collider& collider, Collider& other) const

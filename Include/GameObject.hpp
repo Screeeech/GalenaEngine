@@ -44,7 +44,7 @@ public:
         m_componentMap.insert({ std::type_index(typeid(T)), component });
 
         // If the current scene is already active, we should activate the new component immediately
-        if (m_parentScene.IsActive() and IsActive())
+        if (m_parentScene->IsActive() and IsActive())
             component->Activate();
 
         return component;
@@ -139,7 +139,7 @@ private:
 
     bool m_active{ false };
 
-    Scene& m_parentScene;
+    Scene* m_parentScene;
     GameObject* m_pParent{};
     std::vector<std::unique_ptr<GameObject>> m_children;
 

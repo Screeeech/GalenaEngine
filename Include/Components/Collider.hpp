@@ -70,9 +70,12 @@ public:
     void SetCollisionLayers(uint32_t layers);
     void EnableCollisionLayers(uint32_t layers);
     void DisableCollisionLayers(uint32_t layers);
+    auto GetCollisionLayers() const -> uint32_t;
+
     void SetCollisionMasks(uint32_t masks);
     void EnableCollisionMasks(uint32_t masks);
     void DisableCollisionMasks(uint32_t masks);
+    auto GetCollisionMasks() const -> uint32_t;
 
     void Collide(Collider& collider, Collider& other) const;
     void Enable();

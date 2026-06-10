@@ -83,8 +83,8 @@ Galena::Galena(std::string const& windowName, int fixedUpdateFrameCap)
     Locator::Provide<SceneManager>();
 
 #ifndef __EMSCRIPTEN__
-    //Locator::Provide<Sound, SoundNull>();
-     Locator::Provide<Sound, SoundService>();
+    Locator::Provide<Sound, SoundNull>();
+     //Locator::Provide<Sound, SoundService>();
 #else
     // temporarily use null service on emscripten until I implement a singlethreaded sound service
     Locator::Provide<Sound, SoundNull>();

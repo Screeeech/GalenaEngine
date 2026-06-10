@@ -85,22 +85,26 @@ auto Scene::GetRoot() const -> GameObject*
 
 void Scene::Update() const
 {
-    m_pRootObject->Update();
+    if (m_pRootObject->IsActive())
+        m_pRootObject->Update();
 }
 
 void Scene::FixedUpdate() const
 {
-    m_pRootObject->FixedUpdate();
+    if (m_pRootObject->IsActive())
+        m_pRootObject->FixedUpdate();
 }
 
 void Scene::LateFixedUpdate() const
 {
-    m_pRootObject->LateFixedUpdate();
+    if (m_pRootObject->IsActive())
+        m_pRootObject->LateFixedUpdate();
 }
 
 void Scene::LateUpdate() const
 {
-    m_pRootObject->LateUpdate();
+    if (m_pRootObject->IsActive())
+        m_pRootObject->LateUpdate();
 }
 
 auto Scene::operator==(const Scene& other) const -> bool
