@@ -34,7 +34,7 @@ public:
     [[nodiscard]] auto IsActive() const -> bool;
 
     void QueueReparent(GameObject& child, GameObject& newParent, bool keepWorldPosition);
-    void ExecuteReparentingQueue();
+    void ExecuteQueuedOperations();
 
     [[nodiscard]] auto GetRoot() const -> GameObject*;
 
@@ -42,9 +42,8 @@ public:
     void FixedUpdate() const;
     void LateFixedUpdate() const;
     void LateUpdate() const;
-    void Render() const;
-    void DrawUI() const;
-    auto operator==(const Scene& other) const -> bool;
+
+    auto operator==(Scene const& other) const -> bool;
 
 private:
     bool m_active{};

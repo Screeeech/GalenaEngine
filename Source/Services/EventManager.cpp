@@ -34,4 +34,9 @@ void EventManager::ExecuteQueuedEvents()
     }
 }
 
+void EventManager::FlushQueuedEvents()
+{
+    m_queuedEvents.clear();
+}
+
 }  // namespace gla

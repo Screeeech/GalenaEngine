@@ -97,9 +97,9 @@ public:
         // clang-format on
     }
 
-    [[nodiscard]] auto GetChildren() const
+    [[nodiscard]] auto GetChildren()
     {
-        return m_children | std::views::transform([](std::unique_ptr<GameObject> const& child) -> GameObject const* { return child.get(); });
+        return m_children | std::views::transform([](std::unique_ptr<GameObject> const& child) -> GameObject* { return child.get(); });
     }
 
     auto GetTransform() -> Transform&;
@@ -114,6 +114,8 @@ public:
     void QueueReparent(GameObject& newParent, bool keepWorldPosition = true);
 
     auto GetParentScene() const -> Scene&;
+
+    void QueueDelete();
 
     // Recursive function
     void SetDirty();
@@ -137,7 +139,10 @@ private:
     void AddChild(std::unique_ptr<GameObject> pChild);
     auto IsChild(GameObject& pChild) -> bool;
 
+    void DeleteMarkedObjects();
+
     bool m_active{ false };
+    bool m_shouldDelete{ false };
 
     Scene* m_parentScene;
     GameObject* m_pParent{};

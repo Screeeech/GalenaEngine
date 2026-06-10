@@ -66,7 +66,7 @@ void Scene::QueueReparent(GameObject& child, GameObject& newParent, bool keepWor
     m_reparentQueue.emplace(child, newParent, keepWorldPosition);
 }
 
-void Scene::ExecuteReparentingQueue()
+void Scene::ExecuteQueuedOperations()
 {
     while (not m_reparentQueue.empty())
     {
@@ -76,6 +76,8 @@ void Scene::ExecuteReparentingQueue()
 
         m_reparentQueue.pop();
     }
+
+    m_pRootObject->DeleteMarkedObjects();
 }
 
 auto Scene::GetRoot() const -> GameObject*

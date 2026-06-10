@@ -159,12 +159,12 @@ void Galena::RunOneFrame()
         currentScene->LateUpdate();
     persistentScene.LateUpdate();
 
-    eventManager.ExecuteQueuedEvents();
     eventManager.EraseFlaggedEventBindings();
+    eventManager.ExecuteQueuedEvents();
 
     if (currentScene)
-        currentScene->ExecuteReparentingQueue();
-    persistentScene.ExecuteReparentingQueue();
+        currentScene->ExecuteQueuedOperations();
+    persistentScene.ExecuteQueuedOperations();
 
     Locator::Get<Renderer>().Render();
 }

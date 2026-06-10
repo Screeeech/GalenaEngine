@@ -229,6 +229,17 @@ auto GameObject::GetParentScene() const -> Scene&
     return *m_parentScene;
 }
 
+void GameObject::QueueDelete()
+{
+    if (m_pParent == nullptr)
+    {
+        std::println("Warning!\tYou cannot delete the scene root object");
+        return;
+    }
+
+    m_shouldDelete = true;
+}
+
 void GameObject::Reparent(GameObject& newParent, bool keepWorldPosition)
 {
     // Is parent root?
@@ -284,6 +295,16 @@ auto GameObject::IsChild(GameObject& pChild) -> bool
 {
     const auto it = rng::find(m_children, &pChild, [](auto const& child) { return child.get(); });
     return it != m_children.end();
+}
+
+void GameObject::DeleteMarkedObjects()
+{
+    std::erase_if(m_children, [](std::unique_ptr<GameObject> const& child) -> bool { return child->m_shouldDelete; });
+
+    for (auto const& child : m_children)
+    {
+        child->DeleteMarkedObjects();
+    }
 }
 
 }  // namespace gla

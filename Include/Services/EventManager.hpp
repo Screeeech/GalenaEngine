@@ -102,6 +102,7 @@ public:
 
     void EraseFlaggedEventBindings();
     void ExecuteQueuedEvents();
+    void FlushQueuedEvents();
 
 private:
     struct EventEntry final
