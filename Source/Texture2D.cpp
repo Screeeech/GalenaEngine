@@ -28,7 +28,7 @@ auto Texture2D::GetSDLTexture() const -> SDL_Texture*
     return m_texture;
 }
 
-Texture2D::Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode)
+Texture2D::Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode, SDL_BlendMode blendMode)
 {
     SDL_Surface* surface = SDL_LoadPNG(fullPath.c_str());
     if (not surface)
@@ -38,6 +38,7 @@ Texture2D::Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode)
 
     m_texture = SDL_CreateTextureFromSurface(Locator::Get<Renderer>().GetSDLRenderer(), surface);
     SDL_SetTextureScaleMode(m_texture, scaleMode);
+    SDL_SetTextureBlendMode(m_texture, blendMode);
 
     SDL_DestroySurface(surface);
 
@@ -47,11 +48,12 @@ Texture2D::Texture2D(const std::string& fullPath, SDL_ScaleMode scaleMode)
     }
 }
 
-Texture2D::Texture2D(SDL_Texture* texture, SDL_ScaleMode scaleMode)
+Texture2D::Texture2D(SDL_Texture* texture, SDL_ScaleMode scaleMode, SDL_BlendMode blendMode)
     : m_texture{ texture }
 {
     assert(m_texture != nullptr);
     SDL_SetTextureScaleMode(m_texture, scaleMode);
+    SDL_SetTextureBlendMode(m_texture, blendMode);
 }
 
 }  // namespace gla

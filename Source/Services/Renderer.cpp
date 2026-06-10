@@ -110,7 +110,8 @@ void Renderer::RenderTexture(const Texture2D& texture, float x, float y, SDL_FRe
     SDL_RenderTexture(GetSDLRenderer(), texture.GetSDLTexture(), pSrcRect, &dst);
 }
 
-void Renderer::RenderTextureFlipped(Texture2D const& texture, float x, float y, bool flipX, bool flipY, SDL_FRect srcRect) const
+void Renderer::RenderTextureFlipped(
+    Texture2D const& texture, float x, float y, bool flipX, bool flipY, SDL_FRect srcRect) const
 {
     SDL_FRect dst{};
     dst.x = x;
