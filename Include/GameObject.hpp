@@ -3,7 +3,10 @@
 
 #include <glm/fwd.hpp>
 #include <memory>
+#include <print>
 #include <ranges>
+#include <typeindex>
+#include <unordered_map>
 #include <vector>
 
 #include "Component.hpp"
@@ -36,8 +39,9 @@ public:
     template<ComponentConcept T, typename... Args>
     auto AddComponent(Args&&... args) noexcept -> T*
     {
-        m_components.push_back(std::make_unique<T>(this, std::forward<Args>(args)...));
-        auto* component = dynamic_cast<T*>(m_components.back().get());
+        m_components.emplace_back(std::make_unique<T>(this, std::forward<Args>(args)...));
+        auto* component = static_cast<T*>(m_components.back().get());
+        m_componentMap.insert({ std::type_index(typeid(T)), component });
 
         // If the current scene is already active, we should activate the new component immediately
         if (m_parentScene.IsActive())
@@ -47,31 +51,50 @@ public:
     }
 
     template<ComponentConcept T>
-    void RemoveComponent() noexcept
+    auto RemoveComponent() noexcept -> bool
     {
-        for (auto& component : m_components)
-            if (auto* pComponent = dynamic_cast<T*>(component.get()))
-            {
-                pComponent->Deactivate();
-                m_components.erase(pComponent);
-            }
+        auto const count = m_componentMap.count(typeid(T));
+        if (count > 1)
+        {
+            std::println(
+                "Warning!\tTrying to call RemoveComponent<{}>() when there are multiple components stored of the same type can lead to any of "
+                "the components being removed",
+                typeid(T).name());
+            std::println("\tInstead, use RemoveComponent(Component* pComponent) to remove a specific component");
+            return false;
+        }
+        if (count == 0)
+            return false;
+
+        auto const it = m_componentMap.find(typeid(T));
+        it->second->Deactivate();
+        m_componentMap.erase(it);
+        std::erase_if(m_components, [&](auto const& comp) -> bool { return it->second == comp.get(); });
+
+        return true;
     }
-    void RemoveComponent(Component* pComponent);
+    auto RemoveComponent(Component* pComponent) -> bool;
+
 
     template<ComponentConcept T>
     auto GetComponent() const -> T*
     {
-        for (auto const& component : m_components)
-            if (auto* pComponent = dynamic_cast<T*>(component.get()))
-                return pComponent;
+        // If there are multiple components of the same type, any of them can be return here
+        // Use GetComponents() instead to get all of the components
+        if (auto const it = m_componentMap.find(std::type_index(typeid(T))); it != m_componentMap.end())
+            return static_cast<T*>(it->second);
         return nullptr;
     }
 
     template<ComponentConcept T>
-    auto GetAllComponents() const
+    auto GetComponents() const
     {
-        return m_components | std::views::transform([](auto const& comp) -> auto { return dynamic_cast<T*>(comp.get()); }) |
-            std::views::filter([](auto* comp) { return comp != nullptr; });
+        // clang-format off
+        auto [fst, snd] = m_componentMap.equal_range(std::type_index(typeid(T)));
+        return std::ranges::subrange(fst, snd)
+             | std::views::transform(
+                 [](auto const& comp) -> T* { return static_cast<T*>(comp.get()); });
+        // clang-format on
     }
 
     [[nodiscard]] auto GetChildren() const
@@ -121,6 +144,7 @@ private:
     std::vector<std::unique_ptr<GameObject>> m_children;
 
     std::vector<std::unique_ptr<Component>> m_components;
+    std::unordered_multimap<std::type_index, Component*> m_componentMap;
     Transform m_transform;
 
     // TODO:

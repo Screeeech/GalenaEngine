@@ -8,6 +8,9 @@
 #include "Scene.hpp"
 #include "Services/ResourceManager.hpp"
 
+namespace vw = std::ranges::views;
+namespace rng = std::ranges;
+
 namespace gla
 {
 
@@ -98,14 +101,26 @@ auto GameObject::IsActive() const -> bool
     return m_active;
 }
 
-void GameObject::RemoveComponent(Component* pComponent)
+auto GameObject::RemoveComponent(Component* pComponent) -> bool
 {
-    auto const it = std::ranges::find_if(m_components, [pComponent](auto const& comp) { return pComponent == comp.get(); });
+    auto const it = rng::find_if(m_components, [&](auto const& comp) -> bool { return pComponent == comp.get(); });
     if (it != m_components.end())
     {
+        auto [fst, snd] = m_componentMap.equal_range(std::type_index(typeid(pComponent)));
+        for (auto mapIt = fst; mapIt != snd; ++mapIt)
+        {
+            if (mapIt->second == pComponent)
+            {
+                m_componentMap.erase(mapIt);
+                break;
+            }
+        }
+
         pComponent->Deactivate();
         m_components.erase(it);
+        return true;
     }
+    return false;
 }
 
 auto GameObject::GetTransform() -> Transform&
@@ -151,7 +166,7 @@ auto GameObject::DisownChild(GameObject* pChild) -> std::unique_ptr<GameObject>
     // We have to move ownership of the child pointer from the parent
     // and return it to instantiate a new unique_ptr
     // I think this is a good approach?
-    auto const it = std::ranges::find_if(m_children, [pChild](const auto& child) { return child.get() == pChild; });
+    auto const it = rng::find_if(m_children, [pChild](const auto& child) { return child.get() == pChild; });
 
     std::unique_ptr<GameObject> newChild{};
     if (it != m_children.end())
@@ -170,7 +185,7 @@ auto GameObject::DisownChild(GameObject* pChild) -> std::unique_ptr<GameObject>
 bool GameObject::RemoveChild(GameObject* pChild)
 {
     // See if child is in current GameObject's list of children
-    auto const it = std::ranges::find_if(m_children, [pChild](const auto& child) { return child.get() == pChild; });
+    auto const it = rng::find_if(m_children, [pChild](const auto& child) { return child.get() == pChild; });
     if (it != m_children.end())
     {
         m_children.erase(it);
@@ -274,7 +289,7 @@ void GameObject::AddChild(std::unique_ptr<GameObject> pChild)
 
 auto GameObject::IsChild(GameObject& pChild) -> bool
 {
-    const auto it = std::ranges::find(m_children, &pChild, [](auto const& child) { return child.get(); });
+    const auto it = rng::find(m_children, &pChild, [](auto const& child) { return child.get(); });
     return it != m_children.end();
 }
 
