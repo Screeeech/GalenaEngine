@@ -1,5 +1,5 @@
 #include "Locator.hpp"
-#include "Services/ISound.hpp"
+#include "Services/Sound.hpp"
 #include "Services/SoundNull.hpp"
 #include "Services/SoundService.hpp"
 #include "Time.hpp"
@@ -83,12 +83,11 @@ Galena::Galena(std::string const& windowName, int fixedUpdateFrameCap)
     Locator::Provide<SceneManager>();
 
 #ifndef __EMSCRIPTEN__
-    // Just using a null sound system while developing so I don't get driven crazy by startup sounds
-    Locator::Provide<ISound, SoundNull>();
-    // ServiceLocator::Provide<ISound, SoundService>();
+    //Locator::Provide<Sound, SoundNull>();
+     Locator::Provide<Sound, SoundService>();
 #else
     // temporarily use null service on emscripten until I implement a singlethreaded sound service
-    Locator::Provide<ISound, SoundNull>();
+    Locator::Provide<Sound, SoundNull>();
 #endif
 }
 
@@ -100,7 +99,7 @@ Galena::~Galena() noexcept
 
     Locator::Destroy<SceneManager>();
     Locator::Destroy<Renderer>();
-    Locator::Destroy<ISound>();
+    Locator::Destroy<Sound>();
 
 
     SDL_DestroyWindow(g_window);

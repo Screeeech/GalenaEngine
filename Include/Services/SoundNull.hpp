@@ -1,12 +1,12 @@
 #ifndef BURGERTIME_SOUNDNULL_HPP
 #define BURGERTIME_SOUNDNULL_HPP
 
-#include "Services/ISound.hpp"
+#include "Services/Sound.hpp"
 
 namespace gla
 {
 
-class SoundNull : public ISound
+class SoundNull : public Sound
 {
 public:
     void PlayAudio(uint32_t /*audioID*/) override {};

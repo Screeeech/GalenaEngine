@@ -8,7 +8,7 @@
 #include <thread>
 #include <unordered_map>
 
-#include "ISound.hpp"
+#include "Sound.hpp"
 
 namespace gla
 {
@@ -32,16 +32,11 @@ struct SoundCommand final
     std::string tag;
 };
 
-class SoundService final : public ISound
+class SoundService final : public Sound
 {
 public:
     explicit SoundService();
     ~SoundService() noexcept override;
-
-    SoundService(SoundService const&) = delete;
-    auto operator=(SoundService const&) -> SoundService& = delete;
-    SoundService(SoundService&&) noexcept = delete;
-    auto operator=(SoundService&&) noexcept -> SoundService& = delete;
 
     void PlayAudio(uint32_t audioID) override;
     void PlayTrack(std::string const& tag) override;

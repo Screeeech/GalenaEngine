@@ -4,7 +4,7 @@
 #include <utility>
 
 #include "Locator.hpp"
-#include "Services/ISound.hpp"
+#include "Services/Sound.hpp"
 
 namespace gla
 {
@@ -16,7 +16,7 @@ VolumeCommand::VolumeCommand(float volumeChange)
 
 void VolumeCommand::Execute()
 {
-    auto& soundService = Locator::Get<ISound>();
+    auto& soundService = Locator::Get<Sound>();
     float const currentVolume = soundService.GetGlobalVolume();
     float const newVolume = std::clamp(currentVolume + m_volumeChange, m_volumeMin, m_volumeMax);
     soundService.SetGlobalVolume(newVolume);

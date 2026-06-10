@@ -2,20 +2,21 @@
 #define BURGERTIME_SOUNDSERVICE_HPP
 
 #include <cstdint>
+#include <string>
 
 namespace gla
 {
 
-class ISound
+class Sound
 {
 public:
-    explicit ISound() = default;
-    virtual ~ISound() noexcept = default;
+    explicit Sound() = default;
+    virtual ~Sound() noexcept = default;
 
-    ISound(ISound const&) = delete;
-    auto operator=(ISound const&) -> ISound& = delete;
-    ISound(ISound&&) noexcept = delete;
-    auto operator=(ISound&&) noexcept -> ISound& = delete;
+    Sound(Sound const&) = delete;
+    auto operator=(Sound const&) -> Sound& = delete;
+    Sound(Sound&&) noexcept = delete;
+    auto operator=(Sound&&) noexcept -> Sound& = delete;
 
     virtual void PlayAudio(uint32_t audioID) = 0;
     virtual void PlayTrack(std::string const& tag) = 0;
