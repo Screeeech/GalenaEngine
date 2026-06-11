@@ -68,8 +68,8 @@ public:
 
         auto const it = m_componentMap.find(typeid(T));
         it->second->Deactivate();
-        m_componentMap.erase(it);
         std::erase_if(m_components, [&](auto const& comp) -> bool { return it->second == comp.get(); });
+        m_componentMap.erase(it);
 
         return true;
     }
