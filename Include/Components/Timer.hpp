@@ -10,7 +10,7 @@ namespace gla
 class Timer final : public Component
 {
 public:
-    explicit Timer(GameObject* pOwner, std::function<void()> callback = {});
+    explicit Timer(GameObject* pOwner);
 
     void Start(float limit);
     void Start(float limit, std::function<void()> oneTimeCallback);
@@ -21,8 +21,6 @@ public:
     [[nodiscard]] auto IsRunning() const -> bool;
     [[nodiscard]] auto IsFinished() const -> bool;
 
-    void SetCallback(std::function<void()> callback);
-
 protected:
     void LateUpdate() override;
 
@@ -30,7 +28,6 @@ private:
     bool m_running{};
     float m_elapsedTime{};
     float m_timeLimit{};
-    std::function<void()> m_timerFinishedCallback;
     std::function<void()> m_oneTimeCallback;
 };
 

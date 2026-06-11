@@ -5,9 +5,8 @@
 namespace gla
 {
 
-Timer::Timer(GameObject* pOwner, std::function<void()> callback)
+Timer::Timer(GameObject* pOwner)
     : Component(pOwner)
-    , m_timerFinishedCallback(std::move(callback))
 {
 }
 
@@ -16,11 +15,14 @@ void Timer::Start(float limit)
     m_elapsedTime = 0;
     m_timeLimit = limit;
     m_running = true;
+    m_oneTimeCallback = nullptr;
 }
 
 void Timer::Start(float limit, std::function<void()> oneTimeCallback)
 {
-    Start(limit);
+    m_elapsedTime = 0;
+    m_timeLimit = limit;
+    m_running = true;
     m_oneTimeCallback = std::move(oneTimeCallback);
 }
 
@@ -39,6 +41,7 @@ void Timer::Reset()
 {
     m_elapsedTime = 0;
     m_running = false;
+    m_oneTimeCallback = nullptr;
 }
 
 auto Timer::IsRunning() const -> bool
@@ -49,11 +52,6 @@ auto Timer::IsRunning() const -> bool
 auto Timer::IsFinished() const -> bool
 {
     return m_elapsedTime >= m_timeLimit;
-}
-
-void Timer::SetCallback(std::function<void()> callback)
-{
-    m_timerFinishedCallback = std::move(callback);
 }
 
 void Timer::LateUpdate()
@@ -71,8 +69,6 @@ void Timer::LateUpdate()
             m_oneTimeCallback();
             m_oneTimeCallback = nullptr;
         }
-        if (m_timerFinishedCallback)
-            m_timerFinishedCallback();
     }
 }
 
