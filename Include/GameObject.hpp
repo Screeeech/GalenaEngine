@@ -114,6 +114,7 @@ public:
     void QueueReparent(GameObject& newParent, bool keepWorldPosition = true);
 
     auto GetParentScene() const -> Scene&;
+    auto GetParent() const -> GameObject*;
 
     void QueueDelete();
 

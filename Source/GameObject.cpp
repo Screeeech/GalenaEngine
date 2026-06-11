@@ -229,6 +229,11 @@ auto GameObject::GetParentScene() const -> Scene&
     return *m_parentScene;
 }
 
+auto GameObject::GetParent() const -> GameObject*
+{
+    return m_pParent;
+}
+
 void GameObject::QueueDelete()
 {
     if (m_pParent == nullptr)

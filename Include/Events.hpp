@@ -21,15 +21,15 @@ struct Event
     EventID eventID{};
 };
 
-struct PlayerEvent : Event
+struct EntityEvent : Event
 {
-    explicit PlayerEvent(EventID id, int playerIndex)
+    explicit EntityEvent(EventID id, int playerIndex)
         : Event(id)
-        , playerIndex{ playerIndex }
+        , entityIndex{ playerIndex }
     {
     }
 
-    int playerIndex;
+    int entityIndex;
 };
 
 struct CollisionEvent : Event
@@ -45,10 +45,10 @@ struct CollisionEvent : Event
     Collider* pOtherCollider;
 };
 
-struct PlayerConnectionEvent final : PlayerEvent
+struct PlayerConnectionEvent final : EntityEvent
 {
     explicit PlayerConnectionEvent(EventID id, int playerIndex, bool isGamepad)
-        : PlayerEvent(id, playerIndex)
+        : EntityEvent(id, playerIndex)
         , isGamepad(isGamepad)
     {
     }
