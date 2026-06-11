@@ -25,7 +25,7 @@ public:
 
     [[nodiscard]] auto GetSourceRect() const -> SDL_FRect;
 
-    bool m_visible{};
+    bool m_visible{ true };
     glm::vec2 m_offset{};
 protected:
     void Render() override;
