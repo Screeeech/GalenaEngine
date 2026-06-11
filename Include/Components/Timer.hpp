@@ -1,7 +1,8 @@
 #ifndef GALENA_TIMER_HPP
 #define GALENA_TIMER_HPP
-#include "Component.hpp"
 #include <functional>
+
+#include "Component.hpp"
 
 namespace gla
 {
@@ -12,6 +13,7 @@ public:
     explicit Timer(GameObject* pOwner, std::function<void()> callback = {});
 
     void Start(float limit);
+    void Start(float limit, std::function<void()> oneTimeCallback);
     void Resume();
     void Pause();
     void Reset();
@@ -29,6 +31,7 @@ private:
     float m_elapsedTime{};
     float m_timeLimit{};
     std::function<void()> m_timerFinishedCallback;
+    std::function<void()> m_oneTimeCallback;
 };
 
 }  // namespace gla

@@ -18,6 +18,12 @@ void Timer::Start(float limit)
     m_running = true;
 }
 
+void Timer::Start(float limit, std::function<void()> oneTimeCallback)
+{
+    Start(limit);
+    m_oneTimeCallback = std::move(oneTimeCallback);
+}
+
 void Timer::Resume()
 {
     if (m_elapsedTime < m_timeLimit)
@@ -60,6 +66,11 @@ void Timer::LateUpdate()
     if (m_elapsedTime >= m_timeLimit)
     {
         m_running = false;
+        if (m_oneTimeCallback)
+        {
+            m_oneTimeCallback();
+            m_oneTimeCallback = nullptr;
+        }
         if (m_timerFinishedCallback)
             m_timerFinishedCallback();
     }

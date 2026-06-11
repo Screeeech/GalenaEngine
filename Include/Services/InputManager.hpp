@@ -19,7 +19,6 @@
 namespace gla
 {
 
-static constexpr int maxPlayers{ 10 };
 
 using ActionID = uint32_t;
 
@@ -87,6 +86,8 @@ struct Action final
 class InputManager final
 {
 public:
+    static constexpr int maxPlayers{ 10 };
+
     explicit InputManager() = default;
     ~InputManager() noexcept;
 
