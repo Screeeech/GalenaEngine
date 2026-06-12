@@ -115,6 +115,22 @@ auto GameObject::RemoveComponent(Component* pComponent) -> bool
     return false;
 }
 
+auto GameObject::GetFirstChild() -> GameObject*
+{
+    if (auto const children = GetChildren(); children.begin() != children.end())
+        return *children.begin();
+
+    return nullptr;
+}
+
+auto GameObject::GetFirstChild(std::string_view tag) -> GameObject*
+{
+    if (auto children = GetChildren(tag); children.begin() != children.end())
+        return *children.begin();
+
+    return nullptr;
+}
+
 auto GameObject::GetTransform() -> Transform&
 {
     return m_transform;

@@ -101,6 +101,18 @@ public:
     {
         return m_children | std::views::transform([](std::unique_ptr<GameObject> const& child) -> GameObject* { return child.get(); });
     }
+    [[nodiscard]] auto GetChildren(std::string_view tag)
+    {
+        // clang-format off
+        return m_children
+            | std::views::filter([=](auto const& child) -> bool { return child->m_name == tag; })
+            | std::views::transform([](auto const& child) -> GameObject* { return child.get(); });
+        // clang-format on
+    }
+
+    [[nodiscard]] auto GetFirstChild() -> GameObject*;
+    [[nodiscard]] auto GetFirstChild(std::string_view tag) -> GameObject*;
+
 
     auto GetTransform() -> Transform&;
     auto GetParentWorldPosition() const -> glm::vec2;
