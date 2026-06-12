@@ -34,6 +34,7 @@ public:
 
     void SetText(std::string const& text);
     [[nodiscard]] auto GetText() const -> std::string const&;
+    void SetYOffset(float yOffset) const;
 
 protected:
     void OnActivate() override;

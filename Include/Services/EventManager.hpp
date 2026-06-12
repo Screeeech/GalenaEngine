@@ -93,6 +93,8 @@ public:
         }
     }
 
+    void QueueEvent(EventID id, std::any const& eventArgs);
+
     template<typename EventType>
         requires std::derived_from<EventType, Event>
     void QueueEvent(EventType const& eventArgs)

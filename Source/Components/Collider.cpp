@@ -59,7 +59,7 @@ void Collider::Collide(Collider& collider, Collider& other) const
     if (std::holds_alternative<EventPayload>(m_trigger))
     {
         auto const& [id, args] = std::get<EventPayload>(m_trigger);
-        Locator::Get<EventManager>().InvokeEvent(id, args);
+        Locator::Get<EventManager>().QueueEvent(id, args);
     }
     else
     {

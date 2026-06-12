@@ -35,6 +35,10 @@ auto TextComponent::GetText() const -> std::string const&
 {
     return m_Text;
 }
+void TextComponent::SetYOffset(float yOffset) const
+{
+    m_pTextSprite->m_offset.y = yOffset;
+}
 
 void TextComponent::OnActivate()
 {
@@ -69,13 +73,13 @@ auto TextComponent::UpdateTexture() const -> std::shared_ptr<Texture2D>
     switch (m_alignment)
     {
         case Align::Left:
-            m_pTextSprite->m_offset = {};
+            m_pTextSprite->m_offset.x = 0;
             break;
         case Align::Right:
-            m_pTextSprite->m_offset = { -texture->w, 0 };
+            m_pTextSprite->m_offset.x = static_cast<float>(-texture->w);
             break;
         case Align::Center:
-            m_pTextSprite->m_offset = { -texture->w / 2, 0 };
+            m_pTextSprite->m_offset.x = static_cast<float>(-texture->w) / 2.f;
             break;
     }
 
