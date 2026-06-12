@@ -18,11 +18,23 @@ void SoundService::QuitAudio()
 }
 
 
-void SoundService::PlayTrack(std::string const& tag)
+void SoundService::PlayTrack(std::string const& tag, bool looping)
 {
     std::scoped_lock const lock(m_commandQueueMutex);
 
-    m_audioCommands.push({ .type = SoundCommand::Type::PlayTag, .tag = tag });
+    m_audioCommands.push({ .type = SoundCommand::Type::PlayTag, .tag = tag, .looping = looping });
+    m_cv.notify_one();
+}
+
+void SoundService::StopTrack(std::string const& tag)
+{
+    std::scoped_lock const lock(m_commandQueueMutex);
+
+    m_audioCommands.push(
+        {
+            .type = SoundCommand::Type::Stop,
+            .tag = tag,
+        });
     m_cv.notify_one();
 }
 
@@ -44,7 +56,7 @@ void SoundService::ProcessAudioCommands(std::stop_token stopToken)
         if (stopToken.stop_requested() and m_audioCommands.empty())
             return;
 
-        auto const [type, id, tag] = m_audioCommands.front();
+        auto const [type, id, tag, looping] = m_audioCommands.front();
         m_audioCommands.pop();
 
         lock.unlock();
@@ -56,10 +68,13 @@ void SoundService::ProcessAudioCommands(std::stop_token stopToken)
                 PlaySingleTimeAudio(id);
                 break;
             case SoundCommand::Type::PlayTag:
-                PlayTaggedTracks(tag);
+                PlayTaggedTracks(tag, looping);
                 break;
             case SoundCommand::Type::Quit:
                 return;
+            case SoundCommand::Type::Stop:
+                StopTaggedTrack(tag);
+            case SoundCommand::Type::StopAll:
             default:;
         }
     }

@@ -10,6 +10,8 @@ namespace gla
 
 class SoundService::Impl final
 {
+    SDL_PropertiesID m_loopingProperty;
+
     std::vector<MIX_Audio*> m_persistentAudios;
     std::vector<MIX_Track*> m_persistentTracks;
 
@@ -20,6 +22,7 @@ class SoundService::Impl final
 
     // We use mutable here because reading operations still need to lock (thus modify) the mutex
     mutable std::mutex m_audioDataMutex;
+
 public:
     Impl(Impl const&) = delete;
     auto operator=(Impl const&) -> Impl& = delete;
@@ -32,6 +35,8 @@ public:
             throw std::runtime_error("MIX_Init() failed");
 
         m_mixer = MIX_CreateMixerDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, nullptr);
+        m_loopingProperty = SDL_CreateProperties();
+        SDL_SetNumberProperty(m_loopingProperty, MIX_PROP_PLAY_LOOPS_NUMBER, -1);
     }
 
     ~Impl()
@@ -42,6 +47,7 @@ public:
         std::ranges::for_each(m_audioPerID, MIX_DestroyAudio, [](auto& pair) -> auto { return pair.second; });
 
         MIX_DestroyMixer(m_mixer);
+        SDL_DestroyProperties(m_loopingProperty);
     }
 
     void LoadAudio(std::string const& path, uint32_t audioID)
@@ -56,6 +62,8 @@ public:
         }
 
         MIX_Audio* audio = MIX_LoadAudio(m_mixer, path.c_str(), true);
+        if (not audio)
+            throw std::runtime_error(std::format("Could not load audio: {}\t{}", path, SDL_GetError()));
         m_audioPerID[audioID] = audio;
     }
 
@@ -110,11 +118,18 @@ public:
         MIX_PlayTrack(track, 0);
     }
 
-    void PlayTaggedTracks(std::string const& tag) const
+    void PlayTaggedTracks(std::string const& tag, bool looping) const
     {
         std::scoped_lock const lock(m_audioDataMutex);
 
-        MIX_PlayTag(m_mixer, tag.c_str(), 0);
+        MIX_PlayTag(m_mixer, tag.c_str(), looping ? m_loopingProperty : 0);
+    }
+
+    void StopTaggedTrack(std::string const& tag) const
+    {
+        std::scoped_lock const lock(m_audioDataMutex);
+
+        MIX_StopTag(m_mixer, tag.c_str(), 0);
     }
 
     void SetGlobalVolume(float volume) const
@@ -184,9 +199,14 @@ void SoundService::PlaySingleTimeAudio(uint32_t audioID) const
     m_pImpl->PlaySingleTimeAudio(audioID);
 }
 
-void SoundService::PlayTaggedTracks(std::string const& tag) const
+void SoundService::PlayTaggedTracks(std::string const& tag, bool looping) const
 {
-    m_pImpl->PlayTaggedTracks(tag);
+    m_pImpl->PlayTaggedTracks(tag, looping);
+}
+
+void SoundService::StopTaggedTrack(std::string const& tag) const
+{
+    m_pImpl->StopTaggedTrack(tag);
 }
 
 }  // namespace gla

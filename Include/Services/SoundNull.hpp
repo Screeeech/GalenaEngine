@@ -13,7 +13,8 @@ public:
     void QuitAudio() override {};
     void SetGlobalVolume(float /*volume*/) override {}
     [[nodiscard]] auto GetGlobalVolume() const -> float override { return 0.f; }
-    void PlayTrack(const std::string& /*tag*/) override {};
+    void PlayTrack(const std::string& /*tag*/, bool /*looping*/) override {};
+    void StopTrack(std::string const& /*tag*/) override {};
     void LoadAudio(const std::string& /*path*/, uint32_t /*audioID*/) override {};
     void LoadPersistentAudioTrack(const std::string& /*path*/, const std::string& /*audioTag*/) override {};
 };

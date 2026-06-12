@@ -20,16 +20,14 @@ struct SoundCommand final
     {
         Play,
         PlayTag,
-        // TODO: Add support for other sound commands
-        // Pause,
-        // VolumeUp,
-        // VolumeDown,
-        // StopAll,
+        Stop,
+        StopAll,
         Quit,
     } type{};
 
     uint32_t id{};
     std::string tag;
+    bool looping{};
 };
 
 class SoundService final : public Sound
@@ -38,8 +36,14 @@ public:
     explicit SoundService();
     ~SoundService() noexcept override;
 
+    SoundService(SoundService const&) = delete;
+    SoundService(SoundService&&) = delete;
+    auto operator=(SoundService const&) -> SoundService& = delete;
+    auto operator=(SoundService&&) -> SoundService& = delete;
+
     void PlayAudio(uint32_t audioID) override;
-    void PlayTrack(std::string const& tag) override;
+    void PlayTrack(std::string const& tag, bool looping = false) override;
+    void StopTrack(std::string const& tag) override;
     void QuitAudio() override;
     void LoadAudio(std::string const& path, uint32_t audioID) override;
     void LoadPersistentAudioTrack(std::string const& path, std::string const& audioTag) override;
@@ -50,7 +54,8 @@ private:
     void ProcessAudioCommands(std::stop_token stopToken);
 
     void PlaySingleTimeAudio(uint32_t audioID) const;
-    void PlayTaggedTracks(std::string const& tag) const;
+    void PlayTaggedTracks(std::string const& tag, bool looping) const;
+    void StopTaggedTrack(std::string const& tag) const;
 
     class Impl;
     std::unique_ptr<Impl> m_pImpl;
