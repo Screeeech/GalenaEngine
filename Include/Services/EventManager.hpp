@@ -50,7 +50,7 @@ public:
 
         for (auto& [eventArgs, eventID, entry] : m_queuedEvents)
         {
-            auto& [storedListener, callback, unbindFlag] = *entry;
+            auto& [storedListener, callback, unbindFlag] = entry;
             if (storedListener == listener)
                 unbindFlag = true;
         }
@@ -60,7 +60,9 @@ public:
     void UnbindEvent(EventID id, ListenerType* listener)
     {
         // std::erase_if(m_listeners, [&](auto const& pair) { return pair.first == id and pair.second.first == listener; });
-        for (auto& [eventID, entry] : m_listeners)
+        // clang-format off
+        for (auto const [fst, snd] = m_listeners.equal_range(id);
+             auto& [eventID, entry] : std::ranges::subrange(fst, snd))
         {
             auto& [storedListener, callback, unbindFlag] = entry;
             if (storedListener == listener and eventID == id)
@@ -69,10 +71,11 @@ public:
 
         for (auto&& [eventArgs, eventID, entry] : m_queuedEvents)
         {
-            auto& [storedListener, callback, unbindFlag] = *entry;
+            auto& [storedListener, callback, unbindFlag] = entry;
             if (storedListener == listener and eventID == id)
                 unbindFlag = true;
         }
+        // clang-format on
     }
 
     void InvokeEvent(EventID eventID, std::any const& eventArgs);
@@ -97,7 +100,7 @@ public:
         auto range = m_listeners.equal_range(eventArgs.eventID);
         for (auto& entry : std::ranges::subrange(range.first, range.second) | std::views::values)
             if (not entry.unbindFlag)
-                m_queuedEvents.emplace_back(std::make_any<EventType>(eventArgs), eventArgs.eventID, &entry);
+                m_queuedEvents.emplace_back(std::make_any<EventType>(eventArgs), eventArgs.eventID, entry);
     }
 
     void EraseFlaggedEventBindings();
@@ -116,7 +119,7 @@ private:
     {
         std::any eventArgs;
         EventID id;
-        EventEntry* entry;
+        EventEntry entry;
     };
 
     // What if object gets deleted before event can fire?
