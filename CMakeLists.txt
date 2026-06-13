@@ -128,17 +128,17 @@ endif ()
 # Add SDL3_ttf
 find_package(SDL3_ttf 3.2.2 CONFIG QUIET)
 if (NOT SDL3_ttf_FOUND)
-  if (WIN32)
-    FetchContent_Declare(
-        SDL3_ttf
-        URL https://www.libsdl.org/projects/SDL_ttf/release/SDL3_ttf-devel-3.2.2-VC.zip
-        DOWNLOAD_NO_PROGRESS ON
-        DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
-    )
-    FetchContent_MakeAvailable(SDL3_ttf)
-    list(PREPEND CMAKE_PREFIX_PATH "${sdl3_ttf_SOURCE_DIR}")
-    find_package(SDL3_ttf CONFIG REQUIRED)
-  else ()
+#  if (WIN32)
+#    FetchContent_Declare(
+#        SDL3_ttf
+#        URL https://www.libsdl.org/projects/SDL_ttf/release/SDL3_ttf-devel-3.2.2-VC.zip
+#        DOWNLOAD_NO_PROGRESS ON
+#        DOWNLOAD_DIR ${CMAKE_BINARY_DIR}/downloads
+#    )
+#    FetchContent_MakeAvailable(SDL3_ttf)
+#    list(PREPEND CMAKE_PREFIX_PATH "${sdl3_ttf_SOURCE_DIR}")
+#    find_package(SDL3_ttf CONFIG REQUIRED)
+#  else ()
     FetchContent_Declare(
         SDL3_ttf
         GIT_REPOSITORY https://github.com/libsdl-org/SDL_ttf.git
@@ -156,7 +156,7 @@ if (NOT SDL3_ttf_FOUND)
       add_link_options(-sUSE_FREETYPE=1 -sUSE_HARFBUZZ=1)
     endif ()
     FetchContent_MakeAvailable(SDL3_ttf)
-  endif ()
+#  endif ()
 endif ()
 
 # Add SDL_Mixer
@@ -173,9 +173,9 @@ endif ()
 if (WIN32)
   # Add VLD (Visual Leak Detector) for memory leak detection on Windows
   find_package(VLD CONFIG)
-  target_include_directories(${ENGINE_TARGET} PUBLIC
-      "${VLD_INCLUDE_DIR}"
-  )
+#  target_include_directories(${ENGINE_TARGET} PUBLIC
+#      "${VLD_INCLUDE_DIR}"
+#  )
 endif ()
 
 target_include_directories(${ENGINE_TARGET} PUBLIC

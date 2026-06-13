@@ -2,6 +2,7 @@
 #define GALENA_COLLIDER_HPP
 
 #include <functional>
+#include <variant>
 #include <vector>
 
 #include "Events.hpp"

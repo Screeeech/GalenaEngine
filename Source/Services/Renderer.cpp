@@ -77,8 +77,8 @@ void Renderer::Render() const
     ImGui::Render();
 
     // Draw temporary bounding box around game canvas
-    SetColor({ .r = 255, .g = 0, .b = 0, .a = 255 });
-    DrawRect({ .x = 0, .y = 0, .w = static_cast<float>(m_logicalResolution.x), .h = static_cast<float>(m_logicalResolution.y) });
+    // SetColor({ .r = 255, .g = 0, .b = 0, .a = 255 });
+    // DrawRect({ .x = 0, .y = 0, .w = static_cast<float>(m_logicalResolution.x), .h = static_cast<float>(m_logicalResolution.y) });
 
     ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData(), m_renderer);
     SDL_RenderPresent(m_renderer);
